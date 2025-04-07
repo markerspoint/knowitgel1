@@ -3,25 +3,33 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 
 Route::get('/', function () {
     return view('homepage');
 });
 
-// User registration
-Route::controller(AuthController::class)->group(function () {
-    Route::get('/register', 'showRegisterForm')->name('register'); // FIXED method name
-    Route::post('/register', 'register')->name('register.submit');
-    Route::get('/login', 'showLoginForm')->name('login');
-    Route::post('/login', 'login')->name('login.submit');
-    Route::post('/logout', 'logout')->name('logout');
-});
+// Authentication Routes
+Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.submit');
+Route::get('/register', [\App\Http\Controllers\AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register'])->name('register.submit');
+Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $games = \App\Models\Game::where('status', 'active')->get();
+        return view('dashboard', compact('games'));
     })->name('dashboard');
+});
+
+// Admin Routes
+Route::middleware(['auth:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::post('/games', [AdminDashboardController::class, 'storeGame'])->name('admin.games.store');
+    Route::put('/games/{game}', [AdminDashboardController::class, 'updateGame'])->name('admin.games.update');
+    Route::delete('/games/{game}', [AdminDashboardController::class, 'deleteGame'])->name('admin.games.delete');
 });
 
 // games
@@ -32,4 +40,3 @@ Route::get('/computer-parts', function () {
 Route::get('/qa-game', function () {
     return view('qa_game');
 })->name('qa.game');
-
