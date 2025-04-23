@@ -189,7 +189,8 @@
                     </div>
 
                     <div class="text-center">
-                        <div class="question-text" id="question"></div>
+                        {{-- Remove the initial question display here, JS will load it --}}
+                        <div class="question-text" id="question">Loading question...</div> 
                         
                         <div class="options-container" id="options"></div>
                         
@@ -211,39 +212,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Sample game data - in a real app, this would come from the server
         const gameData = [
-            {
-                question: "What does CPU stand for?",
-                options: [
-                    "Central Processing Unit",
-                    "Computer Personal Unit",
-                    "Central Program Utility",
-                    "Computer Processing Unit"
-                ],
-                correctAnswer: 0
-            },
-            {
-                question: "Which component is known as the 'brain' of the computer?",
-                options: [
-                    "RAM",
-                    "CPU",
-                    "GPU",
-                    "Hard Drive"
-                ],
-                correctAnswer: 1
-            },
-            {
-                question: "What is the primary function of RAM?",
-                options: [
-                    "Long-term storage",
-                    "Temporary data storage",
-                    "Processing calculations",
-                    "Displaying graphics"
-                ],
-                correctAnswer: 1
-            }
+            @if(isset($games) && $games->count() > 0)
+                @foreach($games as $game)
+                {
+                    question: @json($game->question),
+                    options: @json($game->options_array),
+                    correctAnswer: {{ array_search($game->answer, $game->options_array) !== false ? array_search($game->answer, $game->options_array) : -1 }} // Use -1 if not found
+                }@if(!$loop->last),@endif
+                @endforeach
+            @else
+                // Provide default or empty data if $games is not set or empty
+                // Ensure it's an empty array if no games, not an object with correctAnswer -1
+                // { question: "No questions available.", options: [], correctAnswer: -1 } 
+            @endif
         ];
+
+        console.log('Generated gameData:', gameData);
         
         let currentQuestion = 0;
         let score = 0;
@@ -256,28 +241,60 @@
         const feedbackDiv = document.getElementById('feedback');
         const scoreDisplay = document.getElementById('score');
         
-        // Load the first question
         function loadQuestion() {
+            const validQuestions = gameData.filter(q => q.correctAnswer !== -1);
+            console.log('Valid questions:', validQuestions);
+
+            if (!validQuestions || validQuestions.length === 0) {
+                 questionText.textContent = "No valid Q&A questions found!";
+                 optionsContainer.innerHTML = '';
+                 submitBtn.style.display = 'none';
+                 nextBtn.style.display = 'none';
+                 console.error('No valid questions loaded. Check gameData and correctAnswer calculation.');
+                 return; 
+            }
+
+            // Use the validQuestions array from now on if you want to skip invalid ones,
+            // or stick with gameData if you want to show an error for invalid ones.
+            // For simplicity, let's stick with gameData for now, assuming the check above is sufficient.
+            // If you encounter an invalid question later, you might need more robust handling.
+
             if (currentQuestion < gameData.length) {
                 const question = gameData[currentQuestion];
+
+                if (question.correctAnswer === -1) {
+                    console.error(`Question ${currentQuestion} has an invalid correctAnswer index. Skipping or handling error.`);
+  
+                    questionText.textContent = "Error loading this question.";
+                    optionsContainer.innerHTML = '';
+                    submitBtn.style.display = 'none'; 
+                    nextBtn.classList.remove('d-none');
+                    return;
+                }
+
                 questionText.textContent = question.question;
                 
                 optionsContainer.innerHTML = '';
-                question.options.forEach((option, index) => {
-                    const button = document.createElement('button');
-                    button.className = 'option-btn';
-                    button.textContent = option;
-                    button.dataset.index = index;
-                    button.addEventListener('click', () => selectOption(index));
-                    optionsContainer.appendChild(button);
-                });
+                if (question.options && question.options.length > 0) {
+                    question.options.forEach((option, index) => {
+                        const button = document.createElement('button');
+                        button.className = 'option-btn';
+                        button.textContent = option;
+                        button.dataset.index = index;
+                        button.disabled = false; 
+                        button.addEventListener('click', () => selectOption(index));
+                        optionsContainer.appendChild(button);
+                    });
+                } else {
+                    optionsContainer.innerHTML = '<p>No options available for this question.</p>';
+                }
                 
                 feedbackDiv.classList.add('d-none');
                 submitBtn.classList.remove('d-none');
+                submitBtn.disabled = false; 
                 nextBtn.classList.add('d-none');
                 selectedOption = null;
             } else {
-                // Game over
                 questionText.textContent = "Game Over!";
                 optionsContainer.innerHTML = '';
                 submitBtn.style.display = 'none';
@@ -285,11 +302,10 @@
                 feedbackDiv.classList.remove('d-none');
                 feedbackDiv.classList.remove('feedback-correct', 'feedback-incorrect');
                 feedbackDiv.classList.add('feedback-correct');
-                feedbackDiv.textContent = Congratulations! You scored ${score} out of ${gameData.length}!;
+                feedbackDiv.textContent = `Congratulations! You scored ${score} out of ${gameData.length}!`; 
             }
         }
         
-        // Select an option
         function selectOption(index) {
             const buttons = optionsContainer.getElementsByClassName('option-btn');
             for (let button of buttons) {
@@ -299,7 +315,6 @@
             selectedOption = index;
         }
         
-        // Check the answer
         submitBtn.addEventListener('click', function() {
             if (selectedOption === null) {
                 feedbackDiv.classList.remove('d-none', 'feedback-correct', 'feedback-incorrect');
@@ -323,27 +338,50 @@
                 feedbackDiv.textContent = "Correct! Well done!";
                 score++;
                 scoreDisplay.textContent = score;
+                fetch('{{ route("save.score") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        score: 1, 
+                        game_type: 'qa' 
+                    })
+                }).catch(error => console.error('Error saving score:', error)); 
             } else {
                 feedbackDiv.classList.add('feedback-incorrect');
-                feedbackDiv.textContent = Incorrect. The correct answer is: ${gameData[currentQuestion].options[correctAnswer]};
+                feedbackDiv.textContent = `Incorrect. The correct answer is: ${gameData[currentQuestion].options[correctAnswer]}`;
             }
             
             submitBtn.classList.add('d-none');
-            nextBtn.classList.remove('d-none');
+            if (currentQuestion < gameData.length - 1) {
+                nextBtn.classList.remove('d-none');
+            } else {
+                 nextBtn.classList.add('d-none'); 
+                 setTimeout(() => {
+                     questionText.textContent = "Game Over!";
+                     optionsContainer.innerHTML = '';
+                     submitBtn.style.display = 'none';
+                     nextBtn.style.display = 'none';
+                     feedbackDiv.classList.remove('d-none');
+                     feedbackDiv.classList.remove('feedback-correct', 'feedback-incorrect');
+                     feedbackDiv.classList.add('feedback-correct');
+                     feedbackDiv.textContent = `Congratulations! You scored ${score} out of ${gameData.length}!`;
+                 }, 1500);
+            }
             
-            // Disable all options
+            submitBtn.disabled = true; 
             for (let button of buttons) {
                 button.disabled = true;
             }
         });
         
-        // Move to the next question
         nextBtn.addEventListener('click', function() {
             currentQuestion++;
             loadQuestion();
         });
         
-        // Initialize the game
         loadQuestion();
     </script>
 </body>

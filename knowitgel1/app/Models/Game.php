@@ -16,6 +16,8 @@ class Game extends Model
         'thumbnail',
         'question',
         'answer',
+        'options',
+        'type',
         'status'
     ];
 
