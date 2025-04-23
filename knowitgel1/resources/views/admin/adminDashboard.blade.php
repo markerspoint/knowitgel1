@@ -64,7 +64,7 @@
         transition: all 0.3s;
         }
         .nav-link:hover {
-            color: black; /* Change this to black */
+            color: black; 
             opacity: 0.8;
         }
         .nav-link.active {
@@ -92,7 +92,6 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="#">
@@ -123,8 +122,6 @@
             </div>
         </div>
     </nav>
-
-    <!-- Main Content -->
     <div class="container">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -141,7 +138,6 @@
         @endif
 
         <div class="tab-content">
-            <!-- Users Tab -->
             <div class="tab-pane fade show active" id="users">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -182,8 +178,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Games Tab -->
             <div class="tab-pane fade" id="games">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -200,6 +194,7 @@
                                         <th>Thumbnail</th>
                                         <th>Title</th>
                                         <th>Description</th>
+                                        <th>Type</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -213,6 +208,9 @@
                                         </td>
                                         <td>{{ $game->title }}</td>
                                         <td>{{ Str::limit($game->description, 100) }}</td>
+                                        <td>
+                                            {{ $game->type === 'guess_part' ? 'Guess the Computer Part' : ($game->type === 'qa' ? 'Q&A Game' : ucfirst($game->type)) }}
+                                        </td>
                                         <td>
                                             <span class="badge bg-{{ $game->status === 'active' ? 'success' : 'danger' }}">
                                                 {{ ucfirst($game->status) }}
@@ -240,8 +238,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Add Game Modal -->
     <div class="modal fade" id="addGameModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -267,12 +263,33 @@
                             @enderror
                         </div>
                         <div class="mb-3">
+                            <label class="form-label">Game Type</label>
+                            <select class="form-select @error('type') is-invalid @enderror" name="type" id="gameType" required>
+                                <option value="">Select Game Type</option>
+                                <option value="guess_part">Guess the Computer Part</option>
+                                <option value="qa">Q&A Game</option>
+                            </select>
+                            @error('type')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        
+                        <div class="mb-3" id="gameFileSection">
                             <label class="form-label">Computer Part Image</label>
-                            <input type="file" class="form-control @error('game_file') is-invalid @enderror" name="game_file" accept="image/*" required>
+                            <input type="file" class="form-control @error('game_file') is-invalid @enderror" name="game_file" accept="image/*">
                             @error('game_file')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <small class="text-muted">Upload an image of the computer part</small>
+                        </div>
+                        
+                        <div class="mb-3" id="optionsSection" style="display: none;">
+                            <label class="form-label">Options (comma separated)</label>
+                            <input type="text" class="form-control @error('options') is-invalid @enderror" name="options" value="{{ old('options') }}" placeholder="Option 1, Option 2, Option 3">
+                            @error('options')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Enter multiple choice options separated by commas</small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Question</label>
@@ -321,9 +338,32 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function editGame(gameId) {
-            // Implement edit functionality
-            // You can create a similar modal for editing
         }
     </script>
 </body>
-</html> 
+</html>
+
+<script>
+    document.getElementById('gameType').addEventListener('change', function() {
+        const gameType = this.value;
+        const gameFileSection = document.getElementById('gameFileSection');
+        const optionsSection = document.getElementById('optionsSection');
+        
+        if (gameType === 'guess_part') {
+            gameFileSection.style.display = 'block';
+            optionsSection.style.display = 'none';
+            document.querySelector('[name="game_file"]').setAttribute('required', '');
+            document.querySelector('[name="options"]').removeAttribute('required');
+        } else if (gameType === 'qa') {
+            gameFileSection.style.display = 'none';
+            optionsSection.style.display = 'block';
+            document.querySelector('[name="game_file"]').removeAttribute('required');
+            document.querySelector('[name="options"]').setAttribute('required', '');
+        } else {
+            gameFileSection.style.display = 'none';
+            optionsSection.style.display = 'none';
+            document.querySelector('[name="game_file"]').removeAttribute('required');
+            document.querySelector('[name="options"]').removeAttribute('required');
+        }
+    });
+</script>

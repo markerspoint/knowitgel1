@@ -13,4 +13,9 @@ class User extends Authenticatable
     protected $fillable = [
         'fname', 'lname', 'username', 'email', 'number', 'password',
     ];
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
+    }
 }

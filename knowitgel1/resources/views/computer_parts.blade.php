@@ -69,10 +69,12 @@
             margin: 0 auto;
         }
         .game-image {
-            max-width: 100%;
+            max-width: 60%;
+            max-height: 300px;
             border-radius: 10px;
             margin-bottom: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            object-fit: contain;
         }
         .answer-input {
             background: rgba(255, 255, 255, 0.1);
@@ -127,7 +129,6 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="#">
@@ -143,6 +144,12 @@
                             <i class="fas fa-home me-1"></i>Dashboard
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('leaderboard') }}">
+                            <i class="fas fa-trophy me-1"></i>Leaderboard
+                        </a>
+                    </li>
+                </ul>
                 </ul>
                 <div class="d-flex align-items-center">
                     <span class="text-light me-3">
@@ -158,8 +165,6 @@
             </div>
         </div>
     </nav>
-
-    <!-- Main Content -->
     <div class="container">
         <div class="game-container">
             <div class="card">
@@ -175,22 +180,34 @@
                     </div>
 
                     <div class="text-center">
-                        <img id="part-image" src="{{ asset('images/computer-parts.jpg') }}" class="game-image" alt="Computer Part">
-                        <h5 id="question" class="mb-3">What is this computer part?</h5>
-                        
-                        <div id="feedback" class="feedback-message d-none"></div>
-                        
-                        <div class="mb-3">
-                            <input type="text" id="answer" class="answer-input" placeholder="Enter your answer...">
+                        @if(!isset($gameStarted))
+                        <div id="start-screen">
+                            <h4>Guess the Computer Parts</h4>
+                            <p class="lead mb-4">Test your knowledge about computer hardware components!</p>
+                            <button id="start-btn" class="btn btn-primary btn-lg">
+                                <i class="fas fa-play me-1"></i>Start Game
+                            </button>
                         </div>
-                        
-                        <div class="d-flex justify-content-center gap-2">
-                            <button id="submit-btn" class="btn btn-primary">
-                                <i class="fas fa-check me-1"></i>Submit Answer
-                            </button>
-                            <button id="next-btn" class="btn btn-secondary d-none">
-                                <i class="fas fa-arrow-right me-1"></i>Next Question
-                            </button>
+                        @endif
+
+                        <div id="game-screen" class="{{ isset($gameStarted) ? '' : 'd-none' }}">
+                            <img id="part-image" src="" class="game-image" alt="Computer Part">
+                            <h5 id="question" class="mb-3"></h5>
+                            
+                            <div id="feedback" class="feedback-message d-none"></div>
+                            
+                            <div class="mb-3">
+                                <input type="text" id="answer" class="answer-input" placeholder="Enter your answer...">
+                            </div>
+                            
+                            <div class="d-flex justify-content-center gap-2">
+                                <button id="submit-btn" class="btn btn-primary">
+                                    <i class="fas fa-check me-1"></i>Submit Answer
+                                </button>
+                                <button id="next-btn" class="btn btn-secondary d-none">
+                                    <i class="fas fa-arrow-right me-1"></i>Next Question
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -200,28 +217,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Sample game data - in a real app, this would come from the server
-        const gameData = [
-            {
-                image: "{{ asset('images/cpu.jpg') }}",
-                question: "What is this computer part?",
-                answer: "CPU"
-            },
-            {
-                image: "{{ asset('images/gpu.jpg') }}",
-                question: "What is this computer part?",
-                answer: "GPU"
-            },
-            {
-                image: "{{ asset('images/ram.jpg') }}",
-                question: "What is this computer part?",
-                answer: "RAM"
-            }
-        ];
-        
+        const gameData = {!! json_encode($games) !!};
         let currentQuestion = 0;
         let score = 0;
+        let spinning = false;
         
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const startBtn = document.getElementById('start-btn');
         const partImage = document.getElementById('part-image');
         const questionText = document.getElementById('question');
         const answerInput = document.getElementById('answer');
@@ -230,65 +233,173 @@
         const feedbackDiv = document.getElementById('feedback');
         const scoreDisplay = document.getElementById('score');
         
-        // Load the first question
-        function loadQuestion() {
-            if (currentQuestion < gameData.length) {
-                partImage.src = gameData[currentQuestion].image;
-                questionText.textContent = gameData[currentQuestion].question;
-                answerInput.value = '';
-                feedbackDiv.classList.add('d-none');
-                submitBtn.classList.remove('d-none');
-                nextBtn.classList.add('d-none');
-            } else {
-                // Game over
-                partImage.src = "{{ asset('images/trophy.jpg') }}";
-                questionText.textContent = "Game Over!";
-                answerInput.style.display = 'none';
-                submitBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
-                feedbackDiv.classList.remove('d-none');
-                feedbackDiv.classList.remove('feedback-correct', 'feedback-incorrect');
-                feedbackDiv.classList.add('feedback-correct');
-                feedbackDiv.textContent = Congratulations! You scored ${score} out of ${gameData.length}!;
-            }
+        startBtn.addEventListener('click', function() {
+            startScreen.classList.add('d-none');
+            gameScreen.classList.remove('d-none');
+            spinAndLoadQuestion();
+        });
+        
+        function spinAndLoadQuestion() {
+            if (spinning) return;
+            spinning = true;
+            
+            partImage.src = "";
+            questionText.textContent = "Loading question...";
+            answerInput.value = '';
+            answerInput.disabled = true;
+            submitBtn.disabled = true;
+            
+            const animationContainer = document.createElement('div');
+            animationContainer.style.width = '100%';
+            animationContainer.style.height = '400px';
+            animationContainer.style.position = 'relative';
+            animationContainer.style.margin = '0 auto';
+            animationContainer.style.perspective = '1000px';
+            
+            const carousel = document.createElement('div');
+            carousel.style.width = '300px';
+            carousel.style.height = '300px';
+            carousel.style.position = 'absolute';
+            carousel.style.top = '50%';
+            carousel.style.left = '50%';
+            carousel.style.transformStyle = 'preserve-3d';
+            carousel.style.transform = 'translate(-50%, -50%)';
+            
+            const totalImages = gameData.length;
+            const angleIncrement = (2 * Math.PI) / totalImages;
+            const radius = 200;
+            
+            gameData.forEach((game, index) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.style.position = 'absolute';
+                imgContainer.style.width = '200px';
+                imgContainer.style.height = '200px';
+                
+                const angle = angleIncrement * index;
+                const x = Math.sin(angle) * radius;
+                const z = Math.cos(angle) * radius;
+                
+                imgContainer.style.transform = `
+                    translateX(${x}px)
+                    translateZ(${z}px)
+                    rotateY(${angle}rad)
+                `;
+                imgContainer.style.transition = 'transform 0.1s linear';
+                
+                const img = document.createElement('img');
+                img.src = game.game_file;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'contain';
+                img.style.borderRadius = '10px';
+                img.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+                
+                imgContainer.appendChild(img);
+                carousel.appendChild(imgContainer);
+            });
+            
+            animationContainer.appendChild(carousel);
+            partImage.parentNode.insertBefore(animationContainer, partImage);
+            partImage.style.display = 'none';
+            
+            let rotation = 0;
+            let spinSpeed = 0.2;
+            let animationFrame;
+            const spinDuration = 5000;
+            const startTime = Date.now();
+            
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = elapsed / spinDuration;
+                
+                if (progress > 0.7) {
+                    spinSpeed = Math.max(0.01, spinSpeed * 0.95);
+                }
+                
+                rotation += spinSpeed;
+                carousel.style.transform = `
+                    translate(-50%, -50%)
+                    rotateY(${rotation}rad)
+                `;
+
+                if (elapsed >= spinDuration) {
+                    const randomIndex = Math.floor(Math.random() * totalImages);
+                    const finalRotation = (2 * Math.PI) - (angleIncrement * randomIndex);
+                    
+                    carousel.style.transition = 'transform 1s cubic-bezier(0.25, 0.1, 0.25, 1)';
+                    carousel.style.transform = `
+                        translate(-50%, -50%)
+                        rotateY(${finalRotation}rad)
+                    `;
+                    
+                    setTimeout(() => {
+                        animationContainer.remove();
+                        partImage.style.display = '';
+                        loadQuestion(randomIndex);
+                        spinning = false;
+                    }, 1000);
+                    return;
+                }
+                
+                animationFrame = requestAnimationFrame(animate);
+            };
+            
+            animate();
         }
         
-        // Check the answer
+        function loadQuestion(index) {
+            currentQuestion = index;
+            partImage.src = gameData[currentQuestion].game_file;
+            questionText.textContent = gameData[currentQuestion].question;
+            answerInput.disabled = false;
+            submitBtn.disabled = false;
+            feedbackDiv.classList.add('d-none');
+            submitBtn.classList.remove('d-none');
+            nextBtn.classList.add('d-none');
+        }
+        
         submitBtn.addEventListener('click', function() {
-            const userAnswer = answerInput.value.trim().toLowerCase();
-            const correctAnswer = gameData[currentQuestion].answer.toLowerCase();
-            
-            feedbackDiv.classList.remove('d-none', 'feedback-correct', 'feedback-incorrect');
-            
-            if (userAnswer === correctAnswer) {
-                feedbackDiv.classList.add('feedback-correct');
-                feedbackDiv.textContent = "Correct! Well done!";
-                score++;
-                scoreDisplay.textContent = score;
-            } else {
-                feedbackDiv.classList.add('feedback-incorrect');
-                feedbackDiv.textContent = Incorrect. The correct answer is: ${gameData[currentQuestion].answer};
-            }
-            
-            submitBtn.classList.add('d-none');
-            nextBtn.classList.remove('d-none');
+        const userAnswer = answerInput.value.trim().toLowerCase();
+        const correctAnswer = gameData[currentQuestion].answer.toLowerCase();
+        
+        feedbackDiv.classList.remove('d-none', 'feedback-correct', 'feedback-incorrect');
+        
+        if (userAnswer === correctAnswer) {
+        feedbackDiv.classList.add('feedback-correct');
+        feedbackDiv.textContent = "Correct! Well done!";
+        score++;
+        scoreDisplay.textContent = score;
+        
+        fetch('{{ route("save.score") }}', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+        score: score,
+        game_type: 'guess_part'
+        })
+        });
+        } else {
+        feedbackDiv.classList.add('feedback-incorrect');
+        feedbackDiv.textContent = `Incorrect. The correct answer is: ${gameData[currentQuestion].answer}`;
+        }
+        
+        submitBtn.classList.add('d-none');
+        nextBtn.classList.remove('d-none');
         });
         
-        // Move to the next question
         nextBtn.addEventListener('click', function() {
-            currentQuestion++;
-            loadQuestion();
+            spinAndLoadQuestion();
         });
         
-        // Allow Enter key to submit
         answerInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !submitBtn.classList.contains('d-none')) {
                 submitBtn.click();
             }
         });
-        
-        // Initialize the game
-        loadQuestion();
     </script>
 </body>
 </html>
+

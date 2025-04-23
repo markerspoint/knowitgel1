@@ -9,10 +9,15 @@ return new class extends Migration {
     {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
-            $table->string('question'); // Question text
-            $table->string('answer'); // Correct answer
-            $table->json('options')->nullable(); // Multiple choices for Q&A
-            $table->enum('type', ['guess_part', 'qa']); // Type of game
+            $table->string('title');
+            $table->text('description');
+            $table->string('game_file')->nullable();
+            $table->string('thumbnail');
+            $table->string('question');
+            $table->string('answer');
+            $table->json('options')->nullable();
+            $table->enum('type', ['guess_part', 'qa'])->default('guess_part');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
     }

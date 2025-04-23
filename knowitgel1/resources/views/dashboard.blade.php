@@ -12,6 +12,51 @@
             min-height: 100vh;
             color: #fff;
         }
+        .row.game-row {
+            height: 100%;
+            min-height: 320px;
+        }
+        .game-card {
+            height: 100%;
+            min-height: 300px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat; 
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+            z-index: 0;
+        }
+        .game-card .card-body {
+            width: 100%;
+            padding: 0;
+            position: relative;
+            z-index: 1;
+        }
+        .game-card.computer-parts {
+            background-image: url('/images/computer-parts-bg.png');
+        }
+        .game-card.qa-game {
+            background-image: url('/images/qa-game-bg.png');
+        }
+        .col-md-6 {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
         .navbar {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -95,7 +140,6 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="#">
@@ -137,82 +181,40 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container">
-        <!-- Welcome Section -->
         <div class="welcome-section">
             <h1>Welcome, {{ Auth::user()->fname }}!</h1>
             <p>Ready to test your knowledge about computer parts?</p>
         </div>
 
-        <!-- Games Grid -->
-        <div class="row">
-            @if($games->count() > 0)
-                @foreach($games as $game)
-                <div class="col-md-4 mb-4">
-                    <div class="card game-card">
-                        <img src="{{ asset($game->thumbnail) }}" class="card-img-top game-image" alt="{{ $game->title }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $game->title }}</h5>
-                            <p class="card-text">{{ Str::limit($game->description, 100) }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-{{ $game->status === 'active' ? 'success' : 'danger' }}">
-                                    {{ ucfirst($game->status) }}
-                                </span>
-                                @if($game->title === 'Guess the Computer Parts')
-                                    <a href="{{ route('computer.parts') }}" class="btn btn-primary">
-                                        <i class="fas fa-play me-1"></i>Play Now
-                                    </a>
-                                @elseif($game->title === 'Q&A Game')
-                                    <a href="{{ route('qa.game') }}" class="btn btn-primary">
-                                        <i class="fas fa-play me-1"></i>Play Now
-                                    </a>
-                                @else
-                                    <a href="#" class="btn btn-primary">
-                                        <i class="fas fa-play me-1"></i>Play Now
-                                    </a>
-                                @endif
-                            </div>
+        <div class="row game-row">
+            <div class="col-md-6 mb-4">
+                <div class="card game-card computer-parts">
+                    <div class="card-body text-white">
+                        <h5 class="card-title">Guess the Computer Parts</h5>
+                        <p class="card-text">Test your knowledge about computer hardware components!</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ route('computer.parts') }}" class="btn btn-primary">
+                                <i class="fas fa-play me-1"></i>Play Now
+                            </a>
                         </div>
                     </div>
                 </div>
-                @endforeach
-            @else
-                <!-- Default Games -->
-                <div class="col-md-4 mb-4">
-                    <div class="card game-card">
-                        <img src="{{ asset('images/computer-parts.jpg') }}" class="card-img-top game-image" alt="Guess the Computer Parts">
-                        <div class="card-body">
-                            <h5 class="card-title">Guess the Computer Parts</h5>
-                            <p class="card-text">Test your knowledge about computer hardware components!</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-success">Active</span>
-                                <a href="{{ route('computer.parts') }}" class="btn btn-primary">
-                                    <i class="fas fa-play me-1"></i>Play Now
-                                </a>
-                            </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card game-card qa-game">
+                    <div class="card-body text-white">
+                        <h5 class="card-title">Q&A Game</h5>
+                        <p class="card-text">Answer questions about computer parts and technology!</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ route('qa.game') }}" class="btn btn-primary">
+                                <i class="fas fa-play me-1"></i>Play Now
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <div class="card game-card">
-                        <img src="{{ asset('images/qa-game.jpg') }}" class="card-img-top game-image" alt="Q&A Game">
-                        <div class="card-body">
-                            <h5 class="card-title">Q&A Game</h5>
-                            <p class="card-text">Answer questions about computer parts and technology!</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-success">Active</span>
-                                <a href="{{ route('qa.game') }}" class="btn btn-primary">
-                                    <i class="fas fa-play me-1"></i>Play Now
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
+            </div>
         </div>
-
-        <!-- Stats Section -->
         <div class="row mt-4">
             <div class="col-md-4">
                 <div class="card">
