@@ -24,14 +24,26 @@ class AuthController extends Controller
         ]);
 
         $guard = $credentials['login_type'] === 'admin' ? 'admin' : 'web';
-        
+
         try {
             if (Auth::guard($guard)->attempt([
                 'username' => $credentials['username'],
                 'password' => $credentials['password']
             ])) {
+                if ($guard === 'web') {
+                    $user = Auth::guard('web')->user();
+                    if ($user->is_disabled) {
+                        Auth::guard('web')->logout();
+                        $request->session()->invalidate();
+                        $request->session()->regenerateToken();
+                        return back()
+                            ->withInput($request->only('username', 'login_type'))
+                            ->with('error', 'Your account has been disabled. Please contact support.');
+                    }
+                }
+
                 $request->session()->regenerate();
-                
+
                 if ($guard === 'admin') {
                     $admin = Auth::guard('admin')->user();
                     if ($admin->isSuperAdmin()) {
@@ -41,7 +53,7 @@ class AuthController extends Controller
                     return redirect()->route('admin.dashboard')
                         ->with('success', 'Welcome back, Admin!');
                 }
-                
+
                 return redirect()->route('dashboard')
                     ->with('success', 'Welcome back!');
             }
@@ -83,7 +95,6 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password)
             ]);
     
-            // Redirect to the login page with a success message
             return redirect()->route('login')->with('success', 'Registration successful! Please log in to access your dashboard.');
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'An error occurred during registration. Please try again.');

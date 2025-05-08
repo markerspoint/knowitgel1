@@ -141,7 +141,6 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="#">
@@ -173,7 +172,6 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container">
         <div class="game-container">
             <div class="card">
@@ -189,20 +187,20 @@
                     </div>
 
                     <div class="text-center">
-                        {{-- Remove the initial question display here, JS will load it --}}
-                        <div class="question-text" id="question">Loading question...</div> 
-                        
-                        <div class="options-container" id="options"></div>
-                        
-                        <div id="feedback" class="feedback-message d-none"></div>
-                        
-                        <div class="d-flex justify-content-center gap-2">
-                            <button id="submit-btn" class="btn btn-primary">
-                                <i class="fas fa-check me-1"></i>Submit Answer
+                        <div id="start-screen">
+                            <h4>Q&A Game</h4>
+                            <p class="lead mb-4">Test your knowledge with these computer-related questions!</p>
+                            <button id="start-btn" class="btn btn-primary btn-lg">
+                                <i class="fas fa-play me-1"></i>Start Game
                             </button>
-                            <button id="next-btn" class="btn btn-secondary d-none">
-                                <i class="fas fa-arrow-right me-1"></i>Next Question
-                            </button>
+                        </div>
+
+                        <div id="game-screen" class="d-none">
+                            <div class="question-text" id="question">Loading question...</div> 
+                            
+                            <div class="options-container" id="options"></div>
+                            
+                            <div id="feedback" class="feedback-message d-none"></div>
                         </div>
                     </div>
                 </div>
@@ -212,132 +210,170 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const gameData = [
-            @if(isset($games) && $games->count() > 0)
-                @foreach($games as $game)
-                {
-                    question: @json($game->question),
-                    options: @json($game->options_array),
-                    correctAnswer: {{ array_search($game->answer, $game->options_array) !== false ? array_search($game->answer, $game->options_array) : -1 }} // Use -1 if not found
-                }@if(!$loop->last),@endif
-                @endforeach
-            @else
-                // Provide default or empty data if $games is not set or empty
-                // Ensure it's an empty array if no games, not an object with correctAnswer -1
-                // { question: "No questions available.", options: [], correctAnswer: -1 } 
-            @endif
-        ];
-
-        console.log('Generated gameData:', gameData);
-        
-        let currentQuestion = 0;
-        let score = 0;
-        let selectedOption = null;
-        
-        const questionText = document.getElementById('question');
-        const optionsContainer = document.getElementById('options');
-        const submitBtn = document.getElementById('submit-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const feedbackDiv = document.getElementById('feedback');
-        const scoreDisplay = document.getElementById('score');
-        
-        function loadQuestion() {
-            const validQuestions = gameData.filter(q => q.correctAnswer !== -1);
-            console.log('Valid questions:', validQuestions);
-
-            if (!validQuestions || validQuestions.length === 0) {
-                 questionText.textContent = "No valid Q&A questions found!";
-                 optionsContainer.innerHTML = '';
-                 submitBtn.style.display = 'none';
-                 nextBtn.style.display = 'none';
-                 console.error('No valid questions loaded. Check gameData and correctAnswer calculation.');
-                 return; 
+        document.addEventListener('DOMContentLoaded', function() {
+            const startScreen = document.getElementById('start-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const startBtn = document.getElementById('start-btn');
+            const questionElement = document.getElementById('question');
+            const optionsContainer = document.getElementById('options');
+            const feedbackElement = document.getElementById('feedback');
+            const scoreElement = document.getElementById('score');
+            
+            const questions = @json($games);
+            
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let timer;
+            let timeLeft = 10; 
+            let timerElement;
+            
+            startBtn.addEventListener('click', startGame);
+            
+            function startGame() {
+                startScreen.classList.add('d-none');
+                gameScreen.classList.remove('d-none');
+                loadQuestion();
             }
-
-            // Use the validQuestions array from now on if you want to skip invalid ones,
-            // or stick with gameData if you want to show an error for invalid ones.
-            // For simplicity, let's stick with gameData for now, assuming the check above is sufficient.
-            // If you encounter an invalid question later, you might need more robust handling.
-
-            if (currentQuestion < gameData.length) {
-                const question = gameData[currentQuestion];
-
-                if (question.correctAnswer === -1) {
-                    console.error(`Question ${currentQuestion} has an invalid correctAnswer index. Skipping or handling error.`);
-  
-                    questionText.textContent = "Error loading this question.";
-                    optionsContainer.innerHTML = '';
-                    submitBtn.style.display = 'none'; 
-                    nextBtn.classList.remove('d-none');
+            
+            function loadQuestion() {
+                if (currentQuestionIndex >= questions.length) {
+                    gameScreen.innerHTML = `
+                        <h3>Game Over!</h3>
+                        <p>Your final score: ${score}/${questions.length}</p>
+                        <button class="btn btn-primary" onclick="location.reload()">Play Again</button>
+                    `;
                     return;
                 }
-
-                questionText.textContent = question.question;
+                
+                const currentQuestion = questions[currentQuestionIndex];
+                questionElement.textContent = currentQuestion.question;
                 
                 optionsContainer.innerHTML = '';
-                if (question.options && question.options.length > 0) {
-                    question.options.forEach((option, index) => {
+                
+                if (!document.getElementById('timer-container')) {
+                    const timerContainer = document.createElement('div');
+                    timerContainer.id = 'timer-container';
+                    timerContainer.classList.add('mb-3', 'text-center');
+                    timerContainer.innerHTML = `
+                        <div class="progress" style="height: 30px;">
+                            <div id="timer-bar" class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                <span id="timer-text">10s</span>
+                            </div>
+                        </div>
+                    `;
+                    questionElement.parentNode.insertBefore(timerContainer, questionElement);
+                }
+                
+                timeLeft = 10;
+                timerElement = document.getElementById('timer-text');
+                const timerBar = document.getElementById('timer-bar');
+                timerElement.textContent = timeLeft + 's';
+                timerBar.style.width = '100%';
+                timerBar.classList.remove('bg-warning', 'bg-danger');
+                timerBar.classList.add('bg-primary');
+                
+                clearInterval(timer);
+                timer = setInterval(updateTimer, 1000);
+                
+                if (currentQuestion.options && Array.isArray(currentQuestion.options)) {
+                    currentQuestion.options.forEach((option, index) => {
                         const button = document.createElement('button');
-                        button.className = 'option-btn';
                         button.textContent = option;
-                        button.dataset.index = index;
-                        button.disabled = false; 
-                        button.addEventListener('click', () => selectOption(index));
+                        button.classList.add('option-btn');
+                        button.addEventListener('click', () => checkAnswer(option, index));
                         optionsContainer.appendChild(button);
                     });
                 } else {
-                    optionsContainer.innerHTML = '<p>No options available for this question.</p>';
+                    console.error('Invalid options format for question:', currentQuestion);
                 }
                 
-                feedbackDiv.classList.add('d-none');
-                submitBtn.classList.remove('d-none');
-                submitBtn.disabled = false; 
-                nextBtn.classList.add('d-none');
-                selectedOption = null;
-            } else {
-                questionText.textContent = "Game Over!";
-                optionsContainer.innerHTML = '';
-                submitBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
-                feedbackDiv.classList.remove('d-none');
-                feedbackDiv.classList.remove('feedback-correct', 'feedback-incorrect');
-                feedbackDiv.classList.add('feedback-correct');
-                feedbackDiv.textContent = `Congratulations! You scored ${score} out of ${gameData.length}!`; 
-            }
-        }
-        
-        function selectOption(index) {
-            const buttons = optionsContainer.getElementsByClassName('option-btn');
-            for (let button of buttons) {
-                button.classList.remove('selected');
-            }
-            buttons[index].classList.add('selected');
-            selectedOption = index;
-        }
-        
-        submitBtn.addEventListener('click', function() {
-            if (selectedOption === null) {
-                feedbackDiv.classList.remove('d-none', 'feedback-correct', 'feedback-incorrect');
-                feedbackDiv.classList.add('feedback-incorrect');
-                feedbackDiv.textContent = "Please select an answer!";
-                return;
+                feedbackElement.classList.add('d-none');
             }
             
-            const correctAnswer = gameData[currentQuestion].correctAnswer;
-            const buttons = optionsContainer.getElementsByClassName('option-btn');
-            
-            buttons[correctAnswer].classList.add('correct');
-            if (selectedOption !== correctAnswer) {
-                buttons[selectedOption].classList.add('incorrect');
+            function updateTimer() {
+                timeLeft--;
+                const timerBar = document.getElementById('timer-bar');
+                const percentage = (timeLeft / 10) * 100;
+                
+                timerElement.textContent = timeLeft + 's';
+                timerBar.style.width = percentage + '%';
+                
+                if (timeLeft <= 4 && timeLeft > 2) {
+                    timerBar.classList.remove('bg-primary', 'bg-danger');
+                    timerBar.classList.add('bg-warning');
+                } else if (timeLeft <= 2) {
+                    timerBar.classList.remove('bg-primary', 'bg-warning');
+                    timerBar.classList.add('bg-danger');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeOut();
+                }
             }
             
-            feedbackDiv.classList.remove('d-none', 'feedback-correct', 'feedback-incorrect');
+            function timeOut() {
+                const optionButtons = document.querySelectorAll('.option-btn');
+                const currentQuestion = questions[currentQuestionIndex];
+                const correctAnswerIndex = currentQuestion.correctAnswerIndex;
+                
+                optionButtons.forEach((button, index) => {
+                    button.disabled = true;
+                    
+                    if (index === correctAnswerIndex) {
+                        button.classList.add('correct');
+                    }
+                });
+                
+                feedbackElement.classList.remove('d-none');
+                feedbackElement.textContent = `Time's up! The correct answer is ${currentQuestion.options[correctAnswerIndex]}.`;
+                feedbackElement.classList.add('feedback-incorrect');
+                feedbackElement.classList.remove('feedback-correct');
+                
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 2000);
+            }
             
-            if (selectedOption === correctAnswer) {
-                feedbackDiv.classList.add('feedback-correct');
-                feedbackDiv.textContent = "Correct! Well done!";
-                score++;
-                scoreDisplay.textContent = score;
+            function checkAnswer(selectedOption, selectedIndex) {
+                clearInterval(timer);
+                
+                const currentQuestion = questions[currentQuestionIndex];
+                const correctAnswerIndex = currentQuestion.correctAnswerIndex;
+                
+                const optionButtons = document.querySelectorAll('.option-btn');
+                optionButtons.forEach((button, index) => {
+                    button.disabled = true;
+                    
+                    if (index === correctAnswerIndex) {
+                        button.classList.add('correct');
+                    } else if (index === selectedIndex && selectedIndex !== correctAnswerIndex) {
+                        button.classList.add('incorrect');
+                    }
+                });
+                
+                feedbackElement.classList.remove('d-none');
+                
+                if (selectedIndex === correctAnswerIndex) {
+                    score++;
+                    scoreElement.textContent = score;
+                    feedbackElement.textContent = "Correct! Well done!";
+                    feedbackElement.classList.add('feedback-correct');
+                    feedbackElement.classList.remove('feedback-incorrect');
+                } else {
+                    feedbackElement.textContent = `Incorrect. The correct answer is ${currentQuestion.options[correctAnswerIndex]}.`;
+                    feedbackElement.classList.add('feedback-incorrect');
+                    feedbackElement.classList.remove('feedback-correct');
+                }
+                
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 2000);
+            }
+            
+            function saveScore() {
                 fetch('{{ route("save.score") }}', {
                     method: 'POST',
                     headers: {
@@ -345,44 +381,21 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({
-                        score: 1, 
-                        game_type: 'qa' 
+                        score: score,
+                        game_type: 'qa'
                     })
-                }).catch(error => console.error('Error saving score:', error)); 
-            } else {
-                feedbackDiv.classList.add('feedback-incorrect');
-                feedbackDiv.textContent = `Incorrect. The correct answer is: ${gameData[currentQuestion].options[correctAnswer]}`;
-            }
-            
-            submitBtn.classList.add('d-none');
-            if (currentQuestion < gameData.length - 1) {
-                nextBtn.classList.remove('d-none');
-            } else {
-                 nextBtn.classList.add('d-none'); 
-                 setTimeout(() => {
-                     questionText.textContent = "Game Over!";
-                     optionsContainer.innerHTML = '';
-                     submitBtn.style.display = 'none';
-                     nextBtn.style.display = 'none';
-                     feedbackDiv.classList.remove('d-none');
-                     feedbackDiv.classList.remove('feedback-correct', 'feedback-incorrect');
-                     feedbackDiv.classList.add('feedback-correct');
-                     feedbackDiv.textContent = `Congratulations! You scored ${score} out of ${gameData.length}!`;
-                 }, 1500);
-            }
-            
-            submitBtn.disabled = true; 
-            for (let button of buttons) {
-                button.disabled = true;
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Score saved successfully!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving score:', error);
+                });
             }
         });
-        
-        nextBtn.addEventListener('click', function() {
-            currentQuestion++;
-            loadQuestion();
-        });
-        
-        loadQuestion();
     </script>
 </body>
 </html>
