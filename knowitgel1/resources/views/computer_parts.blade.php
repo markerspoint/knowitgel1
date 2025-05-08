@@ -126,6 +126,63 @@
             color: #fff;
             opacity: 1;
         }
+        
+        /* Avatar celebration animation styles */
+        .celebration-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .celebration-avatar {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 100px;
+            animation: celebrate 2s ease-in-out;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(0.1) rotate(-10deg); opacity: 0; }
+            20% { transform: scale(1.1) rotate(10deg); opacity: 1; }
+            40% { transform: scale(0.9) rotate(-5deg); }
+            60% { transform: scale(1.05) rotate(5deg); }
+            80% { transform: scale(0.95) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+        
+        .fireworks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: firework-animation 1s ease-out;
+            opacity: 0;
+        }
+        
+        @keyframes firework-animation {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -195,11 +252,12 @@
                             <h5 id="question" class="mb-3"></h5>
                             
                             <div id="feedback" class="feedback-message d-none"></div>
+                            <div id="description-area" class="mt-2 d-none" style="font-size: 0.9rem; color: rgba(255,255,255,0.85);"></div>
                             
                             <div class="mb-3">
-                                <input type="text" id="answer" class="answer-input" placeholder="Enter your answer...">
+                                {{-- Added autocomplete="off" to disable browser history/suggestions --}}
+                                <input type="text" id="answer" class="answer-input" placeholder="Enter your answer..." autocomplete="off">
                             </div>
-                            
                             <div class="d-flex justify-content-center gap-2">
                                 <button id="submit-btn" class="btn btn-primary">
                                     <i class="fas fa-check me-1"></i>Submit Answer
@@ -221,6 +279,7 @@
         let currentQuestion = 0;
         let score = 0;
         let spinning = false;
+        let answeredQuestionIndices = [];
         
         const startScreen = document.getElementById('start-screen');
         const gameScreen = document.getElementById('game-screen');
@@ -232,15 +291,81 @@
         const nextBtn = document.getElementById('next-btn');
         const feedbackDiv = document.getElementById('feedback');
         const scoreDisplay = document.getElementById('score');
+        const descriptionArea = document.getElementById('description-area');
         
         startBtn.addEventListener('click', function() {
             startScreen.classList.add('d-none');
             gameScreen.classList.remove('d-none');
+            answeredQuestionIndices = [];
+            score = 0; 
+            scoreDisplay.textContent = score;
+            descriptionArea.classList.add('d-none');
+            descriptionArea.textContent = '';
             spinAndLoadQuestion();
         });
         
         function spinAndLoadQuestion() {
             if (spinning) return;
+
+            const availableQuestions = gameData.filter((game, index) => !answeredQuestionIndices.includes(index));
+
+            if (availableQuestions.length === 0) {
+                partImage.style.display = 'none';
+                questionText.textContent = "Game Over! You've answered all questions.";
+                answerInput.style.display = 'none';
+                submitBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                feedbackDiv.classList.add('d-none');
+                descriptionArea.classList.add('d-none');
+                descriptionArea.textContent = '';
+                const gameOverMessage = document.createElement('p');
+                gameOverMessage.textContent = `Final Score: ${score}. Thanks for playing!`;
+                gameOverMessage.classList.add('lead', 'mt-3');
+                
+                const restartBtn = document.createElement('button');
+                restartBtn.textContent = 'Play Again';
+                restartBtn.classList.add('btn', 'btn-primary', 'mt-3');
+                restartBtn.addEventListener('click', () => {
+                    startScreen.classList.remove('d-none');
+                    gameScreen.classList.add('d-none');
+                    answerInput.style.display = '';
+                    submitBtn.style.display = '';
+                    nextBtn.style.display = '';
+                    const existingGameOverMsg = gameScreen.querySelector('.lead.mt-3');
+                    if(existingGameOverMsg) existingGameOverMsg.remove();
+                    const existingRestartBtn = gameScreen.querySelector('.btn.btn-primary.mt-3');
+                    if(existingRestartBtn) existingRestartBtn.remove();
+                });
+
+                const gameScreenDiv = document.getElementById('game-screen');
+                const existingAnimationContainer = partImage.parentNode.querySelector('div[style*="perspective"]');
+                if (existingAnimationContainer) {
+                    existingAnimationContainer.remove();
+                }
+                
+                questionText.innerHTML = `Game Over! You've answered all questions.<br>Final Score: ${score}.`;
+                partImage.style.display = 'none';
+                answerInput.classList.add('d-none');
+                submitBtn.classList.add('d-none');
+                nextBtn.classList.add('d-none');
+                feedbackDiv.classList.add('d-none');
+                descriptionArea.classList.add('d-none');
+                descriptionArea.textContent = '';
+
+                if (!document.getElementById('restart-game-btn')) {
+                    const restartGameBtn = document.createElement('button');
+                    restartGameBtn.id = 'restart-game-btn';
+                    restartGameBtn.textContent = 'Play Again';
+                    restartGameBtn.classList.add('btn', 'btn-primary', 'mt-3');
+                    restartGameBtn.onclick = () => {
+                        location.reload();
+                    };
+                    questionText.parentNode.appendChild(restartGameBtn);
+                }
+                spinning = false;
+                return;
+            }
+            
             spinning = true;
             
             partImage.src = "";
@@ -248,6 +373,17 @@
             answerInput.value = '';
             answerInput.disabled = true;
             submitBtn.disabled = true;
+            answerInput.classList.remove('d-none'); 
+            submitBtn.classList.remove('d-none'); 
+            nextBtn.classList.add('d-none'); 
+            feedbackDiv.classList.add('d-none'); 
+            descriptionArea.classList.add('d-none');
+            descriptionArea.textContent = '';
+
+            const existingRestartBtn = document.getElementById('restart-game-btn');
+            if (existingRestartBtn) {
+                existingRestartBtn.remove();
+            }
             
             const animationContainer = document.createElement('div');
             animationContainer.style.width = '100%';
@@ -265,7 +401,7 @@
             carousel.style.transformStyle = 'preserve-3d';
             carousel.style.transform = 'translate(-50%, -50%)';
             
-            const totalImages = gameData.length;
+            const totalImages = gameData.length; 
             const angleIncrement = (2 * Math.PI) / totalImages;
             const radius = 200;
             
@@ -323,8 +459,13 @@
                 `;
 
                 if (elapsed >= spinDuration) {
-                    const randomIndex = Math.floor(Math.random() * totalImages);
-                    const finalRotation = (2 * Math.PI) - (angleIncrement * randomIndex);
+                    const randomAvailableIndexInFilteredArray = Math.floor(Math.random() * availableQuestions.length);
+                    const selectedGame = availableQuestions[randomAvailableIndexInFilteredArray];
+                    const originalGameIndex = gameData.indexOf(selectedGame);
+
+                    answeredQuestionIndices.push(originalGameIndex);
+
+                    const finalRotation = (2 * Math.PI) - (angleIncrement * originalGameIndex);
                     
                     carousel.style.transition = 'transform 1s cubic-bezier(0.25, 0.1, 0.25, 1)';
                     carousel.style.transform = `
@@ -335,7 +476,7 @@
                     setTimeout(() => {
                         animationContainer.remove();
                         partImage.style.display = '';
-                        loadQuestion(randomIndex);
+                        loadQuestion(originalGameIndex);
                         spinning = false;
                     }, 1000);
                     return;
@@ -348,50 +489,69 @@
         }
         
         function loadQuestion(index) {
-            currentQuestion = index;
+            currentQuestion = index; 
             partImage.src = gameData[currentQuestion].game_file;
             questionText.textContent = gameData[currentQuestion].question;
             answerInput.disabled = false;
             submitBtn.disabled = false;
+            answerInput.focus();
             feedbackDiv.classList.add('d-none');
-            submitBtn.classList.remove('d-none');
-            nextBtn.classList.add('d-none');
+            descriptionArea.classList.add('d-none');
+            descriptionArea.textContent = '';
         }
         
         submitBtn.addEventListener('click', function() {
-        const userAnswer = answerInput.value.trim().toLowerCase();
-        const correctAnswer = gameData[currentQuestion].answer.toLowerCase();
-        
-        feedbackDiv.classList.remove('d-none', 'feedback-correct', 'feedback-incorrect');
-        
-        if (userAnswer === correctAnswer) {
-        feedbackDiv.classList.add('feedback-correct');
-        feedbackDiv.textContent = "Correct! Well done!";
-        score++;
-        scoreDisplay.textContent = score;
-        
-        fetch('{{ route("save.score") }}', {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-        score: score,
-        game_type: 'guess_part'
-        })
-        });
-        } else {
-        feedbackDiv.classList.add('feedback-incorrect');
-        feedbackDiv.textContent = `Incorrect. The correct answer is: ${gameData[currentQuestion].answer}`;
-        }
-        
-        submitBtn.classList.add('d-none');
-        nextBtn.classList.remove('d-none');
+            const userAnswer = answerInput.value.trim().toLowerCase();
+            const correctAnswer = gameData[currentQuestion].answer.toLowerCase();
+            const description = gameData[currentQuestion].description || "No description available for this item.";
+
+            feedbackDiv.classList.remove('d-none');
+            feedbackDiv.classList.remove('feedback-correct', 'feedback-incorrect');
+            descriptionArea.classList.add('d-none');
+            descriptionArea.textContent = '';
+            
+            if (userAnswer === correctAnswer) {
+                feedbackDiv.textContent = 'Correct!';
+                feedbackDiv.classList.add('feedback-correct');
+                score++;
+                scoreDisplay.textContent = score;
+            } else {
+                feedbackDiv.innerHTML = `Incorrect! The correct answer is: <strong>${gameData[currentQuestion].answer}</strong>`; // Show correct answer
+                feedbackDiv.classList.add('feedback-incorrect');
+                
+                descriptionArea.innerHTML = description; 
+                descriptionArea.classList.remove('d-none');
+            }
+            
+            submitBtn.classList.add('d-none');
+            nextBtn.classList.remove('d-none');
+            answerInput.disabled = true;
         });
         
         nextBtn.addEventListener('click', function() {
-            spinAndLoadQuestion();
+            descriptionArea.classList.add('d-none');
+            descriptionArea.textContent = '';
+            const remainingQuestions = gameData.filter((game, index) => !answeredQuestionIndices.includes(index));
+            if (remainingQuestions.length > 0) {
+                spinAndLoadQuestion();
+            } else {
+                questionText.textContent = "Game Over! All questions answered.";
+                partImage.style.display = 'none';
+                answerInput.style.display = 'none';
+                submitBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                feedbackDiv.classList.add('d-none');
+                if (!document.getElementById('restart-game-btn')) {
+                    const restartGameBtn = document.createElement('button');
+                    restartGameBtn.id = 'restart-game-btn';
+                    restartGameBtn.textContent = 'Play Again';
+                    restartGameBtn.classList.add('btn', 'btn-primary', 'mt-3');
+                    restartGameBtn.onclick = () => {
+                        location.reload(); 
+                    };
+                    questionText.parentNode.appendChild(restartGameBtn);
+                }
+            }
         });
         
         answerInput.addEventListener('keypress', function(e) {
@@ -400,6 +560,11 @@
             }
         });
     </script>
+    
+    <div id="celebration-container" class="celebration-container">
+        <div class="fireworks" id="fireworks"></div>
+        <div class="celebration-avatar">🏆</div>
+    </div>
 </body>
 </html>
 

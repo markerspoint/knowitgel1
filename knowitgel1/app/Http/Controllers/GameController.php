@@ -16,22 +16,37 @@ class GameController extends Controller
 
     public function showQAGame()
     {
-        $games = \App\Models\Game::where('type', 'qa')->where('status', 'active')->get();
-        $games->transform(function ($game) {
-            $game->options_array = json_decode($game->options, true) ?? [];
-            return $game;
+        $games = Game::where('type', 'qa')->where('status', 'active')->get();
+
+        $transformedGames = $games->map(function ($game) {
+            $options = json_decode($game->options, true) ?? [];
+            $questionText = $game->question;
+            $answerText = $game->answer;
+            $gameId = $game->id;
+
+            \Log::debug("Processing game question", [
+                'game_id' => $gameId,
+                'question' => $questionText,
+                'options' => $options,
+                'answer' => $answerText
+            ]);
+
+            return [
+                'question' => $questionText,
+                'options' => $options,
+                'correctAnswerIndex' => array_search(strtolower(trim($answerText)), 
+                    array_map(function($opt) { 
+                        return is_string($opt) ? strtolower(trim($opt)) : $opt; 
+                    }, $options))
+            ];
         });
-        return view('qa_game', compact('games'));
+
+        return view('qa_game', ['games' => $transformedGames]);
     }
 
     public function saveScore(Request $request)
     {
-        $request->validate([
-            'score' => 'required|integer',
-            'game_type' => 'required|string'
-        ]);
-    
-        Score::create([
+        $score = Score::create([
             'user_id' => auth()->id(),
             'score' => $request->score,
             'game_type' => $request->game_type
