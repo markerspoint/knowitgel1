@@ -27,18 +27,13 @@ Route::middleware(['auth'])->group(function () {
 
     // Game routes
     Route::get('/computer-parts', [GameController::class, 'showComputerParts'])->name('computer.parts');
-
-    // Replace the inline closure with the controller method
-    // Route::get('/qa-game', function () {
-    //     $game = \App\Models\Game::where('type', 'qa')->first();
-    //     return view('qa_game', compact('game'));
-    // })->name('qa.game');
-    Route::get('/qa-game', [GameController::class, 'showQAGame'])->name('qa.game'); // Use the controller method
-
+    Route::get('/qa-game', [GameController::class, 'showQAGame'])->name('qa.game');
     Route::post('/save-score', [GameController::class, 'saveScore'])->name('save.score');
     Route::get('/leaderboard', [GameController::class, 'leaderboard'])->name('leaderboard');
-    Route::get('/lesson/game', [LessonController::class, 'game'])->name('lesson.game');
-    Route::get('/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show'); // This line points to LessonController::show
+    Route::get('/lessons', [LessonController::class, 'game'])->name('lesson.game');
+    Route::get('/lessons/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
+    Route::post('/lessons/{lesson}/complete', [LessonController::class, 'markAsComplete'])->name('lesson.complete'); 
+    Route::get('/user/history', [UserController::class, 'history'])->name('user.history');
 });
 
 // Admin Routes
@@ -54,6 +49,5 @@ Route::middleware(['auth:admin'])->prefix('admin')->group(function () {
     Route::put('/lessons/{lesson}', [AdminDashboardController::class, 'updateLesson'])->name('admin.lessons.update');
     Route::delete('/lessons/{lesson}', [AdminDashboardController::class, 'deleteLesson'])->name('admin.lessons.delete'); 
     Route::patch('/admin/users/{user}/toggle-status', [AdminDashboardController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
-    // Make sure you have a route for user deletion as well, like:
     Route::delete('/users/{user}', [AdminDashboardController::class, 'deleteUser'])->name('admin.users.delete'); 
 });

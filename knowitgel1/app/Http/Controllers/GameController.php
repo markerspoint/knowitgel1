@@ -34,10 +34,13 @@ class GameController extends Controller
             return [
                 'question' => $questionText,
                 'options' => $options,
-                'correctAnswerIndex' => array_search(strtolower(trim($answerText)), 
-                    array_map(function($opt) { 
-                        return is_string($opt) ? strtolower(trim($opt)) : $opt; 
-                    }, $options))
+                'description' => $game->description,
+                'correctAnswerIndex' => array_search(
+                    strtolower(trim($answerText)),
+                    array_map(function ($opt) {
+                        return is_string($opt) ? strtolower(trim($opt)) : $opt;
+                    }, $options)
+                )
             ];
         });
 
@@ -51,7 +54,7 @@ class GameController extends Controller
             'score' => $request->score,
             'game_type' => $request->game_type
         ]);
-    
+
         return response()->json(['success' => true]);
     }
 
@@ -61,7 +64,7 @@ class GameController extends Controller
             ->orderBy('score', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-            
+
         return view('leaderboard', compact('scores'));
     }
 }
