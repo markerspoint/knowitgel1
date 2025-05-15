@@ -56,5 +56,13 @@ class UserController extends Controller
     
         return back()->with('error', 'Invalid username or password');
     }
+
+    public function history()
+    {
+        $user = Auth::user();
+        $history = $user->scores()->orderBy('created_at', 'desc')->get();
+        
+        return view('user.history', compact('history'));
+    }
     
 }
