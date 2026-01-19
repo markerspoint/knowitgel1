@@ -98,6 +98,13 @@
           >
             TyperGel1 Words
           </button>
+          <button
+            @click="activeTab = 'studies'"
+            :class="['px-4 py-2 rounded-lg font-medium transition-all border-0 cursor-pointer',
+                     activeTab === 'studies' ? 'bg-white text-black' : 'text-black bg-white bg-opacity-40 hover:bg-opacity-60']"
+          >
+            Studies
+          </button>
         </div>
 
         <div v-if="activeTab === 'overview'" class="space-y-6">
@@ -463,6 +470,132 @@
             <p v-else class="text-sm opacity-70">No TyperGel1 words yet. Add one using the form above.</p>
           </div>
         </div>
+
+        <div v-else-if="activeTab === 'studies'" class="space-y-6">
+          <div class="bg-white bg-opacity-95 rounded-2xl shadow-lg p-6 text-gray-800">
+            <h4 class="text-xl font-semibold mb-4 flex items-center">
+              <i class="fas fa-book mr-2"></i>
+              Add New Study Content
+            </h4>
+            <form @submit.prevent="editingStudy ? updateStudy() : submitStudy()" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <input
+                  type="text"
+                  v-model="studyForm.title"
+                  required
+                  placeholder="e.g., KNOW IT GEL 1"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Description (Optional)</label>
+                <input
+                  type="text"
+                  v-model="studyForm.description"
+                  placeholder="Brief description of the study content"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Content</label>
+                <textarea
+                  v-model="studyForm.content"
+                  rows="15"
+                  required
+                  placeholder="Enter your study content here. You can use hashtags, line breaks, and any text format."
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent font-mono text-sm"
+                ></textarea>
+                <small class="text-gray-500 text-xs mt-1 block">
+                  Enter the study content. This will be displayed in a document-like format to users.
+                </small>
+              </div>
+              <div v-if="editingStudy" class="flex justify-end space-x-3 pt-2">
+                <button
+                  type="button"
+                  @click="editingStudy = null; studyForm = { title: '', description: '', content: '', status: 'active' }"
+                  class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all"
+                >
+                  Cancel Edit
+                </button>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <select
+                  v-model="studyForm.status"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:border-transparent"
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+              <div class="flex justify-end pt-2">
+                <button
+                  type="submit"
+                  :disabled="isSubmittingStudy"
+                  class="px-6 py-2 bg-gradient-to-r from-[#f093fb] to-[#f5576c] text-white font-semibold rounded-lg hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
+                >
+                  <span v-if="isSubmittingStudy">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>{{ editingStudy ? 'Updating...' : 'Adding...' }}
+                  </span>
+                  <span v-else>
+                    <i class="fas fa-plus mr-2"></i>{{ editingStudy ? 'Update Study Content' : 'Add Study Content' }}
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="bg-white bg-opacity-95 rounded-2xl shadow-lg p-6 text-gray-800">
+            <h4 class="text-lg font-semibold mb-3 flex items-center">
+              <i class="fas fa-list mr-2"></i>
+              Existing Study Content
+            </h4>
+            <div v-if="lessons.length" class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr>
+                    <th class="text-left py-2 px-3 border-b border-gray-200">Title</th>
+                    <th class="text-left py-2 px-3 border-b border-gray-200">Description</th>
+                    <th class="text-left py-2 px-3 border-b border-gray-200">Status</th>
+                    <th class="text-left py-2 px-3 border-b border-gray-200">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="lesson in lessons" :key="lesson.id" class="border-b border-gray-100">
+                    <td class="py-2 px-3">{{ truncate(lesson.title, 40) }}</td>
+                    <td class="py-2 px-3">{{ truncate(lesson.description, 50) }}</td>
+                    <td class="py-2 px-3">
+                      <span :class="['px-3 py-1 rounded text-xs font-medium', lesson.status === 'active' ? 'bg-green-500 bg-opacity-20 text-green-700' : 'bg-red-500 bg-opacity-20 text-red-700']">
+                        {{ capitalize(lesson.status) }}
+                      </span>
+                    </td>
+                    <td class="py-2 px-3">
+                      <div class="flex items-center space-x-2">
+                        <button
+                          @click="editStudy(lesson)"
+                          class="px-3 py-1 bg-blue-500 bg-opacity-20 text-blue-700 rounded text-xs hover:bg-opacity-30 transition-all"
+                          title="Edit"
+                        >
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button
+                          @click="confirmDeleteStudy(lesson)"
+                          class="px-3 py-1 bg-red-500 bg-opacity-20 text-red-700 rounded text-xs hover:bg-opacity-30 transition-all"
+                          title="Delete"
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p v-else class="text-sm opacity-70">No study content yet. Add one using the form above.</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -536,6 +669,14 @@ export default {
       games: [],
       lessons: [],
       activeTab: 'overview',
+      studyForm: {
+        title: '',
+        description: '',
+        content: '',
+        status: 'active'
+      },
+      isSubmittingStudy: false,
+      editingStudy: null,
       qaGameForm: {
         title: '',
         description: '',
@@ -628,6 +769,7 @@ export default {
       try {
         const response = await axios.get('/api/admin/dashboard-data');
         this.games = response.data.games || [];
+        this.lessons = response.data.lessons || [];
         if (response.data.analytics) {
           this.analytics.totals = response.data.analytics.totals || this.analytics.totals;
           this.analytics.user_stats = response.data.analytics.user_stats || this.analytics.user_stats;
@@ -917,6 +1059,90 @@ export default {
         await this.fetchDashboardData();
       } catch (error) {
         this.showMessage('Failed to delete TyperGel1 word', 'error');
+      }
+    },
+    async submitStudy() {
+      try {
+        this.isSubmittingStudy = true;
+        const formData = new FormData();
+        formData.append('title', this.studyForm.title);
+        formData.append('description', this.studyForm.description || '');
+        formData.append('content', this.studyForm.content);
+        formData.append('status', this.studyForm.status);
+
+        await axios.post('/api/admin/lessons', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        this.showMessage('Study content created successfully!', 'success');
+        this.studyForm = {
+          title: '',
+          description: '',
+          content: '',
+          status: 'active'
+        };
+        await this.fetchDashboardData();
+      } catch (error) {
+        const errorMsg = error.response?.data?.message || 'Failed to create study content';
+        this.showMessage(errorMsg, 'error');
+      } finally {
+        this.isSubmittingStudy = false;
+      }
+    },
+    editStudy(lesson) {
+      this.editingStudy = { ...lesson };
+      this.studyForm = {
+        title: lesson.title,
+        description: lesson.description || '',
+        content: lesson.content,
+        status: lesson.status
+      };
+      this.activeTab = 'studies';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    async updateStudy() {
+      if (!this.editingStudy) return;
+      
+      try {
+        this.isSubmittingStudy = true;
+        const formData = new FormData();
+        formData.append('title', this.studyForm.title);
+        formData.append('description', this.studyForm.description || '');
+        formData.append('content', this.studyForm.content);
+        formData.append('status', this.studyForm.status);
+
+        await axios.put(`/api/admin/lessons/${this.editingStudy.id}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        this.showMessage('Study content updated successfully!', 'success');
+        this.studyForm = {
+          title: '',
+          description: '',
+          content: '',
+          status: 'active'
+        };
+        this.editingStudy = null;
+        await this.fetchDashboardData();
+      } catch (error) {
+        const errorMsg = error.response?.data?.message || 'Failed to update study content';
+        this.showMessage(errorMsg, 'error');
+      } finally {
+        this.isSubmittingStudy = false;
+      }
+    },
+    confirmDeleteStudy(lesson) {
+      if (confirm(`Are you sure you want to delete "${lesson.title}"?`)) {
+        this.deleteStudy(lesson.id);
+      }
+    },
+    async deleteStudy(lessonId) {
+      try {
+        await axios.delete(`/api/admin/lessons/${lessonId}`);
+        this.showMessage('Study content deleted successfully!', 'success');
+        await this.fetchDashboardData();
+      } catch (error) {
+        this.showMessage('Failed to delete study content', 'error');
       }
     },
     renderCharts() {

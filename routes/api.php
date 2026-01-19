@@ -92,6 +92,17 @@ Route::middleware(['auth'])->group(function () {
             ],
         ]);
     });
+    
+    Route::get('/user/studies', function (Request $request) {
+        $lessons = \App\Models\Lesson::where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return response()->json([
+            'status' => 'success',
+            'studies' => $lessons,
+        ]);
+    });
 });
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {

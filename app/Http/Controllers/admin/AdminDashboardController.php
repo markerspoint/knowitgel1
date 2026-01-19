@@ -37,21 +37,26 @@ class AdminDashboardController extends Controller
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
                 'content' => 'required|string',
-                'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'status' => 'required|in:active,inactive'
             ]);
 
-            $thumbnail = $request->file('thumbnail');
-            $thumbnailName = time() . '_' . $thumbnail->getClientOriginalName();
-            $thumbnail->move(public_path('thumbnails'), $thumbnailName);
-
-            $lesson = Lesson::create([
+            $lessonData = [
                 'title' => $request->title,
                 'description' => $request->description,
                 'content' => $request->content,
-                'thumbnail' => 'thumbnails/' . $thumbnailName,
-                'status' => $request->status
-            ]);
+                'status' => $request->status,
+                'thumbnail' => null
+            ];
+
+            if ($request->hasFile('thumbnail')) {
+                $thumbnail = $request->file('thumbnail');
+                $thumbnailName = time() . '_' . $thumbnail->getClientOriginalName();
+                $thumbnail->move(public_path('thumbnails'), $thumbnailName);
+                $lessonData['thumbnail'] = 'thumbnails/' . $thumbnailName;
+            }
+
+            $lesson = Lesson::create($lessonData);
 
             if (request()->expectsJson()) {
                 return response()->json([

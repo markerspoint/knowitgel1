@@ -17,9 +17,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/qa-game', [GameController::class, 'showQAGame'])->name('qa.game');
     Route::post('/save-score', [GameController::class, 'saveScore'])->name('save.score');
     Route::get('/leaderboard', [GameController::class, 'leaderboard'])->name('leaderboard');
-    Route::get('/lessons', [LessonController::class, 'game'])->name('lesson.game');
-    Route::get('/lessons/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
-    Route::post('/lessons/{lesson}/complete', [LessonController::class, 'markAsComplete'])->name('lesson.complete'); 
     Route::get('/user/history', [UserController::class, 'history'])->name('user.history');
 });
 

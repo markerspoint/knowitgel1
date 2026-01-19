@@ -111,6 +111,13 @@
             <i class="fas fa-keyboard mr-2"></i>
             Play Typing Game
           </button>
+          <button
+            @click="handleStudiesClick"
+            class="inline-flex items-center px-6 py-3 font-semibold rounded-lg shadow-lg transition-all duration-300 bg-gradient-to-r from-[#f093fb] to-[#f5576c] text-white hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
+          >
+            <i class="fas fa-book mr-2"></i>
+            Studies
+          </button>
         </div>
       </div>
 
@@ -252,6 +259,9 @@ export default {
       } else if (gameType === 'typergel1') {
         this.$router.push('/typergel1');
       }
+    },
+    handleStudiesClick() {
+      this.$router.push('/lessons');
     },
     getGameCardClass(type) {
       const classes = {

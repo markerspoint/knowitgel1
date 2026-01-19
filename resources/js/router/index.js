@@ -15,6 +15,7 @@ import Leaderboard from '../components/Leaderboard.vue';
 import AdminAssessment from '../components/AdminAssessment.vue';
 import QAFPSGame from '../components/QAFPSGame.vue';
 import TyperGel1 from '../components/TyperGel1.vue';
+import Studies from '../components/Studies.vue';
 
 const routes = [
   {
@@ -103,6 +104,12 @@ const routes = [
     path: '/leaderboard',
     name: 'leaderboard',
     component: Leaderboard,
+    meta: { requiresAuth: true, role: 'user' }
+  },
+  {
+    path: '/lessons',
+    name: 'studies',
+    component: Studies,
     meta: { requiresAuth: true, role: 'user' }
   },
   {
