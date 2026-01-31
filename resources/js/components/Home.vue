@@ -49,18 +49,28 @@
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <router-link
-                        to="/login"
-                        class="px-5 py-2 text-sm font-bold text-white hover:text-red-500 transition-colors"
-                    >
-                        LOG IN
-                    </router-link>
-                    <router-link
-                        to="/register"
-                        class="px-6 py-2 bg-red-500 text-white text-sm font-bold rounded-md hover:bg-red-600 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)]"
-                    >
-                        JOIN NOW
-                    </router-link>
+                    <template v-if="!user">
+                        <router-link
+                            to="/login"
+                            class="px-5 py-2 text-sm font-bold text-white hover:text-red-500 transition-colors"
+                        >
+                            LOG IN
+                        </router-link>
+                        <router-link
+                            to="/register"
+                            class="px-6 py-2 bg-red-500 text-white text-sm font-bold rounded-md hover:bg-red-600 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+                        >
+                            JOIN NOW
+                        </router-link>
+                    </template>
+                    <template v-else>
+                        <router-link
+                            :to="dashboardLink"
+                            class="px-8 py-2 bg-red-500 text-white text-sm font-black rounded-md hover:bg-red-600 transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)] uppercase"
+                        >
+                            Dashboard
+                        </router-link>
+                    </template>
                 </div>
             </div>
         </nav>
@@ -101,18 +111,28 @@
                     <div
                         class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6"
                     >
-                        <router-link
-                            to="/register"
-                            class="w-full sm:w-auto px-10 py-4 bg-red-500 text-white font-black rounded-lg hover:bg-red-600 transition-all shadow-[0_10px_30px_rgba(239,68,68,0.4)] hover:-translate-y-1"
-                        >
-                            GET STARTED
-                        </router-link>
-                        <router-link
-                            to="/login"
-                            class="w-full sm:w-auto px-10 py-4 bg-white/5 text-white font-black rounded-lg border border-white/10 hover:bg-white/10 transition-all backdrop-blur-sm"
-                        >
-                            RESUME LEARNING
-                        </router-link>
+                        <template v-if="!user">
+                            <router-link
+                                to="/register"
+                                class="w-full sm:w-auto px-10 py-4 bg-red-500 text-white font-black rounded-lg hover:bg-red-600 transition-all shadow-[0_10px_30px_rgba(239,68,68,0.4)] hover:-translate-y-1"
+                            >
+                                GET STARTED
+                            </router-link>
+                            <router-link
+                                to="/login"
+                                class="w-full sm:w-auto px-10 py-4 bg-white/5 text-white font-black rounded-lg border border-white/10 hover:bg-white/10 transition-all backdrop-blur-sm"
+                            >
+                                RESUME LEARNING
+                            </router-link>
+                        </template>
+                        <template v-else>
+                            <router-link
+                                :to="dashboardLink"
+                                class="w-full sm:w-auto px-12 py-4 bg-red-500 text-white font-black rounded-lg hover:bg-red-600 transition-all shadow-[0_10px_30px_rgba(239,68,68,0.4)] hover:-translate-y-1 uppercase tracking-widest"
+                            >
+                                Enter Dashboard Terminal
+                            </router-link>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -478,10 +498,13 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
     name: "Home",
     data() {
         return {
+            user: null,
             activeSection: "",
             navLinks: [
                 { label: "Pillars", href: "#pillars" },
@@ -538,10 +561,30 @@ export default {
             ],
         };
     },
+    computed: {
+        dashboardLink() {
+            if (!this.user) return "/login";
+            if (this.user.role === "admin") return "/admin/dashboard";
+            return this.user.has_completed_assessment
+                ? "/user/dashboard"
+                : "/assessment";
+        },
+    },
     mounted() {
+        this.fetchUser();
         this.initReveal();
     },
     methods: {
+        async fetchUser() {
+            try {
+                const response = await axios.get("/api/user");
+                if (response.data.status === "success") {
+                    this.user = response.data.user;
+                }
+            } catch (error) {
+                this.user = null;
+            }
+        },
         initReveal() {
             const observerOptions = {
                 threshold: 0.15,
