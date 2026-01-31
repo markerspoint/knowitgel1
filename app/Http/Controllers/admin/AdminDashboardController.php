@@ -87,18 +87,19 @@ class AdminDashboardController extends Controller
 
             if ($request->type === 'guess_part') {
                 $rules['title'] = 'required|string|max:255';
-                $rules['description'] = 'required|string';
-                $rules['game_file'] = 'required|image|mimes:jpeg,png,jpg,gif|max:2048';
+                $rules['description'] = 'nullable|string';
+                $rules['game_file'] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
                 $rules['question'] = 'required|string|max:255';
                 $rules['answer'] = 'required|string|max:255';
             }
 
             if ($request->type === 'qa') {
                 $rules['title'] = 'required|string|max:255';
-                $rules['description'] = 'required|string';
+                $rules['description'] = 'nullable|string';
                 $rules['options'] = 'required|string';
                 $rules['question'] = 'required|string|max:255';
                 $rules['answer'] = 'required|string|max:255';
+                $rules['thumbnail'] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
             }
 
             if ($request->type === 'typergel') {
@@ -123,26 +124,37 @@ class AdminDashboardController extends Controller
                 'type' => $request->type,
                 'status' => $request->status,
                 'thumbnail' => 'thumbnails/default-thumbnail.png',
+                'description' => $request->description ?? 'Logic module description.',
+                'title' => $request->title ?? 'Logic Link',
             ];
 
             if ($request->type === 'guess_part') {
-                $gameData['title'] = $request->title;
-                $gameData['description'] = $request->description;
-                $gameFile = $request->file('game_file');
-                $gameFileName = time() . '_' . $gameFile->getClientOriginalName();
-                $gameFile->move(public_path('games'), $gameFileName);
-                $gameData['game_file'] = 'games/' . $gameFileName;
+                $gameData['title'] = $request->title ?? 'Combat Unit';
+                $gameData['description'] = $request->description ?? 'Visual identification module.';
+                if ($request->hasFile('game_file')) {
+                    $gameFile = $request->file('game_file');
+                    $gameFileName = time() . '_' . $gameFile->getClientOriginalName();
+                    $gameFile->move(public_path('games'), $gameFileName);
+                    $gameData['game_file'] = 'games/' . $gameFileName;
+                }
                 $gameData['question'] = $request->question;
                 $gameData['answer'] = $request->answer;
             }
 
             if ($request->type === 'qa' && $request->options) {
-                $gameData['title'] = $request->title;
-                $gameData['description'] = $request->description;
+                $gameData['title'] = $request->title ?? 'QA Logic Link';
+                $gameData['description'] = $request->description ?? 'Cognitive assessment module.';
                 $options = array_map('trim', explode(',', $request->options));
                 $gameData['options'] = json_encode($options);
                 $gameData['question'] = $request->question;
                 $gameData['answer'] = $request->answer;
+                
+                if ($request->hasFile('thumbnail')) {
+                    $thumbnail = $request->file('thumbnail');
+                    $thumbnailName = time() . '_' . $thumbnail->getClientOriginalName();
+                    $thumbnail->move(public_path('thumbnails'), $thumbnailName);
+                    $gameData['thumbnail'] = 'thumbnails/' . $thumbnailName;
+                }
             }
 
             if ($request->type === 'typergel') {
@@ -150,7 +162,7 @@ class AdminDashboardController extends Controller
                 $gameData['title'] = 'TyperGel1: ' . $question;
                 $gameData['description'] = 'Typing practice word: ' . $question;
                 $gameData['question'] = $question;
-                $gameData['answer'] = null;
+                $gameData['answer'] = $question; // Must not be null for DB
                 $gameData['options'] = null;
             }
 
@@ -199,8 +211,11 @@ class AdminDashboardController extends Controller
             ];
         } else {
             $rules['title'] = 'required|string|max:255';
-            $rules['description'] = 'required|string';
-            $rules['game_file'] = 'nullable|file|mimes:html,js,css,json|max:10240';
+            $rules['description'] = 'nullable|string';
+            $rules['question'] = 'required|string|max:255';
+            $rules['answer'] = 'required|string|max:255';
+            $rules['options'] = 'nullable|string';
+            $rules['game_file'] = 'nullable|file|mimes:html,js,css,json,jpeg,png,jpg,gif|max:10240';
             $rules['thumbnail'] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
         }
 
@@ -218,9 +233,16 @@ class AdminDashboardController extends Controller
             } else {
                 $data = [
                     'title' => $request->title,
-                    'description' => $request->description,
-                    'status' => $request->status
+                    'description' => $request->description ?? $game->description,
+                    'status' => $request->status,
+                    'question' => $request->question,
+                    'answer' => $request->answer,
                 ];
+
+                if ($request->options) {
+                    $options = array_map('trim', explode(',', $request->options));
+                    $data['options'] = json_encode($options);
+                }
 
                 if ($request->hasFile('game_file')) {
                     if ($game->game_file && file_exists(public_path($game->game_file))) {
