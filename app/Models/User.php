@@ -48,6 +48,6 @@ class User extends Authenticatable
 
     public function hasCompletedAssessment()
     {
-        return $this->assessments()->exists();
+        return $this->scores()->where('game_type', 'assessment')->exists();
     }
 }
