@@ -19,13 +19,13 @@
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Global Label</label
+                                >Global Label (Auto-incremented)</label
                             >
                             <input
                                 type="text"
                                 v-model="qaGameForm.title"
                                 required
-                                placeholder="Question Title"
+                                placeholder="e.g. Combat Module #1"
                                 class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500/50 transition-all font-medium text-sm"
                             />
                         </div>
@@ -67,33 +67,45 @@
                                 class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500/50 transition-all font-medium text-sm h-24 resize-none"
                             ></textarea>
                         </div>
-                        <div class="space-y-1.5">
+                        <div class="space-y-3">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
                                 >Identity Thumbnail</label
                             >
-                            <div class="relative group/file">
-                                <input
-                                    type="file"
-                                    @change="handleQAFPSThumbnailChange"
-                                    accept="image/*"
-                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                />
+                            <div class="flex items-center space-x-4">
                                 <div
-                                    class="w-full bg-white/5 border border-dashed border-white/10 rounded-xl px-4 py-6 text-center group-hover/file:border-red-500/50 transition-all"
+                                    class="w-16 h-16 rounded-xl bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center shrink-0"
                                 >
+                                    <img
+                                        v-if="qaGameForm.preview"
+                                        :src="qaGameForm.preview"
+                                        class="w-full h-full object-cover"
+                                    />
                                     <i
-                                        class="fas fa-cloud-upload-alt text-2xl text-gray-600 mb-2"
+                                        v-else
+                                        class="fas fa-microchip text-gray-700 text-xl"
                                     ></i>
-                                    <p
-                                        class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+                                </div>
+                                <div class="relative group/file flex-1">
+                                    <input
+                                        type="file"
+                                        @change="handleQAFPSThumbnailChange"
+                                        accept="image/*"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    />
+                                    <div
+                                        class="w-full bg-white/5 border border-dashed border-white/10 rounded-xl px-4 py-4 text-center group-hover/file:border-red-500/50 transition-all"
                                     >
-                                        {{
-                                            qaGameForm.thumbnail
-                                                ? qaGameForm.thumbnail.name
-                                                : "Upload Sync Image"
-                                        }}
-                                    </p>
+                                        <p
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+                                        >
+                                            {{
+                                                qaGameForm.thumbnail
+                                                    ? qaGameForm.thumbnail.name
+                                                    : "Upload Sync Image"
+                                            }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -113,7 +125,7 @@
                     class="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
                 >
                     <div
-                        class="p-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between"
+                        class="p-8 border-b border-white/5 bg-white/2 flex items-center justify-between"
                     >
                         <span
                             class="text-xs font-black text-white uppercase tracking-widest"
@@ -124,7 +136,7 @@
                             >{{ qaGames.length }} Instances</span
                         >
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left">
                             <thead>
                                 <tr
@@ -142,7 +154,7 @@
                                 <tr
                                     v-for="game in qaGames"
                                     :key="game.id"
-                                    class="hover:bg-white/[0.03] transition-colors group"
+                                    class="hover:bg-white/3 transition-colors group"
                                 >
                                     <td class="px-8 py-6">
                                         <div
@@ -154,12 +166,21 @@
                                                 <img
                                                     v-if="game.thumbnail"
                                                     :src="'/' + game.thumbnail"
+                                                    @error="
+                                                        (e) =>
+                                                            (e.target.src =
+                                                                '/thumbnails/default-thumbnail.png')
+                                                    "
                                                     class="w-full h-full object-cover"
                                                 />
-                                                <i
+                                                <div
                                                     v-else
-                                                    class="fas fa-image text-gray-600"
-                                                ></i>
+                                                    class="w-full h-full flex items-center justify-center bg-red-500/10"
+                                                >
+                                                    <i
+                                                        class="fas fa-microchip text-red-500/30"
+                                                    ></i>
+                                                </div>
                                             </div>
                                             <span
                                                 class="text-sm font-bold text-white uppercase tracking-tight"
@@ -199,7 +220,9 @@
                                                 ></i>
                                             </button>
                                             <button
-                                                @click="deleteQAGame(game)"
+                                                @click="
+                                                    confirmDeleteQAGame(game)
+                                                "
                                                 class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
                                             >
                                                 <i
@@ -226,7 +249,7 @@
                     class="bg-[#181818] border border-white/10 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
                 >
                     <div
-                        class="p-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between"
+                        class="p-8 border-b border-white/5 bg-white/2 flex items-center justify-between"
                     >
                         <div>
                             <h3
@@ -306,25 +329,47 @@
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
                                     >Update Identity Thumbnail</label
                                 >
-                                <div class="relative group/file">
-                                    <input
-                                        type="file"
-                                        @change="
-                                            (e) =>
-                                                (editingQAGame.thumbnail =
-                                                    e.target.files[0])
-                                        "
-                                        accept="image/*"
-                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                    />
+                                <div class="flex items-center space-x-4">
                                     <div
-                                        class="w-full bg-white/5 border border-dashed border-white/10 rounded-xl px-4 py-5 text-center group-hover/file:border-red-500/50 transition-all"
+                                        class="w-16 h-16 rounded-xl bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center shrink-0"
                                     >
-                                        <p
-                                            class="text-[10px] font-bold text-gray-500 uppercase"
+                                        <img
+                                            v-if="
+                                                editingQAGame.preview ||
+                                                editingQAGame.thumbnail
+                                            "
+                                            :src="
+                                                editingQAGame.preview ||
+                                                '/' + editingQAGame.thumbnail
+                                            "
+                                            @error="
+                                                (e) =>
+                                                    (e.target.src =
+                                                        '/thumbnails/default-thumbnail.png')
+                                            "
+                                            class="w-full h-full object-cover"
+                                        />
+                                        <i
+                                            v-else
+                                            class="fas fa-microchip text-gray-700 text-xl"
+                                        ></i>
+                                    </div>
+                                    <div class="relative group/file flex-1">
+                                        <input
+                                            type="file"
+                                            @change="handleEditThumbnailChange"
+                                            accept="image/*"
+                                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                        />
+                                        <div
+                                            class="w-full bg-white/5 border border-dashed border-white/10 rounded-xl px-4 py-5 text-center group-hover/file:border-red-500/50 transition-all"
                                         >
-                                            Revision Matrix
-                                        </p>
+                                            <p
+                                                class="text-[10px] font-bold text-gray-500 uppercase"
+                                            >
+                                                Revision Matrix
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -365,6 +410,57 @@
                 </div>
             </div>
         </transition>
+
+        <!-- Delete Confirmation Modal -->
+        <transition name="fade">
+            <div
+                v-if="showDeleteQAModal"
+                class="fixed inset-0 z-110 flex items-center justify-center p-6 bg-black/95 backdrop-blur-xl"
+            >
+                <div
+                    class="bg-[#111111] border border-red-500/20 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative"
+                >
+                    <div class="p-10 text-center">
+                        <div
+                            class="w-20 h-20 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-8 border border-red-500/20"
+                        >
+                            <i
+                                class="fas fa-exclamation-triangle text-3xl text-red-500"
+                            ></i>
+                        </div>
+                        <h3
+                            class="text-2xl font-black text-white uppercase tracking-tighter mb-4"
+                        >
+                            Confirm Purge
+                        </h3>
+                        <p
+                            class="text-sm text-gray-500 leading-relaxed mb-10 font-medium"
+                        >
+                            Are you certain you want to decommission
+                            <span class="text-white font-black">{{
+                                gameToDelete?.title
+                            }}</span
+                            >? This action will permanently sever the logic link
+                            from the network.
+                        </p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button
+                                @click="showDeleteQAModal = false"
+                                class="py-4 px-6 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
+                            >
+                                Abort
+                            </button>
+                            <button
+                                @click="executeDeleteQAGame"
+                                class="py-4 px-6 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.3)] uppercase text-[10px] tracking-widest"
+                            >
+                                Purge Unit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -379,6 +475,8 @@ export default {
     data() {
         return {
             showEditQAModal: false,
+            showDeleteQAModal: false,
+            gameToDelete: null,
             editingQAGame: null,
             qaGameForm: {
                 title: "",
@@ -388,8 +486,17 @@ export default {
                 options: "",
                 status: "active",
                 thumbnail: null,
+                preview: null,
             },
         };
+    },
+    watch: {
+        qaGames: {
+            handler() {
+                this.autoFillTitle();
+            },
+            immediate: true,
+        },
     },
     computed: {
         qaGames() {
@@ -401,14 +508,35 @@ export default {
             if (!str) return "";
             return str.length > length ? str.substring(0, length) + "..." : str;
         },
+        autoFillTitle() {
+            // Only auto-fill if the title is empty or follows the auto-increment pattern
+            if (
+                !this.qaGameForm.title ||
+                this.qaGameForm.title.startsWith("Combat Module #")
+            ) {
+                const nextNum = this.qaGames.length + 1;
+                this.qaGameForm.title = `Combat Module #${nextNum}`;
+            }
+        },
         handleQAFPSThumbnailChange(event) {
-            this.qaGameForm.thumbnail = event.target.files[0];
+            const file = event.target.files[0];
+            if (file) {
+                this.qaGameForm.thumbnail = file;
+                this.qaGameForm.preview = URL.createObjectURL(file);
+            }
+        },
+        handleEditThumbnailChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.editingQAGame.thumbnail = file;
+                this.editingQAGame.preview = URL.createObjectURL(file);
+            }
         },
         async submitQAFPSQuestion() {
             try {
                 const formData = new FormData();
                 Object.keys(this.qaGameForm).forEach((key) => {
-                    if (this.qaGameForm[key] !== null)
+                    if (this.qaGameForm[key] !== null && key !== "preview")
                         formData.append(key, this.qaGameForm[key]);
                 });
                 formData.append("type", "qa");
@@ -430,6 +558,7 @@ export default {
                     options: "",
                     status: "active",
                     thumbnail: null,
+                    preview: null,
                 };
                 this.$emit("refresh");
             } catch (error) {
@@ -454,7 +583,11 @@ export default {
                     optionsStr = game.options;
                 }
             }
-            this.editingQAGame = { ...game, options: optionsStr };
+            this.editingQAGame = {
+                ...game,
+                options: optionsStr,
+                preview: null,
+            };
             this.showEditQAModal = true;
         },
         async updateQAGame() {
@@ -503,20 +636,19 @@ export default {
                 );
             }
         },
-        async deleteQAGame(game) {
-            if (
-                !confirm(
-                    "Decommission this combat module? Logic sync will be severed.",
-                )
-            )
-                return;
+        confirmDeleteQAGame(game) {
+            this.gameToDelete = game;
+            this.showDeleteQAModal = true;
+        },
+        async executeDeleteQAGame() {
             try {
-                await axios.delete(`/api/admin/games/${game.id}`);
+                await axios.delete(`/api/admin/games/${this.gameToDelete.id}`);
                 this.$emit(
                     "message",
                     "Combat module decommissioned.",
                     "success",
                 );
+                this.showDeleteQAModal = false;
                 this.$emit("refresh");
             } catch (error) {
                 this.$emit(
@@ -529,3 +661,23 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0px;
+}
+
+.custom-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar {
+    width: 3px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(239, 68, 68, 0.3);
+    border-radius: 10px;
+}
+</style>

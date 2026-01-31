@@ -2,7 +2,14 @@
     <div class="space-y-12">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Single Entry -->
-            <div class="bg-white/5 border border-white/10 rounded-3xl p-8">
+            <div
+                class="bg-white/5 border border-white/10 rounded-3xl p-8 relative overflow-hidden group"
+            >
+                <div
+                    class="absolute -right-6 -bottom-6 opacity-5 group-hover:opacity-10 transition-opacity transform rotate-12"
+                >
+                    <i class="fas fa-keyboard text-8xl text-red-500"></i>
+                </div>
                 <h3
                     class="text-sm font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
@@ -11,7 +18,7 @@
                 </h3>
                 <form
                     @submit.prevent="submitTyperGelWord"
-                    class="flex items-end space-x-4"
+                    class="flex items-end space-x-4 relative z-10"
                 >
                     <div class="flex-1 space-y-1.5">
                         <label
@@ -28,7 +35,7 @@
                     </div>
                     <button
                         type="submit"
-                        class="p-3.5 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all"
+                        class="p-3.5 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.2)]"
                     >
                         <i class="fas fa-plus"></i>
                     </button>
@@ -36,7 +43,14 @@
             </div>
 
             <!-- Bulk Import -->
-            <div class="bg-white/5 border border-white/10 rounded-3xl p-8">
+            <div
+                class="bg-white/5 border border-white/10 rounded-3xl p-8 relative overflow-hidden group"
+            >
+                <div
+                    class="absolute -right-6 -bottom-6 opacity-5 group-hover:opacity-10 transition-opacity transform -rotate-12"
+                >
+                    <i class="fas fa-file-import text-8xl text-blue-500"></i>
+                </div>
                 <h3
                     class="text-sm font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
@@ -45,13 +59,13 @@
                 </h3>
                 <form
                     @submit.prevent="submitBulkTyperGelWords"
-                    class="space-y-6"
+                    class="space-y-6 relative z-10"
                 >
                     <textarea
                         v-model="bulkTyperGelWords"
                         required
                         placeholder="String List (Comma or Line Separated)"
-                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500/50 transition-all font-mono text-xs h-32 resize-none"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500/50 transition-all font-mono text-xs h-32 resize-none custom-scrollbar"
                     ></textarea>
                     <div class="flex items-center justify-between">
                         <span
@@ -61,7 +75,7 @@
                         <button
                             type="submit"
                             :disabled="isBulkSubmitting"
-                            class="px-6 py-2.5 bg-blue-500 text-white font-black rounded-xl hover:bg-blue-600 transition-all text-[10px] tracking-[0.2em] disabled:opacity-50"
+                            class="px-6 py-2.5 bg-blue-500 text-white font-black rounded-xl hover:bg-blue-600 transition-all text-[10px] tracking-[0.2em] disabled:opacity-50 shadow-[0_10px_20px_rgba(59,130,246,0.2)]"
                         >
                             <span v-if="!isBulkSubmitting"
                                 >EXECUTE BULK LINK</span
@@ -81,7 +95,7 @@
             class="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
         >
             <div
-                class="p-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between"
+                class="p-8 border-b border-white/5 bg-white/2 flex items-center justify-between"
             >
                 <span
                     class="text-xs font-black text-white uppercase tracking-widest"
@@ -110,11 +124,11 @@
                         <tr
                             v-for="game in typerGelGames"
                             :key="game.id"
-                            class="hover:bg-white/[0.03] transition-colors group"
+                            class="hover:bg-white/3 transition-colors group"
                         >
                             <td class="px-8 py-6">
                                 <span
-                                    class="text-sm font-bold text-white tracking-tight"
+                                    class="text-sm font-bold text-white tracking-tight uppercase"
                                     >{{ game.question }}</span
                                 >
                             </td>
@@ -136,13 +150,13 @@
                                 >
                                     <button
                                         @click="openEditTyperGelModal(game)"
-                                        class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-all"
+                                        class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-all flex items-center justify-center"
                                     >
                                         <i class="fas fa-edit text-xs"></i>
                                     </button>
                                     <button
                                         @click="confirmDeleteTyperGel(game)"
-                                        class="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                                        class="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
                                     >
                                         <i class="fas fa-trash-alt text-xs"></i>
                                     </button>
@@ -158,7 +172,7 @@
         <transition name="fade">
             <div
                 v-if="showEditTyperGelModal"
-                class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+                class="fixed inset-0 z-100 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
             >
                 <div
                     class="bg-[#181818] border border-white/10 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative"
@@ -166,7 +180,7 @@
                     <div class="absolute -right-10 -top-10 opacity-5">
                         <i class="fas fa-keyboard text-[8rem] text-white"></i>
                     </div>
-                    <div class="p-8 border-b border-white/5 bg-white/[0.02]">
+                    <div class="p-8 border-b border-white/5 bg-white/2">
                         <h3
                             class="text-xl font-black text-white uppercase tracking-tighter"
                         >
@@ -228,6 +242,55 @@
                 </div>
             </div>
         </transition>
+
+        <!-- Delete Confirmation Modal -->
+        <transition name="fade">
+            <div
+                v-if="showDeleteModal"
+                class="fixed inset-0 z-110 flex items-center justify-center p-6 bg-black/95 backdrop-blur-xl"
+            >
+                <div
+                    class="bg-[#111111] border border-red-500/20 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative"
+                >
+                    <div class="p-10 text-center">
+                        <div
+                            class="w-20 h-20 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-8 border border-red-500/20"
+                        >
+                            <i
+                                class="fas fa-exclamation-triangle text-3xl text-red-500"
+                            ></i>
+                        </div>
+                        <h3
+                            class="text-2xl font-black text-white uppercase tracking-tighter mb-4"
+                        >
+                            Purge Token
+                        </h3>
+                        <p class="text-sm text-gray-500 leading-relaxed mb-10">
+                            Remove
+                            <span class="text-white font-bold"
+                                >"{{ tokenToDelete?.question }}"</span
+                            >
+                            from the registry? This action will immediately
+                            terminate the link.
+                        </p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button
+                                @click="showDeleteModal = false"
+                                class="py-4 px-6 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
+                            >
+                                Abort
+                            </button>
+                            <button
+                                @click="executeDeleteTyperGel"
+                                class="py-4 px-6 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.3)] uppercase text-[10px] tracking-widest"
+                            >
+                                Execute Purge
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -255,6 +318,8 @@ export default {
                 status: "active",
             },
             isEditingTyperGel: false,
+            showDeleteModal: false,
+            tokenToDelete: null,
         };
     },
     computed: {
@@ -385,13 +450,14 @@ export default {
             }
         },
         confirmDeleteTyperGel(game) {
-            if (confirm(`Purge token "${game.question}" from registry?`))
-                this.deleteTyperGel(game.id);
+            this.tokenToDelete = game;
+            this.showDeleteModal = true;
         },
-        async deleteTyperGel(id) {
+        async executeDeleteTyperGel() {
             try {
-                await axios.delete(`/api/admin/games/${id}`);
+                await axios.delete(`/api/admin/games/${this.tokenToDelete.id}`);
                 this.$emit("message", "Token purged from network.", "success");
+                this.showDeleteModal = false;
                 this.$emit("refresh");
             } catch (error) {
                 this.$emit(
@@ -404,3 +470,23 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0px;
+}
+
+.custom-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar {
+    width: 3px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(239, 68, 68, 0.3);
+    border-radius: 10px;
+}
+</style>
