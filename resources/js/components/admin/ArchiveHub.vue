@@ -1,51 +1,49 @@
 <template>
     <div class="space-y-12">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h3
-                    class="text-sm font-black text-white uppercase tracking-widest mb-2 flex items-center"
-                >
-                    <i class="fas fa-archive mr-3 text-red-500"></i>Knowledge
-                    Repository
-                </h3>
-                <p class="text-[10px] font-mono text-gray-500 uppercase">
-                    Centralized Archive Management Terminal
-                </p>
-            </div>
-            <button
-                @click="openCreateModal"
-                class="px-6 py-3 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.2)] uppercase tracking-widest text-[10px]"
-            >
-                <i class="fas fa-plus-circle mr-2"></i>Initialize Archive
-            </button>
-        </div>
-
-        <!-- Archive Index -->
         <div
-            class="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
+            class="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative"
         >
+            <!-- Decorative Background Element -->
             <div
-                class="p-8 border-b border-white/5 bg-white/2 flex items-center justify-between"
+                class="absolute top-0 right-0 p-12 opacity-5 pointer-events-none"
             >
-                <span
-                    class="text-xs font-black text-white uppercase tracking-widest"
-                    >Archive Records</span
-                >
-                <span class="text-[10px] font-mono text-gray-600 uppercase"
-                    >{{ lessons.length }} Sectors Synchronized</span
-                >
+                <i class="fas fa-book-open text-[120px] rotate-12"></i>
             </div>
+
             <div
-                class="overflow-x-auto custom-scrollbar max-h-[600px] overflow-y-auto"
+                class="p-8 border-b border-white/5 bg-white/2 flex items-center justify-between relative z-10"
             >
+                <div>
+                    <h2
+                        class="text-2xl font-black text-white uppercase tracking-tighter"
+                    >
+                        Knowledge Archive Hub
+                    </h2>
+                    <p
+                        class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1"
+                    >
+                        Centralized Intelligence Repository
+                    </p>
+                </div>
+                <button
+                    @click="openCreateModal"
+                    class="px-6 py-3 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.2)] flex items-center space-x-3 uppercase text-[10px] tracking-widest"
+                >
+                    <i class="fas fa-plus"></i>
+                    <span>Initialize Archive</span>
+                </button>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar relative z-10">
                 <table class="w-full text-left">
-                    <thead class="sticky top-0 bg-[#161616] z-10">
+                    <thead>
                         <tr
-                            class="border-b border-white/5 text-[10px] font-black text-gray-500 uppercase tracking-widest"
+                            class="bg-white/5 border-b border-white/5 text-[10px] font-black text-gray-400 uppercase tracking-widest"
                         >
-                            <th class="px-8 py-5">Protocol Title</th>
+                            <th class="px-8 py-5">Identity Block</th>
+                            <th class="px-8 py-5">Broadcast Payload</th>
+                            <th class="px-8 py-5">Sync Date</th>
                             <th class="px-8 py-5">Status</th>
-                            <th class="px-8 py-5">Last Link</th>
                             <th class="px-8 py-5 text-right">Operations</th>
                         </tr>
                     </thead>
@@ -56,16 +54,43 @@
                             class="hover:bg-white/3 transition-colors group"
                         >
                             <td class="px-8 py-6">
-                                <h4
-                                    class="text-sm font-bold text-white uppercase tracking-tight mb-1"
-                                >
-                                    {{ lesson.title }}
-                                </h4>
-                                <p
-                                    class="text-[10px] text-gray-500 line-clamp-1 max-w-sm uppercase font-mono"
-                                >
-                                    {{ lesson.description }}
+                                <div class="flex items-center space-x-4">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0"
+                                    >
+                                        <img
+                                            v-if="lesson.thumbnail"
+                                            :src="'/' + lesson.thumbnail"
+                                            @error="
+                                                (e) =>
+                                                    (e.target.src =
+                                                        '/thumbnails/default-thumbnail.png')
+                                            "
+                                            class="w-full h-full object-cover"
+                                        />
+                                        <i
+                                            v-else
+                                            class="fas fa-microchip text-red-500/20 text-xl"
+                                        ></i>
+                                    </div>
+                                    <span
+                                        class="text-sm font-bold text-white uppercase tracking-tight"
+                                        >{{ lesson.title }}</span
+                                    >
+                                </div>
+                            </td>
+                            <td class="px-8 py-6">
+                                <p class="text-[10px] text-gray-500 font-mono">
+                                    {{
+                                        lesson.description ||
+                                        "No summary attached."
+                                    }}
                                 </p>
+                            </td>
+                            <td class="px-8 py-6">
+                                <span class="text-xs font-mono text-gray-400">{{
+                                    formatDate(lesson.created_at)
+                                }}</span>
                             </td>
                             <td class="px-8 py-6">
                                 <span
@@ -79,24 +104,19 @@
                                     {{ lesson.status }}
                                 </span>
                             </td>
-                            <td
-                                class="px-8 py-6 text-[10px] font-mono text-gray-600"
-                            >
-                                {{ formatDate(lesson.updated_at) }}
-                            </td>
                             <td class="px-8 py-6 text-right">
                                 <div
                                     class="flex items-center justify-end space-x-2"
                                 >
                                     <button
                                         @click="editStudy(lesson)"
-                                        class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-all flex items-center justify-center"
+                                        class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-all flex items-center justify-center"
                                     >
                                         <i class="fas fa-edit text-xs"></i>
                                     </button>
                                     <button
                                         @click="confirmDeleteStudy(lesson)"
-                                        class="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
+                                        class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
                                     >
                                         <i class="fas fa-trash-alt text-xs"></i>
                                     </button>
@@ -106,7 +126,7 @@
                     </tbody>
                 </table>
                 <div
-                    v-if="!lessons.length"
+                    v-if="lessons.length === 0"
                     class="text-center py-20 opacity-20"
                 >
                     <i class="fas fa-book-open text-5xl mb-4 text-red-500"></i>
@@ -183,70 +203,122 @@
                                     <input
                                         type="text"
                                         v-model="studyForm.description"
-                                        placeholder="Short Summary"
+                                        placeholder="Short Summary (Optional)"
                                         class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-gray-300 focus:outline-none focus:border-red-500/50 transition-all font-medium text-sm"
                                     />
                                 </div>
                             </div>
 
-                            <div class="space-y-2">
-                                <label
-                                    class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-                                    >Central Knowledge Buffer</label
-                                >
-                                <textarea
-                                    v-model="studyForm.content"
-                                    required
-                                    placeholder="Enter full archive materials (Markdown supported)..."
-                                    class="w-full bg-white/2 border border-white/10 rounded-2xl px-6 py-6 text-gray-300 focus:outline-none focus:border-red-500/50 transition-all font-mono text-sm h-[200px] leading-relaxed resize-none custom-scrollbar"
-                                ></textarea>
-                            </div>
-
-                            <div
-                                class="flex items-center justify-between pt-6 border-t border-white/5"
-                            >
+                            <div class="grid md:grid-cols-2 gap-6 items-start">
                                 <div class="space-y-2">
                                     <label
                                         class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-                                        >Sync Status</label
+                                        >Central Knowledge Buffer</label
                                     >
-                                    <select
-                                        v-model="studyForm.status"
-                                        class="block bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold uppercase text-gray-400 focus:outline-none"
-                                    >
-                                        <option value="active">
-                                            Active Sync
-                                        </option>
-                                        <option value="inactive">
-                                            Latent Protocol
-                                        </option>
-                                    </select>
+                                    <textarea
+                                        v-model="studyForm.content"
+                                        required
+                                        placeholder="Enter full archive materials (Markdown supported)..."
+                                        class="w-full bg-white/2 border border-white/10 rounded-2xl px-6 py-6 text-gray-300 focus:outline-none focus:border-red-500/50 transition-all font-mono text-sm h-[200px] leading-relaxed resize-none custom-scrollbar"
+                                    ></textarea>
                                 </div>
-                                <div class="flex items-center space-x-4">
-                                    <button
-                                        type="button"
-                                        @click="closeEditModal"
-                                        class="px-8 py-3 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
+                                <div class="space-y-4">
+                                    <label
+                                        class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
+                                        >Archive Thumbnail</label
                                     >
-                                        Abort
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        :disabled="isSubmittingStudy"
-                                        class="px-10 py-3 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.2)] uppercase text-[10px] tracking-widest"
-                                    >
-                                        <span v-if="!isSubmittingStudy">{{
-                                            editingStudy
-                                                ? "Apply Sync Revision"
-                                                : "Broadcast Archive"
-                                        }}</span>
-                                        <span v-else
-                                            ><i
-                                                class="fas fa-sync-alt fa-spin"
-                                            ></i
-                                        ></span>
-                                    </button>
+                                    <div class="flex items-center space-x-4">
+                                        <div
+                                            class="w-16 h-16 rounded-xl bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center shrink-0"
+                                        >
+                                            <img
+                                                v-if="studyForm.preview"
+                                                :src="studyForm.preview"
+                                                class="w-full h-full object-cover"
+                                            />
+                                            <img
+                                                v-else-if="
+                                                    editingStudy &&
+                                                    editingStudy.thumbnail
+                                                "
+                                                :src="
+                                                    '/' + editingStudy.thumbnail
+                                                "
+                                                class="w-full h-full object-cover"
+                                            />
+                                            <i
+                                                v-else
+                                                class="fas fa-microchip text-gray-700 text-xl"
+                                            ></i>
+                                        </div>
+                                        <div class="relative group/file flex-1">
+                                            <input
+                                                type="file"
+                                                @change="handleThumbnailChange"
+                                                accept="image/*"
+                                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                            />
+                                            <div
+                                                class="w-full bg-white/5 border border-dashed border-white/10 rounded-xl px-4 py-5 text-center group-hover/file:border-red-500/50 transition-all"
+                                            >
+                                                <p
+                                                    class="text-[10px] font-bold text-gray-500 uppercase"
+                                                >
+                                                    {{
+                                                        studyForm.thumbnail
+                                                            ? studyForm
+                                                                  .thumbnail
+                                                                  .name
+                                                            : "Select Matrix"
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 mt-4">
+                                        <label
+                                            class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
+                                            >Sync Status</label
+                                        >
+                                        <select
+                                            v-model="studyForm.status"
+                                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold uppercase text-gray-400 focus:outline-none"
+                                        >
+                                            <option value="active">
+                                                Active Sync
+                                            </option>
+                                            <option value="inactive">
+                                                Latent Protocol
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-end pt-6 border-t border-white/5 space-x-4"
+                            >
+                                <button
+                                    type="button"
+                                    @click="closeEditModal"
+                                    class="px-8 py-3 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
+                                >
+                                    Abort
+                                </button>
+                                <button
+                                    type="submit"
+                                    :disabled="isSubmittingStudy"
+                                    class="px-10 py-3 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.2)] uppercase text-[10px] tracking-widest"
+                                >
+                                    <span v-if="!isSubmittingStudy">{{
+                                        editingStudy
+                                            ? "Apply Sync Revision"
+                                            : "Broadcast Archive"
+                                    }}</span>
+                                    <span v-else
+                                        ><i class="fas fa-sync-alt fa-spin"></i
+                                    ></span>
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -268,23 +340,22 @@
                             class="w-20 h-20 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-8 border border-red-500/20"
                         >
                             <i
-                                class="fas fa-trash-alt text-3xl text-red-500"
+                                class="fas fa-exclamation-triangle text-3xl text-red-500"
                             ></i>
                         </div>
                         <h3
                             class="text-2xl font-black text-white uppercase tracking-tighter mb-4"
                         >
-                            Confirm Decommission
+                            Purge Command
                         </h3>
                         <p
                             class="text-sm text-gray-500 leading-relaxed mb-10 font-medium"
                         >
-                            Are you certain you want to purge
+                            Confirm decommissioning of
                             <span class="text-white font-black">{{
                                 studyToDelete?.title
-                            }}</span>
-                            from the central archives? This action is
-                            irreversible.
+                            }}</span
+                            >? This unit will be erased from the central buffer.
                         </p>
                         <div class="grid grid-cols-2 gap-4">
                             <button
@@ -322,6 +393,8 @@ export default {
                 description: "",
                 content: "",
                 status: "active",
+                thumbnail: null,
+                preview: null,
             },
             isSubmittingStudy: false,
             editingStudy: null,
@@ -339,6 +412,13 @@ export default {
                 day: "numeric",
             });
         },
+        handleThumbnailChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                this.studyForm.thumbnail = file;
+                this.studyForm.preview = URL.createObjectURL(file);
+            }
+        },
         openCreateModal() {
             this.editingStudy = null;
             this.studyForm = {
@@ -346,6 +426,8 @@ export default {
                 description: "",
                 content: "",
                 status: "active",
+                thumbnail: null,
+                preview: null,
             };
             this.showEditModal = true;
         },
@@ -357,10 +439,16 @@ export default {
             try {
                 this.isSubmittingStudy = true;
                 const formData = new FormData();
-                Object.keys(this.studyForm).forEach((k) =>
-                    formData.append(k, this.studyForm[k]),
-                );
-                await axios.post("/api/admin/lessons", formData);
+                Object.keys(this.studyForm).forEach((k) => {
+                    if (k !== "preview" && this.studyForm[k] !== null) {
+                        formData.append(k, this.studyForm[k]);
+                    }
+                });
+
+                await axios.post("/api/admin/lessons", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
                 this.$emit(
                     "message",
                     "Archive broadcast successful.",
@@ -369,11 +457,14 @@ export default {
                 this.closeEditModal();
                 this.$emit("refresh");
             } catch (error) {
-                this.$emit(
-                    "message",
-                    "Broadcast fault: Interference detected.",
-                    "error",
-                );
+                let msg = "Broadcast fault: Interference detected.";
+                if (error.response?.data?.errors) {
+                    const errors = error.response.data.errors;
+                    msg = Object.values(errors).flat().join(" ");
+                } else if (error.response?.data?.message) {
+                    msg = error.response.data.message;
+                }
+                this.$emit("message", msg, "error");
             } finally {
                 this.isSubmittingStudy = false;
             }
@@ -385,25 +476,45 @@ export default {
                 description: lesson.description || "",
                 content: lesson.content,
                 status: lesson.status,
+                thumbnail: null,
+                preview: null,
             };
             this.showEditModal = true;
         },
         async updateStudy() {
             try {
                 this.isSubmittingStudy = true;
-                await axios.put(
+                const formData = new FormData();
+                formData.append("title", this.studyForm.title);
+                formData.append("description", this.studyForm.description);
+                formData.append("content", this.studyForm.content);
+                formData.append("status", this.studyForm.status);
+                formData.append("_method", "PUT");
+
+                if (this.studyForm.thumbnail) {
+                    formData.append("thumbnail", this.studyForm.thumbnail);
+                }
+
+                await axios.post(
                     `/api/admin/lessons/${this.editingStudy.id}`,
-                    this.studyForm,
+                    formData,
+                    {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    },
                 );
+
                 this.$emit("message", "Archive revision committed.", "success");
                 this.closeEditModal();
                 this.$emit("refresh");
             } catch (error) {
-                this.$emit(
-                    "message",
-                    "Revision failure: Access denied to block.",
-                    "error",
-                );
+                let msg = "Revision failure: Access denied to block.";
+                if (error.response?.data?.errors) {
+                    const errors = error.response.data.errors;
+                    msg = Object.values(errors).flat().join(" ");
+                } else if (error.response?.data?.message) {
+                    msg = error.response.data.message;
+                }
+                this.$emit("message", msg, "error");
             } finally {
                 this.isSubmittingStudy = false;
             }
