@@ -80,7 +80,7 @@
                     <div
                         v-for="bubble in activeBubbles"
                         :key="bubble.id"
-                        class="absolute flex flex-col items-center justify-center p-6 transition-all duration-300 select-none"
+                        class="absolute flex flex-col items-center justify-center px-6 py-4 transition-all duration-300 select-none"
                         :class="[
                             bubble.isCompleted ? 'scale-0 opacity-0' : '',
                             bubble.showIncorrect ? 'shake-anim' : '',
@@ -94,11 +94,11 @@
                         }"
                     >
                         <div
-                            class="absolute inset-0 rounded-xl border backdrop-blur-xl transition-all duration-300 shadow-xl"
+                            class="absolute inset-0 rounded-full border backdrop-blur-xl transition-all duration-300 shadow-xl"
                             :class="[
                                 bubble.id === focusedBubbleId
-                                    ? 'bg-red-500/10 border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.2)]'
-                                    : 'bg-black/80 border-white/10',
+                                    ? 'bg-red-500/10 border-red-500/80 shadow-[0_0_24px_rgba(239,68,68,0.28)]'
+                                    : 'bg-black/80 border-red-500/35 shadow-[0_0_12px_rgba(239,68,68,0.08)]',
                             ]"
                         ></div>
                         <div

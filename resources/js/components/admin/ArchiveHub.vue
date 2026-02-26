@@ -34,6 +34,41 @@
                 </button>
             </div>
 
+            <div
+                class="px-8 py-4 border-b border-white/5 bg-white/[0.015] flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10"
+            >
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        v-for="tab in studyTabs"
+                        :key="tab.id"
+                        type="button"
+                        @click="activeStudyTab = tab.id"
+                        :class="[
+                            'px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all',
+                            activeStudyTab === tab.id
+                                ? 'bg-red-500 text-white border-red-500'
+                                : 'bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10',
+                        ]"
+                    >
+                        {{ tab.label }}
+                    </button>
+                </div>
+                <button
+                    type="button"
+                    @click="toggleStudySort"
+                    class="self-start md:self-auto px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border bg-white/5 text-gray-300 border-white/10 hover:bg-white/10 transition-all flex items-center gap-2"
+                >
+                    <i
+                        :class="
+                            studySortOrder === 'asc'
+                                ? 'fas fa-sort-amount-up-alt'
+                                : 'fas fa-sort-amount-down-alt'
+                        "
+                    ></i>
+                    {{ studySortOrder === "asc" ? "Oldest First" : "Newest First" }}
+                </button>
+            </div>
+
             <div class="overflow-x-auto custom-scrollbar relative z-10">
                 <table class="w-full text-left">
                     <thead>
@@ -42,14 +77,29 @@
                         >
                             <th class="px-8 py-5">Lesson</th>
                             <th class="px-8 py-5">Summary</th>
-                            <th class="px-8 py-5">Date</th>
+                            <th class="px-8 py-5">
+                                <button
+                                    type="button"
+                                    @click="toggleStudySort"
+                                    class="inline-flex items-center gap-2 hover:text-white transition-colors"
+                                >
+                                    <span>Date</span>
+                                    <i
+                                        :class="
+                                            studySortOrder === 'asc'
+                                                ? 'fas fa-sort-amount-up-alt'
+                                                : 'fas fa-sort-amount-down-alt'
+                                        "
+                                    ></i>
+                                </button>
+                            </th>
                             <th class="px-8 py-5">Status</th>
                             <th class="px-8 py-5 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
                         <tr
-                            v-for="lesson in lessons"
+                            v-for="lesson in visibleLessons"
                             :key="lesson.id"
                             class="hover:bg-white/3 transition-colors group"
                         >
@@ -126,14 +176,14 @@
                     </tbody>
                 </table>
                 <div
-                    v-if="lessons.length === 0"
+                    v-if="visibleLessons.length === 0"
                     class="text-center py-20 opacity-20"
                 >
                     <i class="fas fa-book-open text-5xl mb-4 text-red-500"></i>
                     <p
                         class="text-xs font-black uppercase tracking-widest font-mono"
                     >
-                        No lessons yet
+                        No lessons found
                     </p>
                 </div>
             </div>
@@ -219,12 +269,111 @@
                                         class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
                                         >Lesson Content</label
                                     >
-                                    <textarea
-                                        v-model="studyForm.content"
-                                        required
-                                        placeholder="Enter lesson content (Markdown supported)..."
-                                        class="w-full bg-white/2 border border-white/10 rounded-2xl px-6 py-6 text-gray-300 focus:outline-none focus:border-red-500/50 transition-all font-mono text-sm h-[200px] leading-relaxed resize-none custom-scrollbar"
-                                    ></textarea>
+                                    <div
+                                        class="bg-white/2 border border-white/10 rounded-2xl overflow-hidden"
+                                    >
+                                        <div
+                                            class="px-4 py-3 border-b border-white/5 flex flex-wrap items-center gap-2"
+                                        >
+                                            <button
+                                                type="button"
+                                                @click="
+                                                    contentEditor?.chain().focus().toggleBold().run()
+                                                "
+                                                :class="[
+                                                    'px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border',
+                                                    contentEditor?.isActive('bold')
+                                                        ? 'bg-red-500 text-white border-red-500'
+                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10',
+                                                ]"
+                                            >
+                                                B
+                                            </button>
+                                            <button
+                                                type="button"
+                                                @click="
+                                                    contentEditor?.chain().focus().toggleItalic().run()
+                                                "
+                                                :class="[
+                                                    'px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border italic',
+                                                    contentEditor?.isActive('italic')
+                                                        ? 'bg-red-500 text-white border-red-500'
+                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10',
+                                                ]"
+                                            >
+                                                I
+                                            </button>
+                                            <button
+                                                type="button"
+                                                @click="
+                                                    contentEditor?.chain().focus().toggleHeading({ level: 2 }).run()
+                                                "
+                                                :class="[
+                                                    'px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border',
+                                                    contentEditor?.isActive('heading', { level: 2 })
+                                                        ? 'bg-red-500 text-white border-red-500'
+                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10',
+                                                ]"
+                                            >
+                                                H2
+                                            </button>
+                                            <button
+                                                type="button"
+                                                @click="
+                                                    contentEditor?.chain().focus().toggleBulletList().run()
+                                                "
+                                                :class="[
+                                                    'px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border',
+                                                    contentEditor?.isActive('bulletList')
+                                                        ? 'bg-red-500 text-white border-red-500'
+                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10',
+                                                ]"
+                                            >
+                                                List
+                                            </button>
+                                            <button
+                                                type="button"
+                                                @click="
+                                                    contentEditor?.chain().focus().toggleOrderedList().run()
+                                                "
+                                                :class="[
+                                                    'px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border',
+                                                    contentEditor?.isActive('orderedList')
+                                                        ? 'bg-red-500 text-white border-red-500'
+                                                        : 'bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10',
+                                                ]"
+                                            >
+                                                1.
+                                            </button>
+                                            <button
+                                                type="button"
+                                                @click="
+                                                    contentEditor?.chain().focus().undo().run()
+                                                "
+                                                class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"
+                                            >
+                                                Undo
+                                            </button>
+                                            <button
+                                                type="button"
+                                                @click="
+                                                    contentEditor?.chain().focus().redo().run()
+                                                "
+                                                class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border bg-white/5 text-gray-400 border-white/10 hover:text-white hover:bg-white/10"
+                                            >
+                                                Redo
+                                            </button>
+                                        </div>
+                                        <EditorContent
+                                            :editor="contentEditor"
+                                            class="study-editor min-h-[220px] max-h-[320px] overflow-y-auto custom-scrollbar"
+                                        />
+                                    </div>
+                                    <p
+                                        class="text-[10px] text-gray-500 font-mono uppercase tracking-widest"
+                                    >
+                                        Use the toolbar for bold, italic, headings, and lists.
+                                    </p>
                                 </div>
                                 <div class="space-y-4">
                                     <label
@@ -390,9 +539,14 @@
 
 <script>
 import axios from "axios";
+import StarterKit from "@tiptap/starter-kit";
+import { Editor, EditorContent } from "@tiptap/vue-3";
 
 export default {
     name: "ArchiveHub",
+    components: {
+        EditorContent,
+    },
     props: {
         lessons: { type: Array, required: true },
     },
@@ -411,9 +565,102 @@ export default {
             showEditModal: false,
             showDeleteModal: false,
             studyToDelete: null,
+            contentEditor: null,
+            activeStudyTab: "all",
+            studySortOrder: "asc",
         };
     },
+    computed: {
+        studyTabs() {
+            return [
+                { id: "all", label: "All" },
+                { id: "active", label: "Active" },
+                { id: "inactive", label: "Inactive" },
+            ];
+        },
+        visibleLessons() {
+            const filtered = this.lessons.filter((lesson) => {
+                if (this.activeStudyTab === "all") return true;
+                return (lesson.status || "").toLowerCase() === this.activeStudyTab;
+            });
+
+            const sorted = [...filtered].sort((a, b) => {
+                const aTime = a?.created_at ? new Date(a.created_at).getTime() : 0;
+                const bTime = b?.created_at ? new Date(b.created_at).getTime() : 0;
+
+                if (aTime !== bTime) {
+                    return this.studySortOrder === "asc"
+                        ? aTime - bTime
+                        : bTime - aTime;
+                }
+
+                const aId = Number(a?.id || 0);
+                const bId = Number(b?.id || 0);
+                return this.studySortOrder === "asc" ? aId - bId : bId - aId;
+            });
+
+            return sorted;
+        },
+    },
+    beforeUnmount() {
+        this.destroyContentEditor();
+    },
     methods: {
+        toggleStudySort() {
+            this.studySortOrder = this.studySortOrder === "asc" ? "desc" : "asc";
+        },
+        escapeHtml(text) {
+            return String(text)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;");
+        },
+        formatContentForEditor(content) {
+            const value = String(content || "");
+            if (!value.trim()) return "<p></p>";
+            if (/<[a-z][\s\S]*>/i.test(value)) return value;
+
+            return value
+                .split(/\n{2,}/)
+                .map((paragraph) => {
+                    const safe = this.escapeHtml(paragraph).replaceAll(
+                        "\n",
+                        "<br>",
+                    );
+                    return `<p>${safe}</p>`;
+                })
+                .join("");
+        },
+        initContentEditor(content = "") {
+            const initialContent = this.formatContentForEditor(content);
+
+            if (!this.contentEditor) {
+                this.contentEditor = new Editor({
+                    extensions: [StarterKit],
+                    content: initialContent,
+                    editorProps: {
+                        attributes: {
+                            class: "tiptap-editor",
+                        },
+                    },
+                    onUpdate: ({ editor }) => {
+                        this.studyForm.content = editor.getHTML();
+                    },
+                });
+                return;
+            }
+
+            this.contentEditor.commands.setContent(initialContent, {
+                emitUpdate: false,
+            });
+            this.studyForm.content = this.contentEditor.getHTML();
+        },
+        destroyContentEditor() {
+            if (this.contentEditor) {
+                this.contentEditor.destroy();
+                this.contentEditor = null;
+            }
+        },
         formatDate(date) {
             if (!date) return "-";
             return new Date(date).toLocaleDateString("en-US", {
@@ -440,10 +687,12 @@ export default {
                 preview: null,
             };
             this.showEditModal = true;
+            this.$nextTick(() => this.initContentEditor(this.studyForm.content));
         },
         closeEditModal() {
             this.showEditModal = false;
             this.editingStudy = null;
+            this.destroyContentEditor();
         },
         async submitStudy() {
             try {
@@ -490,6 +739,7 @@ export default {
                 preview: null,
             };
             this.showEditModal = true;
+            this.$nextTick(() => this.initContentEditor(this.studyForm.content));
         },
         async updateStudy() {
             try {
@@ -558,6 +808,44 @@ export default {
 </script>
 
 <style scoped>
+.study-editor {
+    padding: 1rem 1.25rem;
+}
+
+:deep(.study-editor .tiptap-editor) {
+    min-height: 220px;
+    color: #d1d5db;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    outline: none;
+}
+
+:deep(.study-editor .tiptap-editor p) {
+    margin: 0 0 0.75rem 0;
+}
+
+:deep(.study-editor .tiptap-editor h2) {
+    margin: 0.5rem 0 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+:deep(.study-editor .tiptap-editor ul),
+:deep(.study-editor .tiptap-editor ol) {
+    margin: 0.5rem 0 0.75rem 1.25rem;
+    padding-left: 0.5rem;
+}
+
+:deep(.study-editor .tiptap-editor li) {
+    margin: 0.2rem 0;
+}
+
+:deep(.study-editor .tiptap-editor strong) {
+    color: #fff;
+    font-weight: 700;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
     width: 0px;
 }
