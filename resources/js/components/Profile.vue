@@ -262,7 +262,7 @@
                         class="text-[10px] font-black text-gray-500 hover:text-red-500 uppercase tracking-widest transition-colors flex items-center space-x-2"
                     >
                         <i class="fas fa-trash-alt"></i
-                        ><span>Discard Matrix Image</span>
+                        ><span>Remove Profile Image</span>
                     </button>
                 </div>
 
@@ -514,7 +514,7 @@ export default {
             if (file) {
                 if (file.size > 2048 * 1024)
                     return this.showMessage(
-                        "Matrix stream overload: Max 2MB.",
+                        "Image is too large (max 2MB).",
                         "error",
                     );
                 this.profilePictureFile = file;

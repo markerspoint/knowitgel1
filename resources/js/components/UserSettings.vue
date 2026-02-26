@@ -47,7 +47,7 @@
                                 <p
                                     class="text-[10px] font-mono text-gray-500 uppercase tracking-widest"
                                 >
-                                    Global Link
+                                    Member
                                 </p>
                             </div>
                             <div
@@ -79,14 +79,14 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-th-large w-5"></i
-                                        ><span>Dashboard Hub</span>
+                                        ><span>Dashboard</span>
                                     </router-link>
                                     <router-link
                                         to="/user/profile"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-user-circle w-5"></i
-                                        ><span>Profile Meta</span>
+                                        ><span>Profile</span>
                                     </router-link>
                                 </div>
                                 <button
@@ -94,7 +94,7 @@
                                     class="w-full flex items-center space-x-3 px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-xs font-black uppercase tracking-[0.2em] transition-all border-t border-white/5"
                                 >
                                     <i class="fas fa-power-off"></i
-                                    ><span>Terminate Link</span>
+                                    ><span>Log Out</span>
                                 </button>
                             </div>
                         </transition>
@@ -143,20 +143,19 @@
                 <h2
                     class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                 >
-                    Security Terminal
+                    Security Settings
                 </h2>
                 <h1
                     class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-4"
                 >
-                    Access
+                    Account
                     <span
                         class="text-transparent bg-clip-text bg-linear-to-r from-red-500 to-red-600"
-                        >Parameters</span
+                        >Settings</span
                     >
                 </h1>
                 <p class="text-gray-500 max-w-xl font-medium">
-                    Re-calibrate your authentication keys and security
-                    preferences across the network.
+                    Update your password and security preferences.
                 </p>
             </div>
 
@@ -179,12 +178,12 @@
                             <h3
                                 class="text-xl font-bold text-white uppercase tracking-tight"
                             >
-                                Cipher Rotation
+                                Change Password
                             </h3>
                             <p
                                 class="text-xs font-mono text-gray-600 uppercase"
                             >
-                                Status: Secure Layer Active
+                                Status: Security Enabled
                             </p>
                         </div>
                     </div>
@@ -197,7 +196,7 @@
                             <div>
                                 <label
                                     class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-3"
-                                    >Current Encryption Key</label
+                                    >Current Password</label
                                 >
                                 <div class="relative group/input">
                                     <div
@@ -220,7 +219,7 @@
                             <div>
                                 <label
                                     class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-3"
-                                    >New Encryption Key</label
+                                    >New Password</label
                                 >
                                 <div class="relative group/input">
                                     <div
@@ -236,7 +235,7 @@
                                         required
                                         minlength="6"
                                         class="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-gray-700 focus:outline-none focus:border-red-500/50 focus:bg-white/10 transition-all font-medium"
-                                        placeholder="Min. 6 alphanumeric chars"
+                                        placeholder="At least 6 characters"
                                     />
                                 </div>
                             </div>
@@ -244,7 +243,7 @@
                             <div>
                                 <label
                                     class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-3"
-                                    >Confirm Rotation</label
+                                    >Confirm New Password</label
                                 >
                                 <div class="relative group/input">
                                     <div
@@ -274,11 +273,11 @@
                             >
                                 <span v-if="isSavingPassword"
                                     ><i class="fas fa-sync-alt fa-spin mr-3"></i
-                                    >Rotating Cipher...</span
+                                    >Updating Password...</span
                                 >
                                 <span v-else
-                                    ><i class="fas fa-save mr-3"></i>Commit Key
-                                    Change</span
+                                    ><i class="fas fa-save mr-3"></i>Save
+                                    Password</span
                                 >
                             </button>
                         </form>
@@ -301,12 +300,12 @@
                             <h3
                                 class="text-xl font-bold text-white uppercase tracking-tight"
                             >
-                                Interface Hooks
+                                Preferences
                             </h3>
                             <p
                                 class="text-xs font-mono text-gray-600 uppercase"
                             >
-                                Configuration: Latent
+                                Configuration: Default
                             </p>
                         </div>
                     </div>
@@ -321,20 +320,19 @@
                                 <i
                                     class="fas fa-info-circle mr-3 text-red-500"
                                 ></i
-                                >Security Protocol
+                                >Password Rules
                             </h5>
                             <p
                                 class="text-sm text-gray-500 leading-relaxed mb-4"
                             >
-                                Password rotation requires current
-                                authentication verification. Minimum entropy
-                                requirements: 6 characters.
+                                To change your password, enter your current
+                                password. Minimum length: 6 characters.
                             </p>
                             <div
                                 class="flex items-center space-x-3 text-[10px] font-mono text-gray-600 uppercase"
                             >
                                 <i class="fas fa-fingerprint text-red-500"></i>
-                                <span>SHA-256 System Encryption Enabled</span>
+                                <span>Your password is securely encrypted</span>
                             </div>
                         </div>
 
@@ -342,13 +340,13 @@
                             <p
                                 class="text-[10px] font-black text-gray-600 uppercase tracking-widest"
                             >
-                                Future Integration Nodes
+                                Coming Soon
                             </p>
                             <div
                                 v-for="node in [
-                                    'Neural Notifications',
-                                    'Visual Theme Override',
-                                    'Global Difficulty Scale',
+                                    'Notifications',
+                                    'Theme Selection',
+                                    'Difficulty Level',
                                 ]"
                                 :key="node"
                                 class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 group/node hover:border-white/10 transition-all cursor-not-allowed"
@@ -387,7 +385,7 @@
             <div
                 class="text-red-500 text-xs font-mono tracking-[0.5em] uppercase"
             >
-                Accessing Secure Parameters...
+                Loading settings...
             </div>
         </div>
     </div>
@@ -450,15 +448,12 @@ export default {
                     this.passwordForm.current_password = "";
                     this.passwordForm.new_password = "";
                     this.passwordForm.new_password_confirmation = "";
-                    this.showMessage(
-                        "Access key successfully rotated in core registry.",
-                        "success",
-                    );
+                    this.showMessage("Password updated successfully.", "success");
                 }
             } catch (error) {
                 const msg =
                     error.response?.data?.message ||
-                    "Cipher rotation fault identified.";
+                    "Password update failed.";
                 this.showMessage(msg, "error");
             } finally {
                 this.isSavingPassword = false;

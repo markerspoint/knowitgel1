@@ -367,7 +367,7 @@
                                             <p
                                                 class="text-[10px] font-bold text-gray-500 uppercase"
                                             >
-                                                Revision Matrix
+                                                Revision Details
                                             </p>
                                         </div>
                                     </div>
@@ -631,7 +631,7 @@ export default {
             } catch (error) {
                 this.$emit(
                     "message",
-                    "Revision failure: Registry block.",
+                    "Revision failed: record blocked.",
                     "error",
                 );
             }

@@ -18,7 +18,19 @@ class UserLeaderboardController extends Controller
         // Get leaderboard data
         $query = User::where('role', 'user')
             ->where('is_disabled', false)
-            ->select('users.*')
+            ->select([
+                'users.id',
+                'users.name',
+                'users.fname',
+                'users.lname',
+                'users.username',
+                'users.email',
+                'users.profile_picture',
+                'users.role',
+                'users.is_disabled',
+                'users.created_at',
+                'users.updated_at',
+            ])
             ->selectRaw('COALESCE(SUM(scores.score), 0) as total_score')
             ->selectRaw('COUNT(scores.id) as games_played')
             ->leftJoin('scores', 'users.id', '=', 'scores.user_id');
@@ -28,7 +40,19 @@ class UserLeaderboardController extends Controller
         }
 
         $leaderboard = $query
-            ->groupBy('users.id', 'users.name', 'users.fname', 'users.lname', 'users.username', 'users.email', 'users.profile_picture', 'users.role', 'users.is_disabled', 'users.created_at', 'users.updated_at')
+            ->groupBy(
+                'users.id',
+                'users.name',
+                'users.fname',
+                'users.lname',
+                'users.username',
+                'users.email',
+                'users.profile_picture',
+                'users.role',
+                'users.is_disabled',
+                'users.created_at',
+                'users.updated_at'
+            )
             ->orderBy('total_score', 'desc')
             ->orderBy('games_played', 'desc')
             ->limit($limit)
@@ -54,7 +78,19 @@ class UserLeaderboardController extends Controller
         if ($currentUser && $currentUser->role === 'user') {
             $allUsers = User::where('role', 'user')
                 ->where('is_disabled', false)
-                ->select('users.*')
+                ->select([
+                    'users.id',
+                    'users.name',
+                    'users.fname',
+                    'users.lname',
+                    'users.username',
+                    'users.email',
+                    'users.profile_picture',
+                    'users.role',
+                    'users.is_disabled',
+                    'users.created_at',
+                    'users.updated_at',
+                ])
                 ->selectRaw('COALESCE(SUM(scores.score), 0) as total_score')
                 ->selectRaw('COUNT(scores.id) as games_played')
                 ->leftJoin('scores', 'users.id', '=', 'scores.user_id');
@@ -64,7 +100,19 @@ class UserLeaderboardController extends Controller
             }
 
             $allUsers = $allUsers
-                ->groupBy('users.id', 'users.name', 'users.fname', 'users.lname', 'users.username', 'users.email', 'users.profile_picture', 'users.role', 'users.is_disabled', 'users.created_at', 'users.updated_at')
+                ->groupBy(
+                    'users.id',
+                    'users.name',
+                    'users.fname',
+                    'users.lname',
+                    'users.username',
+                    'users.email',
+                    'users.profile_picture',
+                    'users.role',
+                    'users.is_disabled',
+                    'users.created_at',
+                    'users.updated_at'
+                )
                 ->orderBy('total_score', 'desc')
                 ->orderBy('games_played', 'desc')
                 ->get();

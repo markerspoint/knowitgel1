@@ -47,7 +47,7 @@
                                 <p
                                     class="text-[10px] font-mono text-gray-500 uppercase tracking-widest"
                                 >
-                                    Network Authority
+                                    Member
                                 </p>
                             </div>
                             <div
@@ -79,21 +79,21 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-th-large w-5"></i
-                                        ><span>Dashboard Hub</span>
+                                        ><span>Dashboard</span>
                                     </router-link>
                                     <router-link
                                         to="/user/profile"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-user-circle w-5"></i
-                                        ><span>Profile Meta</span>
+                                        ><span>Profile</span>
                                     </router-link>
                                     <router-link
                                         to="/user/history"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-history w-5"></i
-                                        ><span>Archived Syncs</span>
+                                        ><span>History</span>
                                     </router-link>
                                 </div>
                                 <button
@@ -101,7 +101,7 @@
                                     class="w-full flex items-center space-x-3 px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-xs font-black uppercase tracking-[0.2em] transition-all border-t border-white/5"
                                 >
                                     <i class="fas fa-power-off"></i
-                                    ><span>Terminate Link</span>
+                                    ><span>Log Out</span>
                                 </button>
                             </div>
                         </transition>
@@ -117,20 +117,19 @@
                 <h2
                     class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                 >
-                    Global Standing
+                    Leaderboard
                 </h2>
                 <h1
                     class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-4"
                 >
-                    Network
+                    Player
                     <span
                         class="text-transparent bg-clip-text bg-linear-to-r from-red-500 to-red-600"
-                        >Leaderboards</span
+                        >Leaderboard</span
                     >
                 </h1>
                 <p class="text-gray-500 max-w-xl font-medium">
-                    Comparative aptitude metrics across all synchronized
-                    learners in the GEL1 network.
+                    Compare scores across all players.
                 </p>
             </div>
 
@@ -151,12 +150,12 @@
                             <p
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1"
                             >
-                                Sector Filter
+                                Filter
                             </p>
                             <h3
                                 class="text-lg font-bold text-white uppercase tracking-tight"
                             >
-                                Isolate Game Type
+                                Select Game
                             </h3>
                         </div>
                     </div>
@@ -167,16 +166,16 @@
                             class="w-full appearance-none bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-sm font-bold uppercase tracking-widest focus:outline-none focus:border-red-500/50 focus:bg-white/10 transition-all cursor-pointer"
                         >
                             <option value="all" class="bg-[#181818]">
-                                Global Aggregated
+                                All Games
                             </option>
                             <option value="qa_fps" class="bg-[#181818]">
-                                Combat Sync (FPS)
+                                Q&A Shooter (FPS)
                             </option>
                             <option value="typergel1" class="bg-[#181818]">
-                                Neural Velocity
+                                Typing Speed
                             </option>
                             <option value="assessment" class="bg-[#181818]">
-                                Initial Calibration
+                                Assessment
                             </option>
                         </select>
                         <div
@@ -233,7 +232,7 @@
                                 <p
                                     class="text-[10px] font-black text-white/70 uppercase tracking-[0.3em] mb-1"
                                 >
-                                    Your Network Standing
+                                    Your Rank
                                 </p>
                                 <h3
                                     class="text-4xl font-black text-white tracking-tighter uppercase mb-1"
@@ -254,7 +253,7 @@
                                 <p
                                     class="text-[10px] font-black text-white/70 uppercase tracking-widest mb-1"
                                 >
-                                    Verified Score
+                                    Total Score
                                 </p>
                                 <p
                                     class="text-4xl font-black text-white tracking-tighter"
@@ -270,7 +269,7 @@
                                 <p
                                     class="text-[10px] font-black text-white/70 uppercase tracking-widest mb-1"
                                 >
-                                    Active Syncs
+                                    Games Played
                                 </p>
                                 <p
                                     class="text-4xl font-black text-white tracking-tighter"
@@ -303,12 +302,12 @@
                         </div>
                         <span
                             class="text-xs font-black text-white uppercase tracking-[0.2em]"
-                            >Global Rank Manifest v1.02</span
+                            >Top Players</span
                         >
                     </div>
                     <span
                         class="text-[10px] font-mono text-gray-600 uppercase tracking-widest"
-                        >Target: Top 100 Learners</span
+                        >Showing: Top 100 Players</span
                     >
                 </div>
 
@@ -324,17 +323,17 @@
                                 <th
                                     class="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]"
                                 >
-                                    Identity Matrix
+                                    Profile
                                 </th>
                                 <th
                                     class="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] text-center"
                                 >
-                                    Output Score
+                                    Score
                                 </th>
                                 <th
                                     class="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] text-right"
                                 >
-                                    Activity Syncs
+                                    Games
                                 </th>
                             </tr>
                         </thead>
@@ -452,7 +451,7 @@
                                         >
                                         <span
                                             class="text-[9px] font-mono text-gray-700 uppercase"
-                                            >Successful Links</span
+                                            >Games Played</span
                                         >
                                     </div>
                                 </td>
@@ -471,11 +470,11 @@
                                     <h4
                                         class="text-sm font-black text-gray-500 uppercase tracking-widest mb-2"
                                     >
-                                        No Uplink Data Found
+                                        No leaderboard data yet
                                     </h4>
                                     <p class="text-xs text-gray-700 italic">
-                                        Initiate network activities to calibrate
-                                        the leaderboard.
+                                        Play a game to appear on the
+                                        leaderboard.
                                     </p>
                                 </td>
                             </tr>
@@ -500,7 +499,7 @@
                         <p
                             class="text-[10px] font-mono text-red-500 uppercase tracking-[0.3em]"
                         >
-                            Calculating Global Standings...
+                            Loading leaderboard...
                         </p>
                     </div>
                 </div>
@@ -526,7 +525,7 @@
             <div
                 class="text-red-500 text-xs font-mono tracking-[0.5em] uppercase"
             >
-                Synchronizing Global Rankings...
+                Loading leaderboard...
             </div>
         </div>
     </div>

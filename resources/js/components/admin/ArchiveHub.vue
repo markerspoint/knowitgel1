@@ -22,7 +22,7 @@
                     <p
                         class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1"
                     >
-                        Centralized Intelligence Repository
+                        Centralized Study Library
                     </p>
                 </div>
                 <button
@@ -269,7 +269,7 @@
                                                             ? studyForm
                                                                   .thumbnail
                                                                   .name
-                                                            : "Select Matrix"
+                                                            : "Select Image"
                                                     }}
                                                 </p>
                                             </div>

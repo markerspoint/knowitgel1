@@ -99,7 +99,7 @@
             >
                 <span
                     class="text-xs font-black text-white uppercase tracking-widest"
-                    >Neural Vocabulary Registry</span
+                    >Vocabulary List</span
                 >
                 <span class="text-[10px] font-mono text-gray-600 uppercase"
                     >{{ typerGelGames.length }} Tokens Encrypted</span
@@ -346,17 +346,17 @@ export default {
                 await axios.post("/api/admin/games", formData);
                 this.$emit(
                     "message",
-                    "Neural token archived successfully.",
+                    "Word saved successfully.",
                     "success",
                 );
                 this.typerGelForm.question = "";
                 this.$emit("refresh");
             } catch (error) {
-                this.$emit(
-                    "message",
-                    "Token duplication or registry fault.",
-                    "error",
-                );
+                const errorMsg =
+                    error.response?.data?.message ||
+                    "Token duplication or registry fault.";
+                this.$emit("message", errorMsg, "error");
+                console.error("Upload error:", error.response?.data);
             }
         },
         getBulkWordCount() {
@@ -394,7 +394,10 @@ export default {
                     try {
                         await axios.post("/api/admin/games", formData);
                     } catch (e) {
-                        console.error(`Failed: ${word}`);
+                        console.error(
+                            `Failed: ${word}`,
+                            e.response?.data || e.message,
+                        );
                     }
                 }
                 this.$emit(
@@ -428,13 +431,17 @@ export default {
         async submitEditTyperGel() {
             this.isEditingTyperGel = true;
             try {
-                await axios.put(`/api/admin/games/${this.editingTyperGel.id}`, {
-                    question: this.editingTyperGel.question,
-                    status: this.editingTyperGel.status,
-                });
+                await axios.post(
+                    `/api/admin/games/${this.editingTyperGel.id}`,
+                    {
+                        question: this.editingTyperGel.question,
+                        status: this.editingTyperGel.status,
+                        _method: "PUT",
+                    },
+                );
                 this.$emit(
                     "message",
-                    "Registry patch successfully applied.",
+                    "List updated successfully.",
                     "success",
                 );
                 this.closeEditTyperGelModal();

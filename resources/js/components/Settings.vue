@@ -160,7 +160,7 @@
                 <h2
                     class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                 >
-                    Neural Configuration
+                    Settings
                 </h2>
                 <h1
                     class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-4"
@@ -222,7 +222,7 @@
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >New Neural Key</label
+                                >New Password</label
                             >
                             <input
                                 type="password"
@@ -280,7 +280,7 @@
                             <h3
                                 class="text-lg font-black text-white uppercase tracking-widest"
                             >
-                                Module Registry
+                                Module Settings
                             </h3>
                             <p
                                 class="text-[10px] font-mono text-gray-500 uppercase tracking-widest"
@@ -360,7 +360,7 @@
                                         <p
                                             class="text-[10px] text-gray-500 uppercase font-mono tracking-widest"
                                         >
-                                            Vocabulary Sync Engine
+                                            Vocabulary Module
                                         </p>
                                     </div>
                                 </div>
@@ -382,8 +382,8 @@
                             <p
                                 class="mt-4 text-[10px] text-gray-600 font-medium leading-relaxed uppercase tracking-tighter"
                             >
-                                Affects the availability of the Neural
-                                Vocabulary assessment module.
+                                Affects the availability of the vocabulary
+                                assessment module.
                             </p>
                         </div>
                     </div>
@@ -395,7 +395,7 @@
                         <i class="fas fa-sync-alt fa-spin text-xs"></i>
                         <span
                             class="text-[10px] font-black uppercase tracking-widest"
-                            >Updating Module Registry...</span
+                            >Updating settings...</span
                         >
                     </div>
                 </div>

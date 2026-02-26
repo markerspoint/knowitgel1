@@ -161,7 +161,7 @@
                     <h2
                         class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                     >
-                        Cognitive Calibration
+                        Assessment Setup
                     </h2>
                     <h1
                         class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase"
@@ -327,7 +327,7 @@
                             <p
                                 class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1"
                             >
-                                Assessment Calibration Entry
+                                Assessment Item
                             </p>
                         </div>
                         <button
@@ -384,7 +384,7 @@
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Calibration Options (CSV Tokens)</label
+                                >Answer Choices (CSV)</label
                             >
                             <input
                                 type="text"
@@ -421,7 +421,7 @@
                                                 questionForm.game_file
                                                     ? questionForm.game_file
                                                           .name
-                                                    : "Upload Identity Matrix"
+                                                    : "Upload Image"
                                             }}
                                         </p>
                                     </div>
@@ -486,7 +486,7 @@
                             <p
                                 class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1"
                             >
-                                #{{ editingQuestion.id }} Registry Update
+                                #{{ editingQuestion.id }} Question Update
                             </p>
                         </div>
                         <button
@@ -540,7 +540,7 @@
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Calibration Tokens</label
+                                >Answer Choices</label
                             >
                             <input
                                 type="text"
@@ -553,7 +553,7 @@
                             <div class="space-y-4">
                                 <label
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                    >Update Identity Matrix</label
+                                    >Update Image</label
                                 >
                                 <div class="relative group/file">
                                     <input

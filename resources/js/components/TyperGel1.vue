@@ -37,7 +37,7 @@
                     <div>
                         <span
                             class="block text-sm font-black uppercase tracking-[0.2em] text-white"
-                            >Neural Input Interface</span
+                            >Typing Input</span
                         >
                         <span
                             class="block text-[9px] font-mono text-gray-500 uppercase tracking-widest"
@@ -50,7 +50,7 @@
                     <div class="hidden md:flex flex-col items-end">
                         <span
                             class="text-[9px] font-mono text-gray-500 uppercase tracking-widest leading-none"
-                            >Matrix Sync Status</span
+                            >Status</span
                         >
                         <span
                             class="text-xs font-black text-red-500 uppercase tracking-tighter"
@@ -196,10 +196,10 @@
                     >
                         <!-- Technical Base Plate -->
                         <div
-                            class="absolute bottom-0 w-full h-28 bg-[#0a0a0a] rounded-t-[4rem] border-t border-red-500/20 shadow-[0_-20px_60px_rgba(0,0,0,1)]"
+                            class="absolute bottom-0 w-full h-28 bg-[#050505] rounded-t-[4rem] border-t-2 border-red-500/50 shadow-[0_-20px_60px_rgba(239,68,68,0.1)]"
                         >
                             <div
-                                class="absolute top-0 left-0 w-full h-px bg-red-500/30 animate-pulse"
+                                class="absolute top-0 left-0 w-full h-px bg-red-500/60 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]"
                             ></div>
                         </div>
 
@@ -209,14 +209,14 @@
                         >
                             <!-- Character Node -->
                             <div
-                                class="w-24 h-24 rounded-4xl bg-gradient-to-br from-red-500/10 to-black border border-red-500/30 flex items-center justify-center relative shadow-2xl shrink-0 mb-2"
+                                class="w-24 h-24 rounded-4xl bg-gradient-to-br from-red-500/30 to-black border-2 border-red-500/60 flex items-center justify-center relative shadow-[0_0_40px_rgba(239,68,68,0.2)] shrink-0 mb-2"
                                 ref="characterHead"
                             >
                                 <div
-                                    class="w-16 h-16 rounded-full bg-black border border-red-500/20 flex items-center justify-center overflow-hidden"
+                                    class="w-16 h-16 rounded-full bg-black border border-red-500/50 flex items-center justify-center overflow-hidden"
                                 >
                                     <div
-                                        class="w-12 h-1 bg-red-500 animate-pulse shadow-[0_0_10px_#ef4444]"
+                                        class="w-12 h-1 bg-red-500 animate-pulse shadow-[0_0_20px_#ef4444]"
                                     ></div>
                                 </div>
                             </div>
@@ -235,7 +235,7 @@
                                             ref="handLeft"
                                         >
                                             <div
-                                                class="hand-realistic hand-left opacity-30 invert"
+                                                class="hand-realistic hand-left opacity-60 invert"
                                             >
                                                 <div class="wrist"></div>
                                                 <div class="palm"></div>
@@ -252,7 +252,7 @@
                                             ref="handRight"
                                         >
                                             <div
-                                                class="hand-realistic hand-right opacity-30 invert"
+                                                class="hand-realistic hand-right opacity-60 invert"
                                             >
                                                 <div class="wrist"></div>
                                                 <div class="palm"></div>
@@ -270,7 +270,7 @@
                                         class="keyboard-base-container transform rotateX-20 scale-95 origin-bottom"
                                     >
                                         <div
-                                            class="bg-[#111] border border-red-500/20 rounded-xl p-3 shadow-inner space-y-2"
+                                            class="bg-[#050505] border-2 border-red-500/60 rounded-xl p-3 shadow-[0_0_60px_rgba(239,68,68,0.2)] space-y-2"
                                         >
                                             <div
                                                 v-for="r in 3"
@@ -280,16 +280,16 @@
                                                 <div
                                                     v-for="i in 10"
                                                     :key="i"
-                                                    class="w-8 h-8 rounded-lg bg-zinc-900 border border-white/5 relative overflow-hidden transition-all duration-75"
+                                                    class="w-8 h-8 rounded-lg bg-red-950/30 border border-red-500/40 relative overflow-hidden transition-all duration-75"
                                                     :class="
                                                         pressedKeyIndex ===
                                                         (r - 1) * 10 + i - 1
-                                                            ? 'scale-90 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)]'
+                                                            ? 'scale-90 border-red-500 shadow-[0_0_30px_rgba(239,68,68,1)]'
                                                             : ''
                                                     "
                                                 >
                                                     <div
-                                                        class="absolute inset-0 bg-red-500 transition-opacity duration-75"
+                                                        class="absolute inset-0 bg-red-600 transition-opacity duration-75"
                                                         :class="
                                                             pressedKeyIndex ===
                                                             (r - 1) * 10 + i - 1
@@ -298,7 +298,7 @@
                                                         "
                                                     ></div>
                                                     <div
-                                                        class="absolute inset-x-1 bottom-1 h-0.5 bg-white/40 rounded-full transition-opacity duration-75"
+                                                        class="absolute inset-x-1 bottom-1 h-0.5 bg-white/60 rounded-full transition-opacity duration-75"
                                                         :class="
                                                             pressedKeyIndex ===
                                                             (r - 1) * 10 + i - 1
@@ -310,15 +310,15 @@
                                             </div>
                                             <div class="flex justify-center">
                                                 <div
-                                                    class="w-40 h-8 rounded-lg bg-zinc-900 border border-white/5 relative overflow-hidden transition-all duration-75"
+                                                    class="w-40 h-8 rounded-lg bg-red-950/30 border border-red-500/40 relative overflow-hidden transition-all duration-75"
                                                     :class="
                                                         pressedKeyIndex === 30
-                                                            ? 'scale-95 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.8)]'
+                                                            ? 'scale-95 border-red-500 shadow-[0_0_35px_rgba(239,68,68,1)]'
                                                             : ''
                                                     "
                                                 >
                                                     <div
-                                                        class="absolute inset-0 bg-red-500 transition-opacity duration-75"
+                                                        class="absolute inset-0 bg-red-600 transition-opacity duration-75"
                                                         :class="
                                                             pressedKeyIndex ===
                                                             30
@@ -327,7 +327,7 @@
                                                         "
                                                     ></div>
                                                     <div
-                                                        class="absolute inset-x-4 bottom-1 h-0.5 bg-white/40 rounded-full transition-opacity duration-75"
+                                                        class="absolute inset-x-4 bottom-1 h-0.5 bg-white/70 rounded-full transition-opacity duration-75"
                                                         :class="
                                                             pressedKeyIndex ===
                                                             30
@@ -367,7 +367,7 @@
                             <h2
                                 class="text-4xl font-black text-white uppercase tracking-tighter mb-4 italic"
                             >
-                                Neural Buffer Link
+                                Typing Stats
                             </h2>
                             <p
                                 class="text-sm text-gray-400 mb-12 font-medium leading-relaxed uppercase tracking-widest"
@@ -386,7 +386,7 @@
                                 >
                                     <span
                                         class="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1 group-hover:text-red-500"
-                                        >{{ lvl }} Matrix</span
+                                        >{{ lvl }} Level</span
                                     ><span
                                         class="block text-2xl font-black text-white group-hover:scale-105 transition-transform uppercase"
                                         >{{ lvl }}</span
@@ -463,7 +463,7 @@
                                 >
                                     <span
                                         class="block text-[8px] font-mono text-gray-500 uppercase mb-2"
-                                        >Matrix Score</span
+                                        >Score</span
                                     ><span
                                         class="text-3xl font-black text-red-500 italic"
                                         >{{ score }}</span
@@ -753,11 +753,16 @@ export default {
             this.clearTimer();
             this.phase = "finished";
             this.endTime = performance.now();
-            submitTyperGelResult(
-                this.score,
-                this.wpm,
-                this.accuracy * 100,
-            ).catch(() => {});
+            submitTyperGelResult({
+                score: this.score,
+                wpm: this.wpm,
+                accuracy: this.accuracy,
+                total_chars: this.correctChars + this.incorrectChars,
+                correct_chars: this.correctChars,
+                incorrect_chars: this.incorrectChars,
+                difficulty: this.difficulty,
+                duration_seconds: this.elapsedSeconds,
+            }).catch(() => {});
         },
         startAnimation() {
             const loop = () => {

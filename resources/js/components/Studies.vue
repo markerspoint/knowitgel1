@@ -96,7 +96,7 @@
                     <h2
                         class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                     >
-                        Academic Repository
+                        Study Library
                     </h2>
                     <h1
                         class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase"

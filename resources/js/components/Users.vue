@@ -158,7 +158,7 @@
                 <h2
                     class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                 >
-                    Identity Registry
+                    User Directory
                 </h2>
                 <h1
                     class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-4"
@@ -199,7 +199,7 @@
                                 <th class="px-8 py-5">Identity ID</th>
                                 <th class="px-8 py-5">Standard Name</th>
                                 <th class="px-8 py-5">
-                                    Neural Email / Sync Username
+                                    Email / Username
                                 </th>
                                 <th class="px-8 py-5 text-right">
                                     Access Controls

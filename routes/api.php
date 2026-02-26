@@ -201,8 +201,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::patch('/users/{user}/toggle-status', [AdminDashboardController::class, 'toggleStatus']);
     Route::delete('/users/{user}', [AdminDashboardController::class, 'deleteUser']);
     Route::post('/games', [AdminDashboardController::class, 'storeGame']);
-    Route::put('/games/{game}', [AdminDashboardController::class, 'updateGame']);
-    Route::delete('/games/{game}', [AdminDashboardController::class, 'deleteGame']);
+    Route::put('/games/{id}', [AdminDashboardController::class, 'updateGame']);
+    Route::delete('/games/{id}', [AdminDashboardController::class, 'deleteGame']);
     Route::post('/lessons', [AdminDashboardController::class, 'storeLesson']);
     Route::put('/lessons/{lesson}', [AdminDashboardController::class, 'updateLesson']);
     Route::delete('/lessons/{lesson}', [AdminDashboardController::class, 'deleteLesson']);

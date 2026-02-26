@@ -16,7 +16,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/computer-parts', [GameController::class, 'showComputerParts'])->name('computer.parts');
     Route::get('/qa-game', [GameController::class, 'showQAGame'])->name('qa.game');
     Route::post('/save-score', [GameController::class, 'saveScore'])->name('save.score');
-    Route::get('/leaderboard', [GameController::class, 'leaderboard'])->name('leaderboard');
+    Route::get('/leaderboard', function () {
+        return view('app');
+    })->name('leaderboard');
     Route::get('/user/history', [UserController::class, 'history'])->name('user.history');
 });
 

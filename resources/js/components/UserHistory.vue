@@ -86,14 +86,14 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-user-circle w-5"></i
-                                        ><span>Profile Meta</span>
+                                        ><span>Profile</span>
                                     </router-link>
                                     <router-link
                                         to="/user/settings"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-cog w-5"></i
-                                        ><span>Parameters</span>
+                                        ><span>Settings</span>
                                     </router-link>
                                 </div>
                                 <button
@@ -101,7 +101,7 @@
                                     class="w-full flex items-center space-x-3 px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-xs font-black uppercase tracking-[0.2em] transition-all border-t border-white/5"
                                 >
                                     <i class="fas fa-power-off"></i
-                                    ><span>Terminate Link</span>
+                                    ><span>Log Out</span>
                                 </button>
                             </div>
                         </transition>
@@ -117,7 +117,7 @@
                 <h2
                     class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                 >
-                    Neural Registry
+                    Activity History
                 </h2>
                 <h1
                     class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-4"
@@ -476,9 +476,9 @@ export default {
         },
         gameLabel(type) {
             const map = {
-                qa_fps: "Combat Sync",
-                typergel1: "Neural Velocity",
-                assessment: "Calibration",
+                qa_fps: "Q&A Shooter",
+                typergel1: "Typing Speed",
+                assessment: "Assessment",
                 guess_part: "Hardware Ident",
                 lesson: "Archive Study",
             };
