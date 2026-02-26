@@ -39,7 +39,7 @@
                     class="text-xs font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
                     <i class="fas fa-chart-line mr-3 text-red-500"></i>Daily
-                    Traffic Synchronisation
+                    Daily Activity
                 </h4>
                 <div class="h-[300px] w-full">
                     <canvas ref="dailySessionsChart"></canvas>
@@ -50,7 +50,7 @@
                     class="text-xs font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
                     <i class="fas fa-chart-bar mr-3 text-red-500"></i>Monthly
-                    Engagement Load
+                    Monthly Activity
                 </h4>
                 <div class="h-[300px] w-full">
                     <canvas ref="monthlySessionsChart"></canvas>
@@ -65,7 +65,7 @@
                     class="text-xs font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
                     <i class="fas fa-circle-notch mr-3 text-red-500"></i>User
-                    Role Metrics
+                    Roles
                 </h4>
                 <div class="flex flex-col md:flex-row items-center gap-8">
                     <div class="h-[250px] w-full md:w-1/2">
@@ -99,8 +99,8 @@
                 <h4
                     class="text-xs font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
-                    <i class="fas fa-radar mr-3 text-red-500"></i>Network Status
-                    Spectrum
+                    <i class="fas fa-radar mr-3 text-red-500"></i>User Status
+                    Overview
                 </h4>
                 <div class="h-[320px] w-full">
                     <canvas ref="userStatusChart"></canvas>
@@ -130,30 +130,30 @@ export default {
         analyticsSummary() {
             return [
                 {
-                    label: "Network Entities",
+                    label: "Total Users",
                     value: this.analytics.totals.total_users,
-                    trend: "+Syncing Active",
+                    trend: "Active users",
                     trendColor: "text-green-500",
                     icon: "fas fa-users",
                 },
                 {
-                    label: "30D Onboarding",
+                    label: "New Users (30 Days)",
                     value: this.analytics.totals.new_users_last_30_days,
-                    trend: "Protocol Normal",
+                    trend: "Recent signups",
                     trendColor: "text-blue-500",
                     icon: "fas fa-user-plus",
                 },
                 {
-                    label: "Archived Syncs",
+                    label: "Total Sessions",
                     value: this.analytics.totals.total_sessions,
-                    trend: "Database Locked",
+                    trend: "Recorded sessions",
                     trendColor: "text-red-500",
                     icon: "fas fa-database",
                 },
                 {
-                    label: "Global Capacity",
+                    label: "Total Score",
                     value: this.analytics.totals.total_score.toLocaleString(),
-                    trend: "System Peak",
+                    trend: "All-time points",
                     trendColor: "text-amber-500",
                     icon: "fas fa-bolt",
                 },
@@ -163,17 +163,17 @@ export default {
             const stats = this.analytics.user_stats;
             return [
                 {
-                    label: "Regular Entities",
+                    label: "Regular Users",
                     value: stats.regular_users || 0,
                     color: "bg-blue-500",
                 },
                 {
-                    label: "Authority Links",
+                    label: "Admins",
                     value: stats.admin_users || 0,
                     color: "bg-red-500",
                 },
                 {
-                    label: "Latent Links",
+                    label: "Disabled Users",
                     value: stats.disabled_users || 0,
                     color: "bg-gray-700",
                 },
@@ -236,7 +236,7 @@ export default {
                         ),
                         datasets: [
                             {
-                                label: "Pulse Rate",
+                                label: "Sessions",
                                 data: this.analytics.daily_sessions_last_30_days.map(
                                     (d) => d.sessions,
                                 ),
@@ -262,7 +262,7 @@ export default {
                         ),
                         datasets: [
                             {
-                                label: "Data Volume",
+                                label: "Sessions",
                                 data: this.analytics.monthly_sessions_last_12_months.map(
                                     (d) => d.sessions,
                                 ),
@@ -281,7 +281,7 @@ export default {
                 this.userStatsChart = new Chart(this.$refs.userStatsChart, {
                     type: "doughnut",
                     data: {
-                        labels: ["Regular", "Authority", "Latent"],
+                        labels: ["Users", "Admins", "Disabled"],
                         datasets: [
                             {
                                 data: [
@@ -313,14 +313,14 @@ export default {
                     data: {
                         labels: [
                             "Active",
-                            "Latent",
-                            "Authority",
-                            "Entities",
-                            "Global",
+                            "Disabled",
+                            "Admins",
+                            "Users",
+                            "Total",
                         ],
                         datasets: [
                             {
-                                label: "Status Spectrum",
+                                label: "User Status",
                                 data: [
                                     this.analytics.user_stats.active_users,
                                     this.analytics.user_stats.disabled_users,

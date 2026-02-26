@@ -439,6 +439,9 @@ class AdminDashboardController extends Controller
                 $validatedData['thumbnail'] = 'thumbnails/' . $thumbnailName;
             }
 
+            // DB column is NOT NULL; Laravel may convert empty string inputs to null.
+            $validatedData['description'] = $validatedData['description'] ?? '';
+
             $lesson->update($validatedData);
 
             if (request()->expectsJson()) {

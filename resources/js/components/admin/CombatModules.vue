@@ -10,7 +10,7 @@
                         class="text-sm font-black text-white uppercase tracking-widest mb-8 flex items-center"
                     >
                         <i class="fas fa-plus-circle mr-3 text-red-500"></i
-                        >Inject Question
+                        >Add Question
                     </h3>
                     <form
                         @submit.prevent="submitQAFPSQuestion"
@@ -19,46 +19,46 @@
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Global Label (Auto-incremented)</label
+                                >Question Title (Auto-numbered)</label
                             >
                             <input
                                 type="text"
                                 v-model="qaGameForm.title"
                                 required
-                                placeholder="e.g. Combat Module #1"
+                                placeholder="e.g. Q&A Question #1"
                                 class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500/50 transition-all font-medium text-sm"
                             />
                         </div>
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Terminal Output (Question)</label
+                                >Question</label
                             >
                             <input
                                 type="text"
                                 v-model="qaGameForm.question"
                                 required
-                                placeholder="The query text"
+                                placeholder="Enter the question"
                                 class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500/50 transition-all font-medium text-sm"
                             />
                         </div>
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Correct Response Key</label
+                                >Correct Answer</label
                             >
                             <input
                                 type="text"
                                 v-model="qaGameForm.answer"
                                 required
-                                placeholder="Required Exact Answer"
+                                placeholder="Exact answer"
                                 class="w-full bg-linear-to-r from-red-500/5 to-transparent border border-white/10 rounded-xl px-4 py-3 text-red-500 focus:outline-none focus:border-red-500/50 transition-all font-bold text-sm"
                             />
                         </div>
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Multiple Choice Tokens (CSV)</label
+                                >Choices (CSV)</label
                             >
                             <textarea
                                 v-model="qaGameForm.options"
@@ -70,7 +70,7 @@
                         <div class="space-y-3">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Identity Thumbnail</label
+                                >Thumbnail</label
                             >
                             <div class="flex items-center space-x-4">
                                 <div
@@ -102,7 +102,7 @@
                                             {{
                                                 qaGameForm.thumbnail
                                                     ? qaGameForm.thumbnail.name
-                                                    : "Upload Sync Image"
+                                                    : "Choose Image"
                                             }}
                                         </p>
                                     </div>
@@ -113,7 +113,7 @@
                             type="submit"
                             class="w-full py-4 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.2)] uppercase tracking-widest text-xs"
                         >
-                            Commit Logic Link
+                            Save Question
                         </button>
                     </form>
                 </div>
@@ -129,11 +129,11 @@
                     >
                         <span
                             class="text-xs font-black text-white uppercase tracking-widest"
-                            >Active Combat Modules</span
+                            >Q&A Questions</span
                         >
                         <span
                             class="text-[10px] font-mono text-gray-600 uppercase"
-                            >{{ qaGames.length }} Instances</span
+                            >{{ qaGames.length }} Items</span
                         >
                     </div>
                     <div class="overflow-x-auto custom-scrollbar">
@@ -142,11 +142,11 @@
                                 <tr
                                     class="bg-white/5 border-b border-white/5 text-[10px] font-black text-gray-500 uppercase tracking-widest"
                                 >
-                                    <th class="px-8 py-5">Module Label</th>
-                                    <th class="px-8 py-5">Logic Output</th>
+                                    <th class="px-8 py-5">Title</th>
+                                    <th class="px-8 py-5">Question</th>
                                     <th class="px-8 py-5">Status</th>
                                     <th class="px-8 py-5 text-right">
-                                        Operations
+                                        Actions
                                     </th>
                                 </tr>
                             </thead>
@@ -240,13 +240,16 @@
         </div>
 
         <!-- Edit Modal -->
+        <Teleport to="body">
         <transition name="fade">
             <div
                 v-if="showEditQAModal && editingQAGame"
-                class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+                @click.self="showEditQAModal = false"
+                class="fixed inset-0 z-[9999] grid place-items-center p-4 md:p-6 bg-black/85 backdrop-blur-md"
             >
                 <div
-                    class="bg-[#181818] border border-white/10 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                    @click.stop
+                    class="relative z-[10000] bg-[#181818] border border-white/10 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
                 >
                     <div
                         class="p-8 border-b border-white/5 bg-white/2 flex items-center justify-between"
@@ -255,12 +258,12 @@
                             <h3
                                 class="text-xl font-black text-white uppercase tracking-tighter"
                             >
-                                Patch Combat Protocol
+                                Edit Question
                             </h3>
                             <p
                                 class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1"
                             >
-                                #{{ editingQAGame.id }} Module Revision
+                                #{{ editingQAGame.id }} Question
                             </p>
                         </div>
                         <button
@@ -278,7 +281,7 @@
                             <div class="space-y-1.5">
                                 <label
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                    >Module Label</label
+                                    >Title</label
                                 >
                                 <input
                                     type="text"
@@ -290,7 +293,7 @@
                             <div class="space-y-1.5">
                                 <label
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                    >Response Key</label
+                                    >Answer</label
                                 >
                                 <input
                                     type="text"
@@ -303,7 +306,7 @@
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Logic Output (Question)</label
+                                >Question</label
                             >
                             <input
                                 type="text"
@@ -315,7 +318,7 @@
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Choice Tokens (CSV)</label
+                                >Choices (CSV)</label
                             >
                             <textarea
                                 v-model="editingQAGame.options"
@@ -327,7 +330,7 @@
                             <div class="space-y-4">
                                 <label
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                    >Update Identity Thumbnail</label
+                                    >Update Thumbnail</label
                                 >
                                 <div class="flex items-center space-x-4">
                                     <div
@@ -367,7 +370,7 @@
                                             <p
                                                 class="text-[10px] font-bold text-gray-500 uppercase"
                                             >
-                                                Revision Details
+                                                Choose Image
                                             </p>
                                         </div>
                                     </div>
@@ -376,15 +379,15 @@
                             <div class="space-y-1.5">
                                 <label
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                    >Sync Status</label
+                                    >Status</label
                                 >
                                 <select
                                     v-model="editingQAGame.status"
                                     class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-xs font-black text-white focus:outline-none"
                                 >
-                                    <option value="active">Active Sync</option>
+                                    <option value="active">Active</option>
                                     <option value="inactive">
-                                        Latent Protocol
+                                        Inactive
                                     </option>
                                 </select>
                             </div>
@@ -397,28 +400,32 @@
                                 @click="showEditQAModal = false"
                                 class="px-8 py-3 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
                             >
-                                Abort
+                                Cancel
                             </button>
                             <button
                                 type="submit"
                                 class="px-10 py-3 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.2)] uppercase text-[10px] tracking-widest"
                             >
-                                Commit Revision
+                                Save Changes
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
         </transition>
+        </Teleport>
 
         <!-- Delete Confirmation Modal -->
+        <Teleport to="body">
         <transition name="fade">
             <div
                 v-if="showDeleteQAModal"
-                class="fixed inset-0 z-110 flex items-center justify-center p-6 bg-black/95 backdrop-blur-xl"
+                @click.self="showDeleteQAModal = false"
+                class="fixed inset-0 z-[10001] grid place-items-center p-4 md:p-6 bg-black/90 backdrop-blur-md"
             >
                 <div
-                    class="bg-[#111111] border border-red-500/20 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative"
+                    @click.stop
+                    class="relative z-[10002] bg-[#111111] border border-red-500/20 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
                 >
                     <div class="p-10 text-center">
                         <div
@@ -431,36 +438,36 @@
                         <h3
                             class="text-2xl font-black text-white uppercase tracking-tighter mb-4"
                         >
-                            Confirm Purge
+                            Delete Question
                         </h3>
                         <p
                             class="text-sm text-gray-500 leading-relaxed mb-10 font-medium"
                         >
-                            Are you certain you want to decommission
+                            Are you sure you want to delete
                             <span class="text-white font-black">{{
                                 gameToDelete?.title
                             }}</span
-                            >? This action will permanently sever the logic link
-                            from the network.
+                            >? This action cannot be undone.
                         </p>
                         <div class="grid grid-cols-2 gap-4">
                             <button
                                 @click="showDeleteQAModal = false"
                                 class="py-4 px-6 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
                             >
-                                Abort
+                                Cancel
                             </button>
                             <button
                                 @click="executeDeleteQAGame"
                                 class="py-4 px-6 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.3)] uppercase text-[10px] tracking-widest"
                             >
-                                Purge Unit
+                                Delete
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </transition>
+        </Teleport>
     </div>
 </template>
 
@@ -497,13 +504,30 @@ export default {
             },
             immediate: true,
         },
+        showEditQAModal() {
+            this.syncBodyScrollLock();
+        },
+        showDeleteQAModal() {
+            this.syncBodyScrollLock();
+        },
     },
     computed: {
         qaGames() {
             return this.games.filter((g) => g.type === "qa");
         },
     },
+    beforeUnmount() {
+        this.setBodyScrollLocked(false);
+    },
     methods: {
+        setBodyScrollLocked(locked) {
+            const value = locked ? "hidden" : "";
+            document.body.style.overflow = value;
+            document.documentElement.style.overflow = value;
+        },
+        syncBodyScrollLock() {
+            this.setBodyScrollLocked(this.showEditQAModal || this.showDeleteQAModal);
+        },
         truncate(str, length) {
             if (!str) return "";
             return str.length > length ? str.substring(0, length) + "..." : str;
@@ -512,10 +536,11 @@ export default {
             // Only auto-fill if the title is empty or follows the auto-increment pattern
             if (
                 !this.qaGameForm.title ||
-                this.qaGameForm.title.startsWith("Combat Module #")
+                this.qaGameForm.title.startsWith("Combat Module #") ||
+                this.qaGameForm.title.startsWith("Q&A Question #")
             ) {
                 const nextNum = this.qaGames.length + 1;
-                this.qaGameForm.title = `Combat Module #${nextNum}`;
+                this.qaGameForm.title = `Q&A Question #${nextNum}`;
             }
         },
         handleQAFPSThumbnailChange(event) {
@@ -547,7 +572,7 @@ export default {
 
                 this.$emit(
                     "message",
-                    "Combat module successfully synchronised.",
+                    "Question created successfully.",
                     "success",
                 );
                 this.qaGameForm = {
@@ -564,7 +589,7 @@ export default {
             } catch (error) {
                 this.$emit(
                     "message",
-                    "Fault detected during combat module injection.",
+                    "Failed to create question.",
                     "error",
                 );
             }
@@ -623,7 +648,7 @@ export default {
 
                 this.$emit(
                     "message",
-                    "Combat module revision committed.",
+                    "Question updated successfully.",
                     "success",
                 );
                 this.showEditQAModal = false;
@@ -631,7 +656,7 @@ export default {
             } catch (error) {
                 this.$emit(
                     "message",
-                    "Revision failed: record blocked.",
+                    "Failed to update question.",
                     "error",
                 );
             }
@@ -645,7 +670,7 @@ export default {
                 await axios.delete(`/api/admin/games/${this.gameToDelete.id}`);
                 this.$emit(
                     "message",
-                    "Combat module decommissioned.",
+                    "Question deleted successfully.",
                     "success",
                 );
                 this.showDeleteQAModal = false;
@@ -653,7 +678,7 @@ export default {
             } catch (error) {
                 this.$emit(
                     "message",
-                    "Decommissioning failure: Unit vital.",
+                    "Failed to delete question.",
                     "error",
                 );
             }

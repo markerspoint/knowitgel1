@@ -76,7 +76,7 @@
 
             <div class="flex-1 relative overflow-hidden">
                 <!-- Word Packets Container (High Index) -->
-                <div class="absolute inset-0 z-50">
+                <div class="absolute inset-0 z-50" ref="bubbleLayer">
                     <div
                         v-for="bubble in activeBubbles"
                         :key="bubble.id"
@@ -387,7 +387,13 @@
                                     <span
                                         class="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1 group-hover:text-red-500"
                                         >{{ lvl }} Level</span
-                                    ><span
+                                    >
+                                    <span
+                                        class="inline-block px-2 py-1 mb-3 rounded-lg bg-white/5 border border-white/10 text-[10px] font-mono text-gray-400 group-hover:border-red-500/30 group-hover:text-red-400"
+                                    >
+                                        {{ getDifficultyConfig(lvl).durationSeconds }}s
+                                    </span>
+                                    <span
                                         class="block text-2xl font-black text-white group-hover:scale-105 transition-transform uppercase"
                                         >{{ lvl }}</span
                                     >
@@ -597,39 +603,123 @@ export default {
         },
         resetStats() {
             this.activeBubbles = [];
+            this.activeWordTexts = new Set();
+            this.focusedBubbleId = null;
             this.score = 0;
             this.correctChars = 0;
             this.incorrectChars = 0;
             this.startTime = performance.now();
+            this.endTime = null;
             this.availableWords = [...this.originalWordPool];
             const config = this.getDifficultyConfig(this.difficulty);
             this.maxConcurrentBubbles = config.maxConcurrentBubbles;
             this.remainingTime = config.durationSeconds;
+            this.lastSpawnTime = performance.now();
             this.clearTimer();
             this.startTimer();
         },
         spawnInitialBubbles() {
             for (let i = 0; i < 2; i++) this.spawnBubble();
         },
+        getBubbleLayerMetrics() {
+            const rect = this.$refs.bubbleLayer?.getBoundingClientRect?.();
+            return {
+                width: rect?.width || window.innerWidth || 1280,
+                height: rect?.height || window.innerHeight || 720,
+            };
+        },
+        estimateBubbleSize(text) {
+            const safeText = String(text || "");
+            return {
+                widthPx: Math.min(260, Math.max(160, 88 + safeText.length * 18)),
+                heightPx: 120,
+            };
+        },
+        getBubbleBounds(bubble, metrics) {
+            const size =
+                bubble.widthPx && bubble.heightPx
+                    ? { widthPx: bubble.widthPx, heightPx: bubble.heightPx }
+                    : this.estimateBubbleSize(bubble.text);
+            const cx = (bubble.x / 100) * metrics.width;
+            const cy = (bubble.y / 100) * metrics.height;
+            const pad = 10;
+            return {
+                left: cx - size.widthPx / 2 - pad,
+                right: cx + size.widthPx / 2 + pad,
+                top: cy - size.heightPx / 2 - pad,
+                bottom: cy + size.heightPx / 2 + pad,
+            };
+        },
+        boundsOverlap(a, b) {
+            return !(
+                a.right < b.left ||
+                a.left > b.right ||
+                a.bottom < b.top ||
+                a.top > b.bottom
+            );
+        },
+        findBubbleSpawnPosition(text) {
+            const metrics = this.getBubbleLayerMetrics();
+            const size = this.estimateBubbleSize(text);
+            const xLanes = [20, 32, 44, 56, 68, 80];
+            const yBands = [-12, -4, 4, 12];
+            const shuffledXLanes = [...xLanes].sort(() => Math.random() - 0.5);
+            const shuffledYBands = [...yBands].sort(() => Math.random() - 0.5);
+
+            const fits = (x, y) => {
+                const candidateBounds = this.getBubbleBounds(
+                    { x, y, text, ...size },
+                    metrics,
+                );
+                return this.activeBubbles.every((b) => {
+                    if (b.isCompleted) return true;
+                    return !this.boundsOverlap(
+                        candidateBounds,
+                        this.getBubbleBounds(b, metrics),
+                    );
+                });
+            };
+
+            for (const y of shuffledYBands) {
+                for (const laneX of shuffledXLanes) {
+                    const x = Math.max(
+                        16,
+                        Math.min(84, laneX + (Math.random() * 4 - 2)),
+                    );
+                    if (fits(x, y)) return { x, y, ...size };
+                }
+            }
+
+            for (let i = 0; i < 24; i++) {
+                const x = 18 + Math.random() * 64;
+                const y = -14 + Math.random() * 30;
+                if (fits(x, y)) return { x, y, ...size };
+            }
+
+            return { x: 20 + Math.random() * 60, y: -10, ...size };
+        },
         spawnBubble() {
-            const minDistance = 22; // Increased for breathing space
             const candidates = this.availableWords.filter(
                 (w) => !this.activeWordTexts.has(w.text),
             );
             if (!candidates.length) return;
             const word =
                 candidates[Math.floor(Math.random() * candidates.length)];
+            const position = this.findBubbleSpawnPosition(word.text);
             this.activeBubbles.push({
                 id: Math.random(),
                 text: word.text,
-                x: 20 + Math.random() * 60,
-                y: -10,
+                x: position.x,
+                y: position.y,
+                widthPx: position.widthPx,
+                heightPx: position.heightPx,
                 speed: this.getDifficultyConfig(this.difficulty).bubbleSpeed,
                 progress: 0,
                 isCompleted: false,
                 showIncorrect: false,
             });
             this.activeWordTexts.add(word.text);
+            this.lastSpawnTime = performance.now();
         },
         getDifficultyConfig(lvl) {
             if (lvl === "easy")
@@ -717,6 +807,7 @@ export default {
                     this.score += 50;
                     this.focusedBubbleId = null;
                     setTimeout(() => {
+                        this.activeWordTexts.delete(b.text);
                         this.activeBubbles = this.activeBubbles.filter(
                             (x) => x.id !== b.id,
                         );
@@ -768,10 +859,14 @@ export default {
             const loop = () => {
                 if (this.phase === "active") {
                     const now = performance.now();
+                    const config = this.getDifficultyConfig(this.difficulty);
                     this.activeBubbles.forEach((b) => {
                         b.y += b.speed * 0.016;
                         if (b.y > 85 && !b.isCompleted) {
                             b.isFailed = true;
+                            if (this.focusedBubbleId === b.id)
+                                this.focusedBubbleId = null;
+                            this.activeWordTexts.delete(b.text);
                             this.activeBubbles = this.activeBubbles.filter(
                                 (x) => x.id !== b.id,
                             );
@@ -779,7 +874,7 @@ export default {
                         }
                     });
                     if (
-                        now - this.lastSpawnTime > 2000 &&
+                        now - this.lastSpawnTime > config.bubbleSpawnMs &&
                         this.activeBubbles.length < this.maxConcurrentBubbles
                     ) {
                         this.spawnBubble();
@@ -830,6 +925,8 @@ export default {
             this.clearTimer();
             this.phase = "idle";
             this.activeBubbles = [];
+            this.activeWordTexts = new Set();
+            this.focusedBubbleId = null;
             this.score = 0;
             this.correctChars = 0;
         },

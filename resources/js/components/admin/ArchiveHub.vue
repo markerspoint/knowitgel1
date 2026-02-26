@@ -17,12 +17,12 @@
                     <h2
                         class="text-2xl font-black text-white uppercase tracking-tighter"
                     >
-                        Knowledge Archive Hub
+                        Study Library
                     </h2>
                     <p
                         class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1"
                     >
-                        Centralized Study Library
+                        Manage lessons and study materials
                     </p>
                 </div>
                 <button
@@ -30,7 +30,7 @@
                     class="px-6 py-3 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.2)] flex items-center space-x-3 uppercase text-[10px] tracking-widest"
                 >
                     <i class="fas fa-plus"></i>
-                    <span>Initialize Archive</span>
+                    <span>Add Lesson</span>
                 </button>
             </div>
 
@@ -40,11 +40,11 @@
                         <tr
                             class="bg-white/5 border-b border-white/5 text-[10px] font-black text-gray-400 uppercase tracking-widest"
                         >
-                            <th class="px-8 py-5">Identity Block</th>
-                            <th class="px-8 py-5">Broadcast Payload</th>
-                            <th class="px-8 py-5">Sync Date</th>
+                            <th class="px-8 py-5">Lesson</th>
+                            <th class="px-8 py-5">Summary</th>
+                            <th class="px-8 py-5">Date</th>
                             <th class="px-8 py-5">Status</th>
-                            <th class="px-8 py-5 text-right">Operations</th>
+                            <th class="px-8 py-5 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
@@ -83,7 +83,7 @@
                                 <p class="text-[10px] text-gray-500 font-mono">
                                     {{
                                         lesson.description ||
-                                        "No summary attached."
+                                        "No summary"
                                     }}
                                 </p>
                             </td>
@@ -133,20 +133,21 @@
                     <p
                         class="text-xs font-black uppercase tracking-widest font-mono"
                     >
-                        Archive Empty
+                        No lessons yet
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- Edit/Create Modal -->
+        <Teleport to="body">
         <transition name="fade">
             <div
                 v-if="showEditModal"
-                class="fixed inset-0 z-100 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+                class="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6 bg-black/85 backdrop-blur-md overflow-y-auto"
             >
                 <div
-                    class="bg-[#181818] border border-white/10 rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]"
+                    class="relative bg-[#181818] border border-white/10 rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[calc(100vh-2rem)] md:max-h-[90vh] my-auto"
                 >
                     <div
                         class="p-8 border-b border-white/5 bg-white/2 flex items-center justify-between"
@@ -157,14 +158,14 @@
                             >
                                 {{
                                     editingStudy
-                                        ? "Archive Revision Protocol"
-                                        : "Knowledge Archive Link"
+                                        ? "Edit Lesson"
+                                        : "Add Lesson"
                                 }}
                             </h3>
                             <p
                                 class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1"
                             >
-                                System Channel Encryption Active
+                                Update lesson details
                             </p>
                         </div>
                         <button
@@ -178,32 +179,35 @@
                         @submit.prevent="
                             editingStudy ? updateStudy() : submitStudy()
                         "
-                        class="p-8 overflow-y-auto custom-scrollbar"
+                        class="flex flex-col min-h-0 flex-1"
                     >
-                        <div class="space-y-6">
+                        <div
+                            class="p-8 overflow-y-auto custom-scrollbar flex-1 min-h-0"
+                        >
+                            <div class="space-y-6">
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div class="space-y-2">
                                     <label
                                         class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-                                        >Protocol Title</label
+                                        >Lesson Title</label
                                     >
                                     <input
                                         type="text"
                                         v-model="studyForm.title"
                                         required
-                                        placeholder="Lesson Heading"
+                                        placeholder="Lesson title"
                                         class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-red-500/50 transition-all font-bold text-sm"
                                     />
                                 </div>
                                 <div class="space-y-2">
                                     <label
                                         class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-                                        >Meta Description</label
+                                        >Description</label
                                     >
                                     <input
                                         type="text"
                                         v-model="studyForm.description"
-                                        placeholder="Short Summary (Optional)"
+                                        placeholder="Short summary (optional)"
                                         class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-gray-300 focus:outline-none focus:border-red-500/50 transition-all font-medium text-sm"
                                     />
                                 </div>
@@ -213,19 +217,19 @@
                                 <div class="space-y-2">
                                     <label
                                         class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-                                        >Central Knowledge Buffer</label
+                                        >Lesson Content</label
                                     >
                                     <textarea
                                         v-model="studyForm.content"
                                         required
-                                        placeholder="Enter full archive materials (Markdown supported)..."
+                                        placeholder="Enter lesson content (Markdown supported)..."
                                         class="w-full bg-white/2 border border-white/10 rounded-2xl px-6 py-6 text-gray-300 focus:outline-none focus:border-red-500/50 transition-all font-mono text-sm h-[200px] leading-relaxed resize-none custom-scrollbar"
                                     ></textarea>
                                 </div>
                                 <div class="space-y-4">
                                     <label
                                         class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-                                        >Archive Thumbnail</label
+                                        >Thumbnail</label
                                     >
                                     <div class="flex items-center space-x-4">
                                         <div
@@ -269,7 +273,7 @@
                                                             ? studyForm
                                                                   .thumbnail
                                                                   .name
-                                                            : "Select Image"
+                                                            : "Choose image"
                                                     }}
                                                 </p>
                                             </div>
@@ -278,62 +282,67 @@
                                     <div class="space-y-2 mt-4">
                                         <label
                                             class="text-[10px] font-black text-gray-400 uppercase tracking-widest"
-                                            >Sync Status</label
+                                            >Status</label
                                         >
                                         <select
                                             v-model="studyForm.status"
                                             class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold uppercase text-gray-400 focus:outline-none"
                                         >
                                             <option value="active">
-                                                Active Sync
+                                                Active
                                             </option>
                                             <option value="inactive">
-                                                Latent Protocol
+                                                Inactive
                                             </option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
-                            <div
-                                class="flex items-center justify-end pt-6 border-t border-white/5 space-x-4"
-                            >
-                                <button
-                                    type="button"
-                                    @click="closeEditModal"
-                                    class="px-8 py-3 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
-                                >
-                                    Abort
-                                </button>
-                                <button
-                                    type="submit"
-                                    :disabled="isSubmittingStudy"
-                                    class="px-10 py-3 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.2)] uppercase text-[10px] tracking-widest"
-                                >
-                                    <span v-if="!isSubmittingStudy">{{
-                                        editingStudy
-                                            ? "Apply Sync Revision"
-                                            : "Broadcast Archive"
-                                    }}</span>
-                                    <span v-else
-                                        ><i class="fas fa-sync-alt fa-spin"></i
-                                    ></span>
-                                </button>
                             </div>
+                        </div>
+                        <div
+                            class="flex items-center justify-end pt-6 px-8 pb-8 border-t border-white/5 space-x-4 shrink-0 bg-[#181818]"
+                        >
+                            <button
+                                type="button"
+                                @click="closeEditModal"
+                                class="px-8 py-3 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                :disabled="isSubmittingStudy"
+                                class="px-10 py-3 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.2)] uppercase text-[10px] tracking-widest"
+                            >
+                                <span v-if="!isSubmittingStudy">{{
+                                    editingStudy
+                                        ? "Save Changes"
+                                        : "Create Lesson"
+                                }}</span>
+                                <span v-else
+                                    ><i class="fas fa-sync-alt fa-spin"></i
+                                ></span>
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
         </transition>
+        </Teleport>
 
         <!-- Delete Confirmation Modal -->
+        <Teleport to="body">
         <transition name="fade">
             <div
                 v-if="showDeleteModal"
-                class="fixed inset-0 z-110 flex items-center justify-center p-6 bg-black/95 backdrop-blur-xl"
+                @click.self="showDeleteModal = false"
+                class="fixed inset-0 z-[10000] grid place-items-center p-4 md:p-6 bg-black/90 backdrop-blur-md"
             >
                 <div
-                    class="bg-[#111111] border border-red-500/20 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative"
+                    @click.stop
+                    class="relative z-[10001] bg-[#111111] border border-red-500/20 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
                 >
                     <div class="p-10 text-center">
                         <div
@@ -346,35 +355,36 @@
                         <h3
                             class="text-2xl font-black text-white uppercase tracking-tighter mb-4"
                         >
-                            Purge Command
+                            Delete Lesson
                         </h3>
                         <p
                             class="text-sm text-gray-500 leading-relaxed mb-10 font-medium"
                         >
-                            Confirm decommissioning of
+                            Are you sure you want to delete
                             <span class="text-white font-black">{{
                                 studyToDelete?.title
                             }}</span
-                            >? This unit will be erased from the central buffer.
+                            >? This action cannot be undone.
                         </p>
                         <div class="grid grid-cols-2 gap-4">
                             <button
                                 @click="showDeleteModal = false"
                                 class="py-4 px-6 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
                             >
-                                Abort
+                                Cancel
                             </button>
                             <button
                                 @click="executeDeleteStudy"
                                 class="py-4 px-6 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.3)] uppercase text-[10px] tracking-widest"
                             >
-                                Execute Purge
+                                Delete
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </transition>
+        </Teleport>
     </div>
 </template>
 
@@ -405,7 +415,7 @@ export default {
     },
     methods: {
         formatDate(date) {
-            if (!date) return "Latent";
+            if (!date) return "-";
             return new Date(date).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
@@ -451,13 +461,13 @@ export default {
 
                 this.$emit(
                     "message",
-                    "Archive broadcast successful.",
+                    "Lesson created successfully.",
                     "success",
                 );
                 this.closeEditModal();
                 this.$emit("refresh");
             } catch (error) {
-                let msg = "Broadcast fault: Interference detected.";
+                let msg = "Failed to create lesson.";
                 if (error.response?.data?.errors) {
                     const errors = error.response.data.errors;
                     msg = Object.values(errors).flat().join(" ");
@@ -503,11 +513,11 @@ export default {
                     },
                 );
 
-                this.$emit("message", "Archive revision committed.", "success");
+                this.$emit("message", "Lesson updated successfully.", "success");
                 this.closeEditModal();
                 this.$emit("refresh");
             } catch (error) {
-                let msg = "Revision failure: Access denied to block.";
+                let msg = "Failed to update lesson.";
                 if (error.response?.data?.errors) {
                     const errors = error.response.data.errors;
                     msg = Object.values(errors).flat().join(" ");
@@ -530,7 +540,7 @@ export default {
                 );
                 this.$emit(
                     "message",
-                    "Archive decommissioning complete.",
+                    "Lesson deleted successfully.",
                     "success",
                 );
                 this.showDeleteModal = false;
@@ -538,7 +548,7 @@ export default {
             } catch (error) {
                 this.$emit(
                     "message",
-                    "Decommission failure: Block integrity vital.",
+                    "Failed to delete lesson.",
                     "error",
                 );
             }
