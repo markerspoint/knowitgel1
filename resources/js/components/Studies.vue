@@ -30,7 +30,7 @@
                     </div>
                     <span
                         class="text-sm font-black tracking-widest text-gray-500 group-hover:text-white transition-colors uppercase"
-                        >Return to Terminal</span
+                        >Back to Dashboard</span
                     >
                 </router-link>
 
@@ -66,7 +66,7 @@
                 <p
                     class="text-xs font-mono text-gray-500 uppercase tracking-[0.4em] animate-pulse"
                 >
-                    Accessing Archive Systems...
+                    Loading Lessons...
                 </p>
             </div>
 
@@ -82,12 +82,12 @@
                 <h2
                     class="text-2xl font-black text-white uppercase tracking-tighter mb-2"
                 >
-                    Archive Empty
+                    No Lessons Yet
                 </h2>
                 <p
                     class="text-xs font-mono text-gray-600 uppercase tracking-widest leading-relaxed"
                 >
-                    No study content identified in the neural buffer.
+                    No lessons are available right now.
                 </p>
             </div>
 
@@ -96,24 +96,52 @@
                     <h2
                         class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                     >
-                        Academic Repository
+                        Lessons
                     </h2>
                     <h1
                         class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase"
                     >
-                        Knowledge
+                        Study
                         <span
                             class="text-transparent bg-clip-text bg-linear-to-r from-red-500 to-red-600"
-                            >Base</span
+                            >Library</span
                         >
                     </h1>
                 </div>
 
                 <div
-                    v-for="(study, index) in studies"
-                    :key="study.id"
+                    class="reveal-section active bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5 flex flex-col gap-4"
+                >
+                    <div
+                        class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                    >
+                        <div>
+                            <p
+                                class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
+                            >
+                                Lessons
+                            </p>
+                            <p class="text-sm text-gray-400">
+                                Use next/previous to move between lessons.
+                            </p>
+                        </div>
+                        <button
+                            @click="toggleSortOrder"
+                            class="self-start md:self-auto px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-black uppercase tracking-widest text-gray-300 transition-all"
+                        >
+                            <i class="fas fa-sort-amount-down-alt mr-2"></i>
+                            {{
+                                sortOrder === "asc"
+                                    ? "Oldest First"
+                                    : "Newest First"
+                            }}
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    v-if="currentStudy"
                     class="reveal-section active bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500"
-                    :class="{ hidden: currentPage !== index }"
                 >
                     <div class="p-10 md:p-16">
                         <!-- Lesson Header -->
@@ -125,20 +153,20 @@
                             >
                                 <span
                                     class="text-[10px] font-black text-red-500 uppercase tracking-widest"
-                                    >Protocol {{ index + 1 }} of
-                                    {{ studies.length }}</span
+                                    >Lesson {{ currentPage + 1 }} of
+                                    {{ orderedStudies.length }}</span
                                 >
                             </div>
                             <h2
                                 class="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase mb-4 leading-none"
                             >
-                                {{ study.title }}
+                                {{ currentStudy.title }}
                             </h2>
                             <p
-                                v-if="study.description"
+                                v-if="currentStudy.description"
                                 class="text-gray-500 font-medium max-w-2xl leading-relaxed italic"
                             >
-                                {{ study.description }}
+                                {{ currentStudy.description }}
                             </p>
                         </div>
 
@@ -147,7 +175,7 @@
                             <!-- Subtle Grid Overlay for Content -->
                             <div
                                 class="prose max-w-none text-gray-300 whitespace-pre-wrap font-sans leading-relaxed text-lg"
-                                v-html="formatContent(study.content)"
+                                v-html="formatContent(currentStudy.content)"
                             ></div>
                         </div>
 
@@ -160,15 +188,17 @@
                                     <p
                                         class="text-[8px] font-black text-gray-600 uppercase tracking-widest"
                                     >
-                                        Total Integrity
+                                        Characters
                                     </p>
                                     <p
                                         class="text-xs font-mono font-bold text-gray-400"
                                     >
                                         {{
-                                            getContentLength(study.content)
+                                            getContentLength(
+                                                currentStudy.content,
+                                            )
                                         }}
-                                        Tokens
+                                        Chars
                                     </p>
                                 </div>
                                 <div class="w-px h-8 bg-white/5 mx-2"></div>
@@ -176,13 +206,15 @@
                                     <p
                                         class="text-[8px] font-black text-gray-600 uppercase tracking-widest"
                                     >
-                                        Sync Hash
+                                        Lesson ID
                                     </p>
                                     <p
                                         class="text-xs font-mono font-bold text-red-500/50"
                                     >
                                         GEL-{{
-                                            study.id.toString().padStart(4, "0")
+                                            currentStudy.id
+                                                .toString()
+                                                .padStart(4, "0")
                                         }}
                                     </p>
                                 </div>
@@ -190,19 +222,19 @@
 
                             <div class="flex gap-4">
                                 <button
-                                    v-if="index > 0"
-                                    @click="goToPage(index - 1)"
+                                    v-if="currentPage > 0"
+                                    @click="goToPage(currentPage - 1)"
                                     class="px-8 py-4 bg-white/5 text-gray-500 font-black rounded-xl hover:bg-white/10 hover:text-white transition-all uppercase text-[10px] tracking-widest border border-white/5"
                                 >
                                     <i class="fas fa-chevron-left mr-3"></i
-                                    >Shift Previous
+                                    >Previous Lesson
                                 </button>
                                 <button
-                                    v-if="index < studies.length - 1"
-                                    @click="goToPage(index + 1)"
+                                    v-if="currentPage < orderedStudies.length - 1"
+                                    @click="goToPage(currentPage + 1)"
                                     class="px-10 py-4 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.2)] uppercase text-[10px] tracking-widest"
                                 >
-                                    Next Protocol
+                                    Next Lesson
                                     <i class="fas fa-chevron-right ml-3"></i>
                                 </button>
                                 <router-link
@@ -210,7 +242,7 @@
                                     to="/user/dashboard"
                                     class="px-10 py-4 bg-green-500 text-black font-black rounded-xl hover:bg-green-600 transition-all shadow-[0_15px_30px_rgba(34,197,94,0.2)] uppercase text-[10px] tracking-widest"
                                 >
-                                    Finish Sync
+                                    Back to Dashboard
                                     <i class="fas fa-check ml-3"></i>
                                 </router-link>
                             </div>
@@ -232,7 +264,21 @@ export default {
             studies: [],
             loading: true,
             currentPage: 0,
+            sortOrder: "asc",
         };
+    },
+    computed: {
+        orderedStudies() {
+            return [...this.studies].sort((a, b) => {
+                const aTime = new Date(a.created_at || 0).getTime();
+                const bTime = new Date(b.created_at || 0).getTime();
+
+                return this.sortOrder === "asc" ? aTime - bTime : bTime - aTime;
+            });
+        },
+        currentStudy() {
+            return this.orderedStudies[this.currentPage] || null;
+        },
     },
     async mounted() {
         await this.fetchStudies();
@@ -243,16 +289,23 @@ export default {
                 this.loading = true;
                 const response = await axios.get("/api/user/studies");
                 this.studies = response.data.studies || [];
+                this.currentPage = 0;
             } catch (error) {
-                console.error("Archive access fault:", error);
+                console.error("Failed to load lessons:", error);
             } finally {
                 this.loading = false;
             }
         },
         formatContent(content) {
             if (!content) return "";
-            // Enhanced formatting for futuristic look
-            return content
+            const safeContent = String(content);
+
+            // If content is already rich HTML (from the admin editor), render it as-is.
+            if (/<[a-z][\s\S]*>/i.test(safeContent)) {
+                return safeContent;
+            }
+
+            return safeContent
                 .replace(/\n/g, "<br>")
                 .replace(
                     /#(\w+)/g,
@@ -264,10 +317,18 @@ export default {
                 );
         },
         getContentLength(content) {
-            return content ? content.replace(/\s/g, "").length : 0;
+            if (!content) return 0;
+            const plainText = String(content).replace(/<[^>]*>/g, "");
+            return plainText.replace(/\s/g, "").length;
         },
         goToPage(index) {
-            this.currentPage = index;
+            const lastIndex = this.orderedStudies.length - 1;
+            this.currentPage = Math.min(Math.max(index, 0), lastIndex);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        },
+        toggleSortOrder() {
+            this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
+            this.currentPage = 0;
             window.scrollTo({ top: 0, behavior: "smooth" });
         },
     },
@@ -294,6 +355,38 @@ export default {
 
 .prose {
     line-height: 1.8;
+}
+
+.prose :deep(h1),
+.prose :deep(h2),
+.prose :deep(h3) {
+    color: #fff;
+    font-weight: 800;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+}
+
+.prose :deep(p) {
+    margin: 0 0 1rem 0;
+}
+
+.prose :deep(ul),
+.prose :deep(ol) {
+    margin: 0 0 1rem 1.25rem;
+}
+
+.prose :deep(li) {
+    margin-bottom: 0.35rem;
+}
+
+.prose :deep(strong) {
+    color: #fff;
+    font-weight: 700;
+}
+
+.prose :deep(em) {
+    color: #d1d5db;
 }
 
 .prose :deep(span.text-red-500) {

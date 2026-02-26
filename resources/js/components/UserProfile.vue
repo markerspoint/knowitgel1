@@ -47,7 +47,7 @@
                                 <p
                                     class="text-[10px] font-mono text-gray-500 uppercase tracking-widest"
                                 >
-                                    Learner Mode
+                                    Member
                                 </p>
                             </div>
                             <div
@@ -79,7 +79,7 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-th-large w-5"></i
-                                        ><span>Dashboard Hub</span>
+                                        ><span>Dashboard</span>
                                     </router-link>
                                     <router-link
                                         to="/leaderboard"
@@ -88,7 +88,7 @@
                                         <i
                                             class="fas fa-trophy w-5 text-yellow-500/50"
                                         ></i
-                                        ><span>Global Rankings</span>
+                                        ><span>Leaderboard</span>
                                     </router-link>
                                 </div>
                                 <button
@@ -96,7 +96,7 @@
                                     class="w-full flex items-center space-x-3 px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-xs font-black uppercase tracking-[0.2em] transition-all border-t border-white/5"
                                 >
                                     <i class="fas fa-power-off"></i
-                                    ><span>Terminate Link</span>
+                                    ><span>Log Out</span>
                                 </button>
                             </div>
                         </transition>
@@ -147,20 +147,19 @@
                 <h2
                     class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                 >
-                    Profile Identity
+                    Profile
                 </h2>
                 <h1
                     class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-4"
                 >
-                    Metadata
+                    Profile
                     <span
                         class="text-transparent bg-clip-text bg-linear-to-r from-red-500 to-red-600"
-                        >Parameters</span
+                        >Settings</span
                     >
                 </h1>
                 <p class="text-gray-500 max-w-xl font-medium">
-                    Update your learner profile credentials and neural link
-                    interface avatar.
+                    Update your profile details and profile picture.
                 </p>
             </div>
 
@@ -181,12 +180,12 @@
                             <h3
                                 class="text-xl font-bold text-white uppercase tracking-tight"
                             >
-                                Identity Matrix
+                                Profile Info
                             </h3>
                             <p
                                 class="text-xs font-mono text-gray-600 uppercase"
                             >
-                                Registry Status: Synchronized
+                                Status: Synced
                             </p>
                         </div>
                     </div>
@@ -196,7 +195,7 @@
                         @click="enableEditMode"
                         class="px-6 py-2.5 bg-red-500 text-white text-xs font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.2)] hover:-translate-y-1 uppercase tracking-widest"
                     >
-                        <i class="fas fa-edit mr-2"></i>Edit Parameters
+                        <i class="fas fa-edit mr-2"></i>Edit Profile
                     </button>
                 </div>
 
@@ -263,14 +262,13 @@
                                 <h4
                                     class="text-white font-bold mb-2 uppercase tracking-tight"
                                 >
-                                    Interface Avatar
+                                    Profile Picture
                                 </h4>
                                 <p
                                     class="text-sm text-gray-500 mb-6 leading-relaxed"
                                 >
-                                    Update your visual representation in the
-                                    GEL1 network. Supported types: JPG, PNG,
-                                    GIF. Max limit: 2MB.
+                                    Upload a profile picture. Supported types:
+                                    JPG, PNG, GIF. Max size: 2MB.
                                 </p>
                                 <div
                                     class="flex flex-wrap items-center justify-center md:justify-start gap-4"
@@ -280,7 +278,7 @@
                                         @click="$refs.fileInput.click()"
                                         class="px-5 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-white/10 hover:border-red-500/50 transition-all uppercase tracking-widest"
                                     >
-                                        Select New Link
+                                        Choose Image
                                     </button>
                                     <button
                                         v-if="
@@ -292,7 +290,7 @@
                                         @click="removeProfilePicture"
                                         class="px-5 py-2 bg-red-500/10 border border-red-500/20 rounded-xl text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white transition-all uppercase tracking-widest"
                                     >
-                                        Clear Data
+                                        Remove Image
                                     </button>
                                     <span
                                         v-if="
@@ -300,7 +298,7 @@
                                             !profilePictureFile
                                         "
                                         class="text-[10px] font-mono text-red-500 uppercase tracking-widest animate-pulse"
-                                        >Deletion Pending Save</span
+                                        >Will be removed after save</span
                                     >
                                 </div>
                             </div>
@@ -327,7 +325,7 @@
                                     },
                                     {
                                         id: 'email',
-                                        label: 'Network Email',
+                                        label: 'Email',
                                         model: 'email',
                                     },
                                 ]"
@@ -358,11 +356,11 @@
                             >
                                 <span v-if="isSaving"
                                     ><i class="fas fa-sync-alt fa-spin mr-3"></i
-                                    >Encrypting...</span
+                                    >Saving...</span
                                 >
                                 <span v-else
-                                    ><i class="fas fa-save mr-3"></i>Commit
-                                    Metadata</span
+                                    ><i class="fas fa-save mr-3"></i>Save
+                                    Changes</span
                                 >
                             </button>
                             <button
@@ -371,7 +369,7 @@
                                 :disabled="isSaving"
                                 class="px-10 py-4 bg-white/5 text-gray-400 font-bold rounded-2xl border border-white/5 hover:bg-white/10 hover:text-white transition-all uppercase tracking-widest text-sm"
                             >
-                                Abort
+                                Cancel
                             </button>
                         </div>
                     </form>
@@ -424,7 +422,7 @@
                                     { l: 'First Name', v: user.fname },
                                     { l: 'Last Name', v: user.lname },
                                     { l: 'Username', v: user.username },
-                                    { l: 'Sync Method', v: 'Encrypted Link' },
+                                    { l: 'Sign-in Method', v: 'Password Login' },
                                 ]"
                                 :key="info.l"
                                 class="bg-white/[0.02] border border-white/5 rounded-2xl p-6"
@@ -465,7 +463,7 @@
             <div
                 class="text-red-500 text-xs font-mono tracking-[0.5em] uppercase"
             >
-                Accessing Profile Registry...
+                Loading profile...
             </div>
         </div>
     </div>
@@ -545,14 +543,14 @@ export default {
             if (file) {
                 if (file.size > 2048 * 1024) {
                     this.showMessage(
-                        "System Fault: File size limit (2MB) exceeded.",
+                        "Image is too large (max 2MB).",
                         "error",
                     );
                     return;
                 }
                 if (!file.type.startsWith("image/")) {
                     this.showMessage(
-                        "Format Error: Invalid visual matrix format.",
+                        "Invalid image format.",
                         "error",
                     );
                     return;
@@ -612,14 +610,14 @@ export default {
                     this.profilePicturePreview = null;
                     this.isEditing = false;
                     this.showMessage(
-                        "Metadata successfully committed to registry.",
+                        "Profile updated successfully.",
                         "success",
                     );
                 }
             } catch (error) {
                 const errorMsg =
                     error.response?.data?.message ||
-                    "Policy violation during encryption.";
+                    "Failed to update profile.";
                 this.showMessage(errorMsg, "error");
             } finally {
                 this.isSaving = false;

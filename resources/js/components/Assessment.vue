@@ -81,7 +81,7 @@
                         <p
                             class="text-gray-500 mt-2 font-mono text-xs uppercase tracking-widest"
                         >
-                            Accessing Neural Database
+                            Loading assessment...
                         </p>
                     </div>
                 </div>

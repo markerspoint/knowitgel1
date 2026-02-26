@@ -77,7 +77,7 @@
                                     <p
                                         class="text-xs font-black text-red-500 uppercase tracking-widest mb-1"
                                     >
-                                        Terminal Session
+                                        Account Menu
                                     </p>
                                     <p
                                         class="text-[10px] font-mono text-gray-500 uppercase"
@@ -91,7 +91,7 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-user-circle w-5"></i
-                                        ><span>Profile Meta</span>
+                                        ><span>Profile</span>
                                     </router-link>
                                     <router-link
                                         to="/leaderboard"
@@ -100,21 +100,21 @@
                                         <i
                                             class="fas fa-trophy w-5 text-yellow-500/50"
                                         ></i
-                                        ><span>Global Rankings</span>
+                                        ><span>Leaderboard</span>
                                     </router-link>
                                     <router-link
                                         to="/user/history"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-history w-5"></i
-                                        ><span>Archived Syncs</span>
+                                        ><span>History</span>
                                     </router-link>
                                     <router-link
                                         to="/user/settings"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-sliders-h w-5"></i
-                                        ><span>Parameters</span>
+                                        ><span>Settings</span>
                                     </router-link>
                                 </div>
                                 <button
@@ -122,7 +122,7 @@
                                     class="w-full flex items-center space-x-3 px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-xs font-black uppercase tracking-[0.2em] transition-all border-t border-white/5"
                                 >
                                     <i class="fas fa-power-off"></i
-                                    ><span>Terminate Link</span>
+                                    ><span>Log Out</span>
                                 </button>
                             </div>
                         </transition>
@@ -272,7 +272,7 @@
                             <h4
                                 class="text-2xl font-black text-white uppercase tracking-tighter mb-2 group-hover:text-red-500 transition-colors"
                             >
-                                Combat Sync: IT Basics
+                                Q&A Shooter: IT Basics
                             </h4>
                             <p
                                 class="text-sm text-gray-500 leading-relaxed mb-6"
@@ -337,7 +337,7 @@
                             <h4
                                 class="text-2xl font-black text-white uppercase tracking-tighter mb-2 group-hover:text-red-500 transition-colors"
                             >
-                                Neural Velocity
+                                Typing Speed
                             </h4>
                             <p
                                 class="text-sm text-gray-500 leading-relaxed mb-6"
@@ -408,7 +408,7 @@
                             <div class="flex items-center justify-between">
                                 <span
                                     class="text-xs font-mono text-gray-600 uppercase"
-                                    >Academic Repository</span
+                                    >Study Library</span
                                 >
                                 <div
                                     class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white group-hover:bg-red-500 group-hover:border-red-500 transition-all"
@@ -486,7 +486,7 @@ export default {
                     desc: "Active Sessions",
                 },
                 {
-                    label: "Link Calibration",
+                    label: "Assessment Score",
                     value: this.stats?.assessment_score || 0,
                     icon: "fas fa-microchip",
                     desc: "Initial Baseline",

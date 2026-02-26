@@ -47,7 +47,7 @@
                                 <p
                                     class="text-[10px] font-mono text-red-500 uppercase tracking-widest"
                                 >
-                                    Network Authority
+                                    Admin
                                 </p>
                             </div>
                             <div
@@ -79,21 +79,21 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-user-shield w-5"></i
-                                        ><span>Admin Profile</span>
+                                        ><span>Profile</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/users"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-users w-5"></i
-                                        ><span>User Manager</span>
+                                        ><span>Users</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/assessment"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-tasks w-5"></i
-                                        ><span>Assessment Logic</span>
+                                        ><span>Assessment</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/settings"
@@ -108,7 +108,7 @@
                                     class="w-full flex items-center space-x-3 px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-xs font-black uppercase tracking-[0.2em] transition-all border-t border-white/5"
                                 >
                                     <i class="fas fa-power-off"></i
-                                    ><span>Terminate Session</span>
+                                    ><span>Log Out</span>
                                 </button>
                             </div>
                         </transition>
@@ -163,7 +163,7 @@
                     <h2
                         class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                     >
-                        Security Terminal
+                        Admin Account
                     </h2>
                     <h1
                         class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase"
@@ -180,7 +180,7 @@
                     @click="enableEditMode"
                     class="px-8 py-4 bg-white/5 border border-white/10 text-white font-black rounded-xl hover:bg-white/10 transition-all uppercase tracking-widest text-xs flex items-center group"
                 >
-                    <i class="fas fa-user-edit mr-3"></i>Modify Credentials
+                    <i class="fas fa-user-edit mr-3"></i>Edit Profile
                 </button>
             </div>
 
@@ -238,7 +238,7 @@
                     <p
                         class="text-[10px] font-mono text-red-500 uppercase tracking-[0.3em] font-bold mb-6 italic"
                     >
-                        Identity Synchronised
+                        Profile Updated
                     </p>
 
                     <div
@@ -247,7 +247,7 @@
                         <i class="fas fa-shield-alt text-blue-500 text-sm"></i>
                         <span
                             class="text-[10px] font-black text-blue-500 uppercase tracking-widest"
-                            >Network Administrator</span
+                            >Administrator</span
                         >
                     </div>
 
@@ -262,7 +262,7 @@
                         class="text-[10px] font-black text-gray-500 hover:text-red-500 uppercase tracking-widest transition-colors flex items-center space-x-2"
                     >
                         <i class="fas fa-trash-alt"></i
-                        ><span>Discard Matrix Image</span>
+                        ><span>Remove Profile Image</span>
                     </button>
                 </div>
 
@@ -303,7 +303,7 @@
                             <div class="space-y-1.5">
                                 <label
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                    >Global Username</label
+                                    >Username</label
                                 >
                                 <input
                                     type="text"
@@ -315,7 +315,7 @@
                             <div class="space-y-1.5">
                                 <label
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                    >Communication Email</label
+                                    >Email</label
                                 >
                                 <input
                                     type="email"
@@ -334,7 +334,7 @@
                                 :disabled="isSaving"
                                 class="px-10 py-4 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.2)] uppercase text-[10px] tracking-widest"
                             >
-                                <span v-if="!isSaving">Commit Revisions</span>
+                                <span v-if="!isSaving">Save Changes</span>
                                 <span v-else
                                     ><i class="fas fa-circle-notch fa-spin"></i>
                                     Processing...</span
@@ -346,7 +346,7 @@
                                 :disabled="isSaving"
                                 class="px-8 py-4 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
                             >
-                                Abort Changes
+                                Cancel
                             </button>
                         </div>
                     </form>
@@ -358,7 +358,7 @@
                                 <p
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"
                                 >
-                                    Subject Full Name
+                                    Full Name
                                 </p>
                                 <p
                                     class="text-xl font-bold text-white tracking-tight"
@@ -370,7 +370,7 @@
                                 <p
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"
                                 >
-                                    System Email Link
+                                    Email
                                 </p>
                                 <p
                                     class="text-xl font-bold text-red-500 tracking-tight"
@@ -382,7 +382,7 @@
                                 <p
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"
                                 >
-                                    Network Handle
+                                    Username
                                 </p>
                                 <p
                                     class="text-xl font-bold text-white tracking-tight uppercase"
@@ -394,7 +394,7 @@
                                 <p
                                     class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"
                                 >
-                                    Authority Status
+                                    Account Status
                                 </p>
                                 <div class="flex items-center space-x-2">
                                     <div
@@ -403,7 +403,7 @@
                                     <p
                                         class="text-xl font-bold text-white tracking-tight uppercase"
                                     >
-                                        Session Active
+                                        Active
                                     </p>
                                 </div>
                             </div>
@@ -433,14 +433,12 @@
                                     <h4
                                         class="text-sm font-black text-white uppercase tracking-widest mb-1"
                                     >
-                                        Security Level: High
+                                        Security: High
                                     </h4>
                                     <p
                                         class="text-xs text-gray-500 font-medium"
                                     >
-                                        Your identity is cryptographically
-                                        protected within the KNOWIT GEL1 neural
-                                        core.
+                                        Your account is securely protected.
                                     </p>
                                 </div>
                             </div>
@@ -514,7 +512,7 @@ export default {
             if (file) {
                 if (file.size > 2048 * 1024)
                     return this.showMessage(
-                        "Matrix stream overload: Max 2MB.",
+                        "Image is too large (max 2MB).",
                         "error",
                     );
                 this.profilePictureFile = file;
@@ -549,13 +547,13 @@ export default {
                     this.user = { ...this.user, ...response.data.user };
                     this.isEditing = false;
                     this.showMessage(
-                        "Identity revisions successfully synchronised.",
+                        "Profile updated successfully.",
                         "success",
                     );
                 }
             } catch (error) {
                 this.showMessage(
-                    "Profile revision failure: Access denied.",
+                    "Failed to update profile.",
                     "error",
                 );
             } finally {

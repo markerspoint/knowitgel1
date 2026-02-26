@@ -47,7 +47,7 @@
                                 <p
                                     class="text-[10px] font-mono text-red-500 uppercase tracking-widest"
                                 >
-                                    Network Authority
+                                    Admin
                                 </p>
                             </div>
                             <div
@@ -79,21 +79,21 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-user-shield w-5"></i
-                                        ><span>Admin Profile</span>
+                                        ><span>Profile</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/users"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-users w-5"></i
-                                        ><span>User Manager</span>
+                                        ><span>Users</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/assessment"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-tasks w-5"></i
-                                        ><span>Assessment Logic</span>
+                                        ><span>Assessment</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/settings"
@@ -108,7 +108,7 @@
                                     class="w-full flex items-center space-x-3 px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-xs font-black uppercase tracking-[0.2em] transition-all border-t border-white/5"
                                 >
                                     <i class="fas fa-power-off"></i
-                                    ><span>Terminate Session</span>
+                                    ><span>Log Out</span>
                                 </button>
                             </div>
                         </transition>
@@ -158,15 +158,15 @@
                 <h2
                     class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                 >
-                    Command Center
+                    Admin Dashboard
                 </h2>
                 <h1
                     class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-4"
                 >
-                    Control
+                    Admin
                     <span
                         class="text-transparent bg-clip-text bg-linear-to-r from-red-500 to-red-600"
-                        >Interface</span
+                        >Panel</span
                     >
                 </h1>
                 <div class="flex flex-wrap gap-3 mt-8">
@@ -245,20 +245,20 @@ export default {
             tabConfigs: [
                 {
                     id: "overview",
-                    label: "Monitor",
+                    label: "Overview",
                     icon: "fas fa-tachometer-alt",
                 },
                 {
                     id: "qa_fps",
-                    label: "Combat Modules",
+                    label: "Q&A Game",
                     icon: "fas fa-crosshairs",
                 },
                 {
                     id: "typergel1",
-                    label: "Vocabulary Link",
+                    label: "Typing Words",
                     icon: "fas fa-keyboard",
                 },
-                { id: "studies", label: "Archive Hub", icon: "fas fa-book" },
+                { id: "studies", label: "Study Library", icon: "fas fa-book" },
             ],
             analytics: {
                 totals: {
@@ -325,7 +325,7 @@ export default {
                 }
             } catch (error) {
                 this.showMessage(
-                    "System integrity fault during data sync.",
+                    "Failed to load dashboard data.",
                     "error",
                 );
             }

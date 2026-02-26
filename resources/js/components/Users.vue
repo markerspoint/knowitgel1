@@ -47,7 +47,7 @@
                                 <p
                                     class="text-[10px] font-mono text-red-500 uppercase tracking-widest"
                                 >
-                                    Network Authority
+                                    Admin
                                 </p>
                             </div>
                             <div
@@ -79,21 +79,21 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-user-shield w-5"></i
-                                        ><span>Admin Profile</span>
+                                        ><span>Profile</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/users"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-users w-5"></i
-                                        ><span>User Manager</span>
+                                        ><span>Users</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/assessment"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-tasks w-5"></i
-                                        ><span>Assessment Logic</span>
+                                        ><span>Assessment</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/settings"
@@ -108,7 +108,7 @@
                                     class="w-full flex items-center space-x-3 px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-xs font-black uppercase tracking-[0.2em] transition-all border-t border-white/5"
                                 >
                                     <i class="fas fa-power-off"></i
-                                    ><span>Terminate Session</span>
+                                    ><span>Log Out</span>
                                 </button>
                             </div>
                         </transition>
@@ -158,7 +158,7 @@
                 <h2
                     class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
                 >
-                    Identity Registry
+                    User Directory
                 </h2>
                 <h1
                     class="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase mb-4"
@@ -170,8 +170,7 @@
                     >
                 </h1>
                 <p class="text-gray-500 font-medium max-w-2xl">
-                    Monitor and control network permissions for all registered
-                    entities within the KNOWIT GEL1 ecosystem.
+                    Manage user accounts and access for all registered users.
                 </p>
             </div>
 
@@ -184,10 +183,10 @@
                 >
                     <span
                         class="text-xs font-black text-white uppercase tracking-widest"
-                        >Active Entities</span
+                        >Users</span
                     >
                     <span class="text-[10px] font-mono text-gray-600 uppercase"
-                        >{{ users.length }} Identity Links Found</span
+                        >{{ users.length }} Users Found</span
                     >
                 </div>
                 <div class="overflow-x-auto">
@@ -196,13 +195,13 @@
                             <tr
                                 class="bg-white/5 border-b border-white/5 text-[10px] font-black text-gray-500 uppercase tracking-widest"
                             >
-                                <th class="px-8 py-5">Identity ID</th>
-                                <th class="px-8 py-5">Standard Name</th>
+                                <th class="px-8 py-5">User ID</th>
+                                <th class="px-8 py-5">Name</th>
                                 <th class="px-8 py-5">
-                                    Neural Email / Sync Username
+                                    Email / Username
                                 </th>
                                 <th class="px-8 py-5 text-right">
-                                    Access Controls
+                                    Actions
                                 </th>
                             </tr>
                         </thead>
@@ -294,7 +293,7 @@
                     <p
                         class="text-xs font-black uppercase tracking-widest font-mono"
                     >
-                        No Identity Links Identified
+                        No users found
                     </p>
                 </div>
             </div>
@@ -341,7 +340,7 @@ export default {
                 this.users = response.data.users || [];
             } catch (error) {
                 this.showMessage(
-                    "Failed to load identity links from network.",
+                    "Failed to load users.",
                     "error",
                 );
             }
@@ -351,12 +350,12 @@ export default {
                 await axios.patch(`/api/admin/users/${user.id}/toggle-status`);
                 user.is_disabled = !user.is_disabled;
                 this.showMessage(
-                    `User ${user.username} state successfully modified.`,
+                    `User ${user.username} updated successfully.`,
                     "success",
                 );
             } catch (error) {
                 this.showMessage(
-                    "Protocol rejection: Failed to modify identity state.",
+                    "Failed to update user status.",
                     "error",
                 );
             }
@@ -364,7 +363,7 @@ export default {
         async deleteUser(user) {
             if (
                 !confirm(
-                    `Purge entity "${user.username}" from the network? This operation is irreversible.`,
+                    `Delete user "${user.username}"? This action cannot be undone.`,
                 )
             )
                 return;
@@ -372,12 +371,12 @@ export default {
                 await axios.delete(`/api/admin/users/${user.id}`);
                 this.users = this.users.filter((u) => u.id !== user.id);
                 this.showMessage(
-                    "Entity purged from neural registry.",
+                    "User deleted successfully.",
                     "success",
                 );
             } catch (error) {
                 this.showMessage(
-                    "Purge failure: Entity record is system vital.",
+                    "Failed to delete user.",
                     "error",
                 );
             }

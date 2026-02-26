@@ -13,8 +13,7 @@
                 <h3
                     class="text-sm font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
-                    <i class="fas fa-keyboard mr-3 text-red-500"></i>Isolate
-                    Entry
+                    <i class="fas fa-keyboard mr-3 text-red-500"></i>Add Word
                 </h3>
                 <form
                     @submit.prevent="submitTyperGelWord"
@@ -23,7 +22,7 @@
                     <div class="flex-1 space-y-1.5">
                         <label
                             class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                            >Vocabulary String</label
+                            >Word or Phrase</label
                         >
                         <input
                             type="text"
@@ -55,7 +54,7 @@
                     class="text-sm font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
                     <i class="fas fa-file-import mr-3 text-blue-500"></i>Bulk
-                    Synchronisation
+                    Import
                 </h3>
                 <form
                     @submit.prevent="submitBulkTyperGelWords"
@@ -64,13 +63,13 @@
                     <textarea
                         v-model="bulkTyperGelWords"
                         required
-                        placeholder="String List (Comma or Line Separated)"
+                        placeholder="Word list (comma or line separated)"
                         class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500/50 transition-all font-mono text-xs h-32 resize-none custom-scrollbar"
                     ></textarea>
                     <div class="flex items-center justify-between">
                         <span
                             class="text-[10px] font-mono text-gray-500 uppercase tracking-widest"
-                            >{{ getBulkWordCount() }} Potential Tokens</span
+                            >{{ getBulkWordCount() }} Words found</span
                         >
                         <button
                             type="submit"
@@ -78,11 +77,11 @@
                             class="px-6 py-2.5 bg-blue-500 text-white font-black rounded-xl hover:bg-blue-600 transition-all text-[10px] tracking-[0.2em] disabled:opacity-50 shadow-[0_10px_20px_rgba(59,130,246,0.2)]"
                         >
                             <span v-if="!isBulkSubmitting"
-                                >EXECUTE BULK LINK</span
+                                >IMPORT WORDS</span
                             >
                             <span v-else
                                 ><i class="fas fa-sync-alt fa-spin mr-2"></i
-                                >LINKING...</span
+                                >IMPORTING...</span
                             >
                         </button>
                     </div>
@@ -99,10 +98,10 @@
             >
                 <span
                     class="text-xs font-black text-white uppercase tracking-widest"
-                    >Neural Vocabulary Registry</span
+                    >Word List</span
                 >
                 <span class="text-[10px] font-mono text-gray-600 uppercase"
-                    >{{ typerGelGames.length }} Tokens Encrypted</span
+                    >{{ typerGelGames.length }} Words</span
                 >
             </div>
             <div
@@ -113,10 +112,10 @@
                         <tr
                             class="border-b border-white/5 text-[10px] font-black text-gray-500 uppercase tracking-widest"
                         >
-                            <th class="px-8 py-5">Token String</th>
+                            <th class="px-8 py-5">Word</th>
                             <th class="px-8 py-5">Status</th>
                             <th class="px-8 py-5 text-right">
-                                Operation Controls
+                                Actions
                             </th>
                         </tr>
                     </thead>
@@ -169,13 +168,16 @@
         </div>
 
         <!-- Edit Modal -->
+        <Teleport to="body">
         <transition name="fade">
             <div
                 v-if="showEditTyperGelModal"
-                class="fixed inset-0 z-100 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+                @click.self="closeEditTyperGelModal"
+                class="fixed inset-0 z-[9999] grid place-items-center p-4 md:p-6 bg-black/85 backdrop-blur-md"
             >
                 <div
-                    class="bg-[#181818] border border-white/10 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative"
+                    @click.stop
+                    class="relative z-[10000] bg-[#181818] border border-white/10 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
                 >
                     <div class="absolute -right-10 -top-10 opacity-5">
                         <i class="fas fa-keyboard text-[8rem] text-white"></i>
@@ -184,19 +186,19 @@
                         <h3
                             class="text-xl font-black text-white uppercase tracking-tighter"
                         >
-                            Modify Token
+                            Edit Word
                         </h3>
                         <p
                             class="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-1"
                         >
-                            Direct Database Link Active
+                            Update word details
                         </p>
                     </div>
                     <div class="p-8 space-y-6">
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Updated String</label
+                                >Word or Phrase</label
                             >
                             <input
                                 type="text"
@@ -208,14 +210,14 @@
                         <div class="space-y-1.5">
                             <label
                                 class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
-                                >Visibility Status</label
+                                >Status</label
                             >
                             <select
                                 v-model="editingTyperGel.status"
                                 class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none"
                             >
-                                <option value="active">Active Presence</option>
-                                <option value="inactive">Latent Link</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
                             </select>
                         </div>
                         <div class="grid grid-cols-2 gap-4 pt-4">
@@ -223,7 +225,7 @@
                                 @click="closeEditTyperGelModal"
                                 class="py-3.5 px-4 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
                             >
-                                Abort
+                                Cancel
                             </button>
                             <button
                                 @click="submitEditTyperGel"
@@ -231,7 +233,7 @@
                                 class="py-3.5 px-4 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.2)] uppercase text-[10px] tracking-widest"
                             >
                                 <span v-if="!isEditingTyperGel"
-                                    >Apply Patch</span
+                                    >Save Changes</span
                                 >
                                 <span v-else
                                     ><i class="fas fa-circle-notch fa-spin"></i
@@ -242,15 +244,19 @@
                 </div>
             </div>
         </transition>
+        </Teleport>
 
         <!-- Delete Confirmation Modal -->
+        <Teleport to="body">
         <transition name="fade">
             <div
                 v-if="showDeleteModal"
-                class="fixed inset-0 z-110 flex items-center justify-center p-6 bg-black/95 backdrop-blur-xl"
+                @click.self="showDeleteModal = false"
+                class="fixed inset-0 z-[10001] grid place-items-center p-4 md:p-6 bg-black/90 backdrop-blur-md"
             >
                 <div
-                    class="bg-[#111111] border border-red-500/20 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative"
+                    @click.stop
+                    class="relative z-[10002] bg-[#111111] border border-red-500/20 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
                 >
                     <div class="p-10 text-center">
                         <div
@@ -263,34 +269,34 @@
                         <h3
                             class="text-2xl font-black text-white uppercase tracking-tighter mb-4"
                         >
-                            Purge Token
+                            Delete Word
                         </h3>
                         <p class="text-sm text-gray-500 leading-relaxed mb-10">
                             Remove
                             <span class="text-white font-bold"
                                 >"{{ tokenToDelete?.question }}"</span
                             >
-                            from the registry? This action will immediately
-                            terminate the link.
+                            from the list? This action cannot be undone.
                         </p>
                         <div class="grid grid-cols-2 gap-4">
                             <button
                                 @click="showDeleteModal = false"
                                 class="py-4 px-6 bg-white/5 text-gray-500 font-black rounded-xl hover:text-white hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest"
                             >
-                                Abort
+                                Cancel
                             </button>
                             <button
                                 @click="executeDeleteTyperGel"
                                 class="py-4 px-6 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.3)] uppercase text-[10px] tracking-widest"
                             >
-                                Execute Purge
+                                Delete
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </transition>
+        </Teleport>
     </div>
 </template>
 
@@ -327,13 +333,34 @@ export default {
             return this.games.filter((g) => g.type === "typergel");
         },
     },
+    watch: {
+        showEditTyperGelModal() {
+            this.syncBodyScrollLock();
+        },
+        showDeleteModal() {
+            this.syncBodyScrollLock();
+        },
+    },
+    beforeUnmount() {
+        this.setBodyScrollLocked(false);
+    },
     methods: {
+        setBodyScrollLocked(locked) {
+            const value = locked ? "hidden" : "";
+            document.body.style.overflow = value;
+            document.documentElement.style.overflow = value;
+        },
+        syncBodyScrollLock() {
+            this.setBodyScrollLocked(
+                this.showEditTyperGelModal || this.showDeleteModal,
+            );
+        },
         async submitTyperGelWord() {
             const word = this.typerGelForm.question.trim();
             if (!word)
                 return this.$emit(
                     "message",
-                    "Token string cannot be null.",
+                    "Word cannot be empty.",
                     "error",
                 );
 
@@ -346,17 +373,17 @@ export default {
                 await axios.post("/api/admin/games", formData);
                 this.$emit(
                     "message",
-                    "Neural token archived successfully.",
+                    "Word saved successfully.",
                     "success",
                 );
                 this.typerGelForm.question = "";
                 this.$emit("refresh");
             } catch (error) {
-                this.$emit(
-                    "message",
-                    "Token duplication or registry fault.",
-                    "error",
-                );
+                const errorMsg =
+                    error.response?.data?.message ||
+                    "This word may already exist.";
+                this.$emit("message", errorMsg, "error");
+                console.error("Upload error:", error.response?.data);
             }
         },
         getBulkWordCount() {
@@ -380,7 +407,7 @@ export default {
             if (!words.length)
                 return this.$emit(
                     "message",
-                    "No tokens identified in buffer.",
+                    "No words found to import.",
                     "error",
                 );
 
@@ -394,12 +421,15 @@ export default {
                     try {
                         await axios.post("/api/admin/games", formData);
                     } catch (e) {
-                        console.error(`Failed: ${word}`);
+                        console.error(
+                            `Failed: ${word}`,
+                            e.response?.data || e.message,
+                        );
                     }
                 }
                 this.$emit(
                     "message",
-                    "Bulk token synchronisation complete.",
+                    "Words imported successfully.",
                     "success",
                 );
                 this.bulkTyperGelWords = "";
@@ -407,7 +437,7 @@ export default {
             } catch (error) {
                 this.$emit(
                     "message",
-                    "Bulk synchronisation interrupted.",
+                    "Bulk import failed.",
                     "error",
                 );
             } finally {
@@ -428,13 +458,17 @@ export default {
         async submitEditTyperGel() {
             this.isEditingTyperGel = true;
             try {
-                await axios.put(`/api/admin/games/${this.editingTyperGel.id}`, {
-                    question: this.editingTyperGel.question,
-                    status: this.editingTyperGel.status,
-                });
+                await axios.post(
+                    `/api/admin/games/${this.editingTyperGel.id}`,
+                    {
+                        question: this.editingTyperGel.question,
+                        status: this.editingTyperGel.status,
+                        _method: "PUT",
+                    },
+                );
                 this.$emit(
                     "message",
-                    "Registry patch successfully applied.",
+                    "List updated successfully.",
                     "success",
                 );
                 this.closeEditTyperGelModal();
@@ -442,7 +476,7 @@ export default {
             } catch (error) {
                 this.$emit(
                     "message",
-                    "Patch rejection: Core collision detected.",
+                    "Failed to update word.",
                     "error",
                 );
             } finally {
@@ -456,13 +490,13 @@ export default {
         async executeDeleteTyperGel() {
             try {
                 await axios.delete(`/api/admin/games/${this.tokenToDelete.id}`);
-                this.$emit("message", "Token purged from network.", "success");
+                this.$emit("message", "Word deleted successfully.", "success");
                 this.showDeleteModal = false;
                 this.$emit("refresh");
             } catch (error) {
                 this.$emit(
                     "message",
-                    "Purge failure: Token locked by session.",
+                    "Failed to delete word.",
                     "error",
                 );
             }

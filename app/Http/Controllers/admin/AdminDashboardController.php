@@ -128,7 +128,7 @@ class AdminDashboardController extends Controller
                 ];
             }
 
-            $request->validate($rules);
+            $validatedData = $request->validate($rules);
 
             $gameData = [
                 'type' => $request->type,
@@ -136,6 +136,8 @@ class AdminDashboardController extends Controller
                 'thumbnail' => 'thumbnails/default-thumbnail.png',
                 'description' => $request->description ?? 'Logic module description.',
                 'title' => $request->title ?? 'Logic Link',
+                'question' => $request->question ?? '',
+                'answer' => $request->answer ?? '',
             ];
 
             if ($request->type === 'guess_part') {
@@ -144,24 +146,30 @@ class AdminDashboardController extends Controller
                 if ($request->hasFile('game_file')) {
                     $gameFile = $request->file('game_file');
                     $gameFileName = time() . '_' . $gameFile->getClientOriginalName();
+                    
+                    if (!file_exists(public_path('games'))) {
+                        mkdir(public_path('games'), 0777, true);
+                    }
+                    
                     $gameFile->move(public_path('games'), $gameFileName);
                     $gameData['game_file'] = 'games/' . $gameFileName;
                 }
-                $gameData['question'] = $request->question;
-                $gameData['answer'] = $request->answer;
             }
 
             if ($request->type === 'qa' && $request->options) {
                 $gameData['title'] = $request->title ?? 'QA Logic Link';
-                $gameData['description'] = $request->description ?? 'Cognitive assessment module.';
+                $gameData['description'] = $request->description ?? 'Assessment module.';
                 $options = array_map('trim', explode(',', $request->options));
                 $gameData['options'] = json_encode($options);
-                $gameData['question'] = $request->question;
-                $gameData['answer'] = $request->answer;
                 
                 if ($request->hasFile('thumbnail')) {
                     $thumbnail = $request->file('thumbnail');
                     $thumbnailName = time() . '_' . $thumbnail->getClientOriginalName();
+                    
+                    if (!file_exists(public_path('thumbnails'))) {
+                        mkdir(public_path('thumbnails'), 0777, true);
+                    }
+                    
                     $thumbnail->move(public_path('thumbnails'), $thumbnailName);
                     $gameData['thumbnail'] = 'thumbnails/' . $thumbnailName;
                 }
@@ -172,7 +180,7 @@ class AdminDashboardController extends Controller
                 $gameData['title'] = 'TyperGel1: ' . $question;
                 $gameData['description'] = 'Typing practice word: ' . $question;
                 $gameData['question'] = $question;
-                $gameData['answer'] = $question; // Must not be null for DB
+                $gameData['answer'] = $question;
                 $gameData['options'] = null;
             }
 
@@ -187,7 +195,17 @@ class AdminDashboardController extends Controller
             }
 
             return redirect()->back()->with('success', 'Item uploaded successfully!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed.',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
         } catch (\Exception $e) {
+            Log::error('Error uploading game: ' . $e->getMessage());
             if (request()->expectsJson()) {
                 return response()->json([
                     'status' => 'error',
@@ -198,47 +216,50 @@ class AdminDashboardController extends Controller
         }
     }
 
-    public function updateGame(Request $request, Game $game)
+    public function updateGame(Request $request, $id)
     {
-        $rules = [
-            'status' => 'required|in:active,inactive'
-        ];
-
-        if ($game->type === 'typergel') {
-            $rules['question'] = [
-                'required',
-                'string',
-                'max:255',
-                function ($attribute, $value, $fail) use ($game) {
-                    $exists = Game::where('type', 'typergel')
-                        ->where('id', '!=', $game->id)
-                        ->whereRaw('LOWER(question) = ?', [strtolower(trim($value))])
-                        ->exists();
-                    if ($exists) {
-                        $fail('This word or phrase already exists in TyperGel1.');
-                    }
-                }
-            ];
-        } else {
-            $rules['title'] = 'required|string|max:255';
-            $rules['description'] = 'nullable|string';
-            $rules['question'] = 'required|string|max:255';
-            $rules['answer'] = 'required|string|max:255';
-            $rules['options'] = 'nullable|string';
-            $rules['game_file'] = 'nullable|file|mimes:html,js,css,json,jpeg,png,jpg,gif|max:10240';
-            $rules['thumbnail'] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
-        }
-
-        $request->validate($rules);
-
         try {
+            $game = Game::findOrFail($id);
+            
+            $rules = [
+                'status' => 'required|in:active,inactive'
+            ];
+
+            if ($game->type === 'typergel') {
+                $rules['question'] = [
+                    'required',
+                    'string',
+                    'max:255',
+                    function ($attribute, $value, $fail) use ($game) {
+                        $exists = Game::where('type', 'typergel')
+                            ->where('id', '!=', $game->id)
+                            ->whereRaw('LOWER(question) = ?', [strtolower(trim($value))])
+                            ->exists();
+                        if ($exists) {
+                            $fail('This word or phrase already exists in TyperGel1.');
+                        }
+                    }
+                ];
+            } else {
+                $rules['title'] = 'required|string|max:255';
+                $rules['description'] = 'nullable|string';
+                $rules['question'] = 'required|string|max:255';
+                $rules['answer'] = 'required|string|max:255';
+                $rules['options'] = 'nullable|string';
+                $rules['game_file'] = 'nullable|file|mimes:html,js,css,json,jpeg,png,jpg,gif|max:10240';
+                $rules['thumbnail'] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
+            }
+
+            $request->validate($rules);
+
             if ($game->type === 'typergel') {
                 $question = $request->question;
                 $data = [
                     'title' => 'TyperGel1: ' . $question,
                     'description' => 'Typing practice word: ' . $question,
                     'question' => $question,
-                    'status' => $request->status
+                    'status' => $request->status,
+                    'answer' => $question
                 ];
             } else {
                 $data = [
@@ -261,6 +282,11 @@ class AdminDashboardController extends Controller
                     
                     $gameFile = $request->file('game_file');
                     $gameFileName = time() . '_' . $gameFile->getClientOriginalName();
+                    
+                    if (!file_exists(public_path('games'))) {
+                        mkdir(public_path('games'), 0777, true);
+                    }
+                    
                     $gameFile->move(public_path('games'), $gameFileName);
                     $data['game_file'] = 'games/' . $gameFileName;
                 }
@@ -271,6 +297,11 @@ class AdminDashboardController extends Controller
                     
                     $thumbnail = $request->file('thumbnail');
                     $thumbnailName = time() . '_' . $thumbnail->getClientOriginalName();
+                    
+                    if (!file_exists(public_path('thumbnails'))) {
+                        mkdir(public_path('thumbnails'), 0777, true);
+                    }
+                    
                     $thumbnail->move(public_path('thumbnails'), $thumbnailName);
                     $data['thumbnail'] = 'thumbnails/' . $thumbnailName;
                 }
@@ -287,20 +318,33 @@ class AdminDashboardController extends Controller
             }
 
             return redirect()->back()->with('success', 'Game updated successfully!');
-        } catch (\Exception $e) {
+        } catch (\Illuminate\Validation\ValidationException $e) {
             if (request()->expectsJson()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Error updating game: ' . $e->getMessage()
+                    'message' => 'Validation failed.',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Error updating game: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Error updating game: ' . $e->getMessage(),
+                    'trace' => config('app.debug') ? $e->getTraceAsString() : null
                 ], 500);
             }
             return redirect()->back()->with('error', 'Error updating game: ' . $e->getMessage());
         }
     }
 
-    public function deleteGame(Game $game)
+    public function deleteGame($id)
     {
         try {
+            $game = Game::findOrFail($id);
+            
             if ($game->game_file && file_exists(public_path($game->game_file))) {
                 unlink(public_path($game->game_file));
             }
@@ -394,6 +438,9 @@ class AdminDashboardController extends Controller
                 $thumbnail->move(public_path('thumbnails'), $thumbnailName);
                 $validatedData['thumbnail'] = 'thumbnails/' . $thumbnailName;
             }
+
+            // DB column is NOT NULL; Laravel may convert empty string inputs to null.
+            $validatedData['description'] = $validatedData['description'] ?? '';
 
             $lesson->update($validatedData);
 

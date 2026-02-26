@@ -50,7 +50,7 @@
                     <div class="hidden md:flex flex-col items-end">
                         <span
                             class="text-[9px] font-mono text-gray-500 uppercase tracking-widest leading-none"
-                            >Matrix Stability</span
+                            >Status</span
                         >
                         <span
                             class="text-xs font-black text-red-500 uppercase tracking-tighter"
@@ -170,7 +170,7 @@
                                 ></span>
                                 <span
                                     class="text-[8px] font-black text-white uppercase tracking-[0.2em]"
-                                    >Query Matrix</span
+                                    >Question Panel</span
                                 >
                             </div>
                             <div class="flex items-center space-x-4">
@@ -410,7 +410,7 @@
                             <h2
                                 class="text-4xl font-black text-white uppercase tracking-tighter mb-4 italic"
                             >
-                                Neural Aim Link
+                                Aim Stats
                             </h2>
                             <p
                                 class="text-sm text-gray-400 mb-12 font-medium leading-relaxed uppercase tracking-widest"
@@ -431,7 +431,7 @@
                                 >
                                     <span
                                         class="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1 group-hover:text-red-500"
-                                        >{{ lvl }} Matrix</span
+                                        >{{ lvl }} Level</span
                                     >
                                     <span
                                         class="block text-2xl font-black text-white group-hover:scale-105 transition-transform"
@@ -526,7 +526,7 @@
                                 >
                                     <span
                                         class="block text-[8px] font-mono text-gray-500 uppercase mb-2"
-                                        >Neural Fatigue</span
+                                        >Fatigue</span
                                     >
                                     <span
                                         class="text-3xl font-black text-red-500 italic"
@@ -659,7 +659,7 @@ export default {
                 })
                 .catch(() => {
                     this.errorMessage =
-                        "Network Error: Neural link handshake failed.";
+                        "Network error: connection failed.";
                     this.phase = "idle";
                 });
         },
