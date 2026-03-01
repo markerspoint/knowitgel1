@@ -167,9 +167,12 @@
                                                     v-if="game.thumbnail"
                                                     :src="'/' + game.thumbnail"
                                                     @error="
-                                                        (e) =>
-                                                            (e.target.src =
-                                                                '/thumbnails/default-thumbnail.png')
+                                                        (e) => {
+                                                            e.target.onerror =
+                                                                null;
+                                                            e.target.src =
+                                                                '/thumbnails/default-thumbnail.png';
+                                                        }
                                                     "
                                                     class="w-full h-full object-cover"
                                                 />
@@ -346,9 +349,11 @@
                                                 '/' + editingQAGame.thumbnail
                                             "
                                             @error="
-                                                (e) =>
-                                                    (e.target.src =
-                                                        '/thumbnails/default-thumbnail.png')
+                                                (e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src =
+                                                        '/thumbnails/default-thumbnail.png';
+                                                }
                                             "
                                             class="w-full h-full object-cover"
                                         />
