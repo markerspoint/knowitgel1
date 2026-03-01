@@ -227,7 +227,7 @@
                     <div class="h-px grow mx-6 bg-white/5"></div>
                     <span
                         class="text-xs font-mono text-gray-600 uppercase tracking-widest"
-                        >Ready for Deployment</span
+                        >Choose a Module</span
                     >
                 </div>
 

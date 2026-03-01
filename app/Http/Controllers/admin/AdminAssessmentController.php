@@ -54,7 +54,7 @@ class AdminAssessmentController extends Controller
     {
         $rules = [
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'question' => 'required|string',
             'answer' => 'required|string',
             'options' => 'required|string',
@@ -64,16 +64,8 @@ class AdminAssessmentController extends Controller
         $request->validate($rules);
 
         $gameFile = $request->file('game_file');
-        
-        if (!$gameFile) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Image is required.',
-                'errors' => ['game_file' => ['Please upload an image for this question.']]
-            ], 422);
-        }
-        
-        if (!$gameFile->isValid()) {
+
+        if ($gameFile && !$gameFile->isValid()) {
             $errorMessage = 'File upload failed. ';
             $uploadMaxSize = ini_get('upload_max_filesize');
             $postMaxSize = ini_get('post_max_size');
@@ -122,7 +114,7 @@ class AdminAssessmentController extends Controller
         $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
         $maxSize = 10240;
 
-        if (!in_array($gameFile->getMimeType(), $allowedMimes)) {
+        if ($gameFile && !in_array($gameFile->getMimeType(), $allowedMimes)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid file type. Only JPEG, PNG, JPG, GIF, and WEBP images are allowed.',
@@ -130,7 +122,7 @@ class AdminAssessmentController extends Controller
             ], 422);
         }
 
-        if ($gameFile->getSize() > $maxSize * 1024) {
+        if ($gameFile && $gameFile->getSize() > $maxSize * 1024) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'File is too large. Maximum file size is 10MB.',
@@ -138,34 +130,37 @@ class AdminAssessmentController extends Controller
             ], 422);
         }
 
-        $options = array_map('trim', explode(',', $request->input('options')));
+        $options = array_values(array_filter(array_map('trim', explode(',', $request->input('options'))), fn ($value) => $value !== ''));
 
         $game = new Game();
         $game->title = $request->input('title');
-        $game->description = $request->input('description');
+        $game->description = $request->input('description') ?? '';
         $game->question = $request->input('question');
         $game->answer = $request->input('answer');
         $game->options = json_encode($options);
         $game->type = 'guess_part';
         $game->status = $request->input('status');
+        $game->thumbnail = 'thumbnails/default-thumbnail.png';
 
+        if ($gameFile) {
             $gameFileName = time() . '_' . $gameFile->getClientOriginalName();
-        
-        $gamesPath = public_path('games');
-        if (!File::exists($gamesPath)) {
-            File::makeDirectory($gamesPath, 0755, true);
-        }
-        
-        if (!$gameFile->move($gamesPath, $gameFileName)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to save file. Please try again.',
-                'errors' => ['game_file' => ['Failed to save the uploaded file.']]
-            ], 422);
-        }
 
-        $game->game_file = 'games/' . $gameFileName;
-        $game->thumbnail = 'games/' . $gameFileName;
+            $gamesPath = public_path('games');
+            if (!File::exists($gamesPath)) {
+                File::makeDirectory($gamesPath, 0755, true);
+            }
+            
+            if (!$gameFile->move($gamesPath, $gameFileName)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed to save file. Please try again.',
+                    'errors' => ['game_file' => ['Failed to save the uploaded file.']]
+                ], 422);
+            }
+
+            $game->game_file = 'games/' . $gameFileName;
+            $game->thumbnail = 'games/' . $gameFileName;
+        }
 
         $game->save();
 
@@ -191,7 +186,7 @@ class AdminAssessmentController extends Controller
     {
         $rules = [
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'question' => 'required|string',
             'answer' => 'required|string',
             'options' => 'required|string',
@@ -201,14 +196,18 @@ class AdminAssessmentController extends Controller
         $request->validate($rules);
 
         $gameModel = Game::findOrFail($game);
-        $options = array_map('trim', explode(',', $request->input('options')));
+        $options = array_values(array_filter(array_map('trim', explode(',', $request->input('options'))), fn ($value) => $value !== ''));
 
         $gameModel->title = $request->input('title');
-        $gameModel->description = $request->input('description');
+        $gameModel->description = $request->input('description') ?? '';
         $gameModel->question = $request->input('question');
         $gameModel->answer = $request->input('answer');
         $gameModel->options = json_encode($options);
         $gameModel->status = $request->input('status');
+
+        if (empty($gameModel->thumbnail)) {
+            $gameModel->thumbnail = 'thumbnails/default-thumbnail.png';
+        }
 
         if ($request->hasFile('game_file')) {
             $gameFile = $request->file('game_file');
