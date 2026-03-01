@@ -251,7 +251,7 @@
                                 class="absolute inset-0 bg-linear-to-t from-[#111] via-transparent to-transparent z-10"
                             ></div>
                             <img
-                                src="/images/computer-parts-bg.png"
+                                src="/images/shooting_game_image.jpg"
                                 alt="QA FPS"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-40"
                                 @error="$event.target.style.display = 'none'"
@@ -272,8 +272,8 @@
                             <p
                                 class="text-sm text-gray-500 leading-relaxed mb-6"
                             >
-                                Precision shooter module focused on identifying
-                                computer hardware architectures.
+                                GEL1 response challenge focused on timing,
+                                focus, and accurate option selection.
                             </p>
                             <div class="flex items-center justify-between">
                                 <span
@@ -316,7 +316,7 @@
                                 class="absolute inset-0 bg-linear-to-t from-[#111] via-transparent to-transparent z-10"
                             ></div>
                             <img
-                                src="/images/qa-game-bg.png"
+                                src="/images/typing_game_image.jpg"
                                 alt="TyperGel1"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-40"
                                 @error="$event.target.style.display = 'none'"
@@ -337,8 +337,8 @@
                             <p
                                 class="text-sm text-gray-500 leading-relaxed mb-6"
                             >
-                                High-speed typing challenge designed to master
-                                ICT terminology and concepts.
+                                GEL1 typing challenge built to improve typing
+                                speed, rhythm, and input precision.
                             </p>
                             <div class="flex items-center justify-between">
                                 <span
@@ -376,7 +376,7 @@
                                 class="absolute inset-0 bg-linear-to-t from-[#111] via-transparent to-transparent z-10"
                             ></div>
                             <img
-                                src="/images/lesson-game-bg.png"
+                                src="/images/studies_image.jpg"
                                 alt="Studies"
                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-40"
                                 @error="$event.target.style.display = 'none'"
@@ -439,11 +439,21 @@
                 Authenticating Terminal...
             </div>
         </div>
+
+        <button
+            type="button"
+            @click="toggleBackgroundMusic"
+            class="fixed bottom-6 right-6 z-[70] px-4 py-3 rounded-xl border-2 border-red-500/60 bg-black/70 backdrop-blur-md text-white text-xs font-black uppercase tracking-widest hover:bg-black/85 hover:border-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.2)] flex items-center gap-2"
+        >
+            <i :class="isMusicPlaying ? 'fas fa-volume-up' : 'fas fa-volume-mute'"></i>
+            <span>{{ isMusicPlaying ? "Pause Music" : "Play Music" }}</span>
+        </button>
     </div>
 </template>
 
 <script>
 import axios from "axios";
+import { Howl } from "howler";
 
 export default {
     name: "UserDashboard",
@@ -463,6 +473,8 @@ export default {
             gameAlertMessage: "",
             showProfileDropdown: false,
             isLoading: true,
+            backgroundMusic: null,
+            isMusicPlaying: false,
         };
     },
     computed: {
@@ -495,11 +507,66 @@ export default {
         await this.fetchGameSettings();
         document.addEventListener("click", this.handleClickOutside);
         this.isLoading = false;
+        this.initBackgroundMusic();
     },
     beforeUnmount() {
         document.removeEventListener("click", this.handleClickOutside);
+        this.stopBackgroundMusic();
     },
     methods: {
+        initBackgroundMusic() {
+            if (this.backgroundMusic) return;
+
+            const tracks = [
+                "/audio/Bando (DASHBOARD).mp3",
+                "/audio/BBBLUE (DASHBOARD).mp3",
+            ];
+            const selectedTrack =
+                tracks[Math.floor(Math.random() * tracks.length)];
+
+            this.backgroundMusic = new Howl({
+                src: [encodeURI(selectedTrack)],
+                loop: true,
+                volume: 0.22,
+                html5: true,
+                onplay: () => {
+                    this.isMusicPlaying = true;
+                },
+                onpause: () => {
+                    this.isMusicPlaying = false;
+                },
+                onstop: () => {
+                    this.isMusicPlaying = false;
+                },
+                onplayerror: () => {
+                    this.isMusicPlaying = false;
+                    this.backgroundMusic?.once("unlock", () => {
+                        this.backgroundMusic?.play();
+                    });
+                },
+            });
+
+            this.backgroundMusic.play();
+        },
+        toggleBackgroundMusic() {
+            if (!this.backgroundMusic) {
+                this.initBackgroundMusic();
+                return;
+            }
+
+            if (this.backgroundMusic.playing()) {
+                this.backgroundMusic.pause();
+            } else {
+                this.backgroundMusic.play();
+            }
+        },
+        stopBackgroundMusic() {
+            if (!this.backgroundMusic) return;
+            this.backgroundMusic.stop();
+            this.backgroundMusic.unload();
+            this.backgroundMusic = null;
+            this.isMusicPlaying = false;
+        },
         async fetchUser() {
             try {
                 const response = await axios.get("/api/user");

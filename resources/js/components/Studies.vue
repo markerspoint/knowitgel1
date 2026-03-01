@@ -409,11 +409,21 @@
                 </div>
             </div>
         </div>
+
+        <button
+            type="button"
+            @click="toggleBackgroundMusic"
+            class="fixed bottom-6 right-6 z-[80] px-4 py-3 rounded-xl border-2 border-red-500/60 bg-black/70 backdrop-blur-md text-white text-xs font-black uppercase tracking-widest hover:bg-black/85 hover:border-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.2)] flex items-center gap-2"
+        >
+            <i :class="isMusicPlaying ? 'fas fa-volume-up' : 'fas fa-volume-mute'"></i>
+            <span>{{ isMusicPlaying ? "Pause Music" : "Play Music" }}</span>
+        </button>
     </div>
 </template>
 
 <script>
 import axios from "axios";
+import { Howl } from "howler";
 
 export default {
     name: "Studies",
@@ -427,6 +437,8 @@ export default {
             jumpLessonNumber: 1,
             lessonListPage: 1,
             lessonListPageSize: 12,
+            backgroundMusic: null,
+            isMusicPlaying: false,
         };
     },
     computed: {
@@ -501,8 +513,58 @@ export default {
     },
     async mounted() {
         await this.fetchStudies();
+        this.initBackgroundMusic();
+    },
+    beforeUnmount() {
+        this.stopBackgroundMusic();
     },
     methods: {
+        initBackgroundMusic() {
+            if (this.backgroundMusic) return;
+
+            this.backgroundMusic = new Howl({
+                src: [encodeURI("/audio/Wonderland (STUDIES).mp3")],
+                loop: true,
+                volume: 0.2,
+                html5: true,
+                onplay: () => {
+                    this.isMusicPlaying = true;
+                },
+                onpause: () => {
+                    this.isMusicPlaying = false;
+                },
+                onstop: () => {
+                    this.isMusicPlaying = false;
+                },
+                onplayerror: () => {
+                    this.isMusicPlaying = false;
+                    this.backgroundMusic?.once("unlock", () => {
+                        this.backgroundMusic?.play();
+                    });
+                },
+            });
+
+            this.backgroundMusic.play();
+        },
+        toggleBackgroundMusic() {
+            if (!this.backgroundMusic) {
+                this.initBackgroundMusic();
+                return;
+            }
+
+            if (this.backgroundMusic.playing()) {
+                this.backgroundMusic.pause();
+            } else {
+                this.backgroundMusic.play();
+            }
+        },
+        stopBackgroundMusic() {
+            if (!this.backgroundMusic) return;
+            this.backgroundMusic.stop();
+            this.backgroundMusic.unload();
+            this.backgroundMusic = null;
+            this.isMusicPlaying = false;
+        },
         async fetchStudies() {
             try {
                 this.loading = true;

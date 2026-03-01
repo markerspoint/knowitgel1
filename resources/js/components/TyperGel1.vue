@@ -494,6 +494,15 @@
                 >
             </div>
         </div>
+
+        <button
+            type="button"
+            @click="toggleBackgroundMusic"
+            class="fixed bottom-6 right-6 z-[120] px-4 py-3 rounded-xl border-2 border-red-500/60 bg-black/70 backdrop-blur-md text-white text-xs font-black uppercase tracking-widest hover:bg-black/85 hover:border-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.2)] flex items-center gap-2"
+        >
+            <i :class="isMusicPlaying ? 'fas fa-volume-up' : 'fas fa-volume-mute'"></i>
+            <span>{{ isMusicPlaying ? "Pause Music" : "Play Music" }}</span>
+        </button>
     </div>
 </template>
 
@@ -530,6 +539,8 @@ export default {
             correctSound: null,
             wrongSound: null,
             typeSound: null,
+            backgroundMusic: null,
+            isMusicPlaying: false,
             animationFrameId: null,
             errorMessage: "",
             pressedKeyIndex: null,
@@ -561,6 +572,7 @@ export default {
     mounted() {
         this.createBackgroundParticles();
         this.initSounds();
+        this.initBackgroundMusic();
         window.addEventListener("keydown", this.handleKeydown);
         this.startAnimation();
         this.$nextTick(() => {
@@ -571,9 +583,63 @@ export default {
         window.removeEventListener("keydown", this.handleKeydown);
         this.clearTimer();
         this.stopAnimation();
+        this.stopBackgroundMusic();
         gsap.killTweensOf("*");
     },
     methods: {
+        initBackgroundMusic() {
+            if (this.backgroundMusic) return;
+
+            const tracks = [
+                "/audio/Disfigure Blank (TYPING GAME).mp3",
+                "/audio/Feel Good (TYPING GAME).mp3",
+            ];
+            const selectedTrack =
+                tracks[Math.floor(Math.random() * tracks.length)];
+
+            this.backgroundMusic = new Howl({
+                src: [encodeURI(selectedTrack)],
+                loop: true,
+                volume: 0.18,
+                html5: true,
+                onplay: () => {
+                    this.isMusicPlaying = true;
+                },
+                onpause: () => {
+                    this.isMusicPlaying = false;
+                },
+                onstop: () => {
+                    this.isMusicPlaying = false;
+                },
+                onplayerror: () => {
+                    this.isMusicPlaying = false;
+                    this.backgroundMusic?.once("unlock", () => {
+                        this.backgroundMusic?.play();
+                    });
+                },
+            });
+
+            this.backgroundMusic.play();
+        },
+        toggleBackgroundMusic() {
+            if (!this.backgroundMusic) {
+                this.initBackgroundMusic();
+                return;
+            }
+
+            if (this.backgroundMusic.playing()) {
+                this.backgroundMusic.pause();
+            } else {
+                this.backgroundMusic.play();
+            }
+        },
+        stopBackgroundMusic() {
+            if (!this.backgroundMusic) return;
+            this.backgroundMusic.stop();
+            this.backgroundMusic.unload();
+            this.backgroundMusic = null;
+            this.isMusicPlaying = false;
+        },
         startWithDifficulty(level) {
             this.difficulty = level;
             this.fetchConfigAndStart();
