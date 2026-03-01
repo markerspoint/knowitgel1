@@ -355,6 +355,8 @@ export default {
 
 .prose {
     line-height: 1.8;
+    white-space: pre-wrap;
+    white-space: break-spaces;
 }
 
 .prose :deep(h1),
@@ -369,6 +371,7 @@ export default {
 
 .prose :deep(p) {
     margin: 0 0 1rem 0;
+    white-space: inherit;
 }
 
 .prose :deep(ul),
@@ -378,6 +381,7 @@ export default {
 
 .prose :deep(li) {
     margin-bottom: 0.35rem;
+    white-space: inherit;
 }
 
 .prose :deep(strong) {

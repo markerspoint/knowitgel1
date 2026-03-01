@@ -638,9 +638,23 @@ export default {
                 this.contentEditor = new Editor({
                     extensions: [StarterKit],
                     content: initialContent,
+                    parseOptions: {
+                        preserveWhitespace: "full",
+                    },
                     editorProps: {
                         attributes: {
                             class: "tiptap-editor",
+                        },
+                        handleKeyDown: (view, event) => {
+                            if (event.key !== "Tab") return false;
+
+                            event.preventDefault();
+                            this.contentEditor
+                                ?.chain()
+                                .focus()
+                                .insertContent("    ")
+                                .run();
+                            return true;
                         },
                     },
                     onUpdate: ({ editor }) => {
@@ -652,6 +666,9 @@ export default {
 
             this.contentEditor.commands.setContent(initialContent, {
                 emitUpdate: false,
+                parseOptions: {
+                    preserveWhitespace: "full",
+                },
             });
             this.studyForm.content = this.contentEditor.getHTML();
         },
@@ -817,6 +834,9 @@ export default {
     color: #d1d5db;
     font-size: 0.95rem;
     line-height: 1.7;
+    white-space: pre-wrap;
+    white-space: break-spaces;
+    tab-size: 4;
     outline: none;
 }
 
