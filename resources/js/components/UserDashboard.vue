@@ -41,11 +41,6 @@
                                 >
                                     {{ user?.fname }} {{ user?.lname }}
                                 </p>
-                                <p
-                                    class="text-[10px] font-mono text-gray-500 uppercase tracking-widest"
-                                >
-                                    Learner Level 1
-                                </p>
                             </div>
                             <div
                                 class="w-10 h-10 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden bg-white/5 group-hover:border-red-500/50 transition-colors"
@@ -264,7 +259,7 @@
                             <div class="absolute top-4 left-4 z-20">
                                 <span
                                     class="px-3 py-1 bg-red-500 text-white text-[10px] font-black uppercase rounded-lg shadow-lg"
-                                    >Module I</span
+                                    >Quiz Mode</span
                                 >
                             </div>
                         </div>
@@ -329,7 +324,7 @@
                             <div class="absolute top-4 left-4 z-20">
                                 <span
                                     class="px-3 py-1 bg-blue-500 text-white text-[10px] font-black uppercase rounded-lg shadow-lg"
-                                    >Module II</span
+                                    >Typing Mode</span
                                 >
                             </div>
                         </div>

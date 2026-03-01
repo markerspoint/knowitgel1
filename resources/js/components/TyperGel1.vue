@@ -37,11 +37,11 @@
                     <div>
                         <span
                             class="block text-sm font-black uppercase tracking-[0.2em] text-white"
-                            >Typing Input</span
+                            >Typing Practice</span
                         >
                         <span
                             class="block text-[9px] font-mono text-gray-500 uppercase tracking-widest"
-                            >Protocol: Buffer Stream Processing</span
+                            >Session: Timed Word Practice</span
                         >
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                         >
                         <span
                             class="text-xs font-black text-red-500 uppercase tracking-tighter"
-                            >{{ difficulty }} STABILITY</span
+                            >{{ difficulty }} MODE</span
                         >
                     </div>
                     <div class="flex items-center space-x-2">
@@ -68,7 +68,7 @@
                             @click="$router.push('/user/dashboard')"
                             class="px-5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest border border-red-500/20 transition-all"
                         >
-                            Abort
+                            Exit
                         </button>
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                         <div class="relative z-10 text-center py-2 px-3">
                             <span
                                 class="block text-[7px] font-mono text-gray-500 uppercase tracking-[0.3em] mb-1"
-                                >Encrypted Packet</span
+                                >Word</span
                             >
                             <div
                                 class="flex items-center justify-center font-black text-lg uppercase tracking-[0.2em]"
@@ -156,7 +156,7 @@
                                 ></span>
                                 <span
                                     class="text-[8px] font-black text-white uppercase tracking-[0.2em]"
-                                    >Stream Telemetry</span
+                                    >Session Stats</span
                                 >
                             </div>
                             <div class="flex items-center space-x-4">
@@ -181,7 +181,7 @@
                         <p
                             class="text-[10px] text-center text-gray-400 uppercase tracking-widest font-medium italic"
                         >
-                            Clear word packets before buffer overflow. Sync:
+                            Type words before time runs out. Accuracy:
                             {{ (accuracy * 100).toFixed(0) }}%
                         </p>
                     </div>
@@ -367,13 +367,13 @@
                             <h2
                                 class="text-4xl font-black text-white uppercase tracking-tighter mb-4 italic"
                             >
-                                Typing Stats
+                                Session Setup
                             </h2>
                             <p
                                 class="text-sm text-gray-400 mb-12 font-medium leading-relaxed uppercase tracking-widest"
                             >
-                                Process the IT data stream. Clear encryption
-                                packets before buffer overflow occurs.
+                                Type the displayed words accurately before time
+                                runs out.
                             </p>
                             <div
                                 class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
@@ -430,14 +430,14 @@
                             >
                                 {{
                                     gameWon
-                                        ? "BUFFER FLUSHED"
-                                        : "STREAM DEPLETED"
+                                        ? "SESSION COMPLETE"
+                                        : "SESSION ENDED"
                                 }}
                             </h2>
                             <p
                                 class="text-[10px] font-mono text-gray-500 uppercase tracking-[0.4em] mb-10"
                             >
-                                Data Integrity Output Report
+                                Session Summary
                             </p>
                             <div class="grid grid-cols-3 gap-6 mb-12">
                                 <div
@@ -445,7 +445,7 @@
                                 >
                                     <span
                                         class="block text-[8px] font-mono text-gray-500 uppercase mb-2"
-                                        >Throughput (WPM)</span
+                                        >Typing Speed (WPM)</span
                                     ><span
                                         class="text-3xl font-black text-white italic"
                                         >{{ wpm.toFixed(0) }}</span
@@ -456,7 +456,7 @@
                                 >
                                     <span
                                         class="block text-[8px] font-mono text-gray-500 uppercase mb-2"
-                                        >Sync Accuracy</span
+                                        >Accuracy</span
                                     ><span
                                         class="text-3xl font-black text-white italic"
                                         >{{
@@ -481,12 +481,12 @@
                                     class="px-10 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-gray-200 transition-all"
                                     @click="resetGame"
                                 >
-                                    Re-sync Interface</button
+                                    Restart Session</button
                                 ><button
                                     class="px-10 py-4 rounded-xl bg-red-500 text-white font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-all"
                                     @click="$router.push('/user/dashboard')"
                                 >
-                                    Exit Terminal
+                                    Back to Dashboard
                                 </button>
                             </div>
                         </div>
@@ -588,7 +588,8 @@ export default {
                         text: typeof w === "string" ? w : w.word,
                     }));
                     if (!this.originalWordPool.length) {
-                        this.errorMessage = "Handshake Refused.";
+                        this.errorMessage =
+                            "No words are available right now.";
                         this.phase = "idle";
                         return;
                     }
@@ -597,7 +598,7 @@ export default {
                     this.spawnInitialBubbles();
                 })
                 .catch(() => {
-                    this.errorMessage = "Handshake Failure.";
+                    this.errorMessage = "Network error: connection failed.";
                     this.phase = "idle";
                 });
         },

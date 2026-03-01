@@ -38,8 +38,7 @@
                 <h4
                     class="text-xs font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
-                    <i class="fas fa-chart-line mr-3 text-red-500"></i>Daily
-                    Daily Activity
+                    <i class="fas fa-chart-line mr-3 text-red-500"></i>Daily Activity
                 </h4>
                 <div class="h-[300px] w-full">
                     <canvas ref="dailySessionsChart"></canvas>
@@ -49,8 +48,7 @@
                 <h4
                     class="text-xs font-black text-white uppercase tracking-widest mb-8 flex items-center"
                 >
-                    <i class="fas fa-chart-bar mr-3 text-red-500"></i>Monthly
-                    Monthly Activity
+                    <i class="fas fa-chart-bar mr-3 text-red-500"></i>Monthly Activity
                 </h4>
                 <div class="h-[300px] w-full">
                     <canvas ref="monthlySessionsChart"></canvas>
