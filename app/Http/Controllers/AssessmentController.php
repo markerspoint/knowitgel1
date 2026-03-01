@@ -9,102 +9,105 @@ use App\Models\Score;
 
 class AssessmentController extends Controller
 {
-    private function getDefaultQuestions()
+    private function parseOptions($options): array
     {
-        return [
-            [
-                'id' => 'def_1',
-                'title' => 'Network Protocol',
-                'question' => 'Which protocol is primarily used for securely logging into a remote server over a network?',
-                'options' => ['FTP', 'SSH', 'SMTP', 'HTTP'],
-                'answer' => 'SSH',
-                'description' => 'Secure shell protocol for remote access.',
-            ],
-            [
-                'id' => 'def_2',
-                'title' => 'Web Infrastructure',
-                'question' => 'What is the primary purpose of a Load Balancer in a high-traffic web environment?',
-                'options' => [
-                    'To store long-term backups of the database',
-                    'To encrypt incoming data packets',
-                    'To act as a physical cooling system for the rack',
-                    'To distribute incoming network traffic across multiple servers'
-                ],
-                'answer' => 'To distribute incoming network traffic across multiple servers',
-                'description' => 'Managing traffic across multiple servers.',
-            ],
-            [
-                'id' => 'def_3',
-                'title' => 'Development Tools',
-                'question' => 'Which of these is a \'Version Control System\' used by developers to track changes in code?',
-                'options' => ['Docker', 'Apache', 'Git', 'Kubernetes'],
-                'answer' => 'Git',
-                'description' => 'System for tracking changes in source code.',
-            ]
-        ];
+        if (is_array($options)) {
+            return array_values(array_filter(array_map('trim', $options), fn ($value) => $value !== ''));
+        }
+
+        if (is_string($options)) {
+            $decoded = json_decode($options, true);
+            if (is_array($decoded)) {
+                return array_values(array_filter(array_map('trim', $decoded), fn ($value) => $value !== ''));
+            }
+
+            return array_values(array_filter(array_map('trim', explode(',', $options)), fn ($value) => $value !== ''));
+        }
+
+        return [];
     }
 
     public function questions(Request $request)
     {
-        $questions = $this->getDefaultQuestions();
+        $questions = Game::where('type', 'guess_part')
+            ->where('status', 'active')
+            ->orderBy('id')
+            ->get();
+
+        $payload = $questions
+            ->map(function (Game $game) {
+                return [
+                    'id' => $game->id,
+                    'title' => $game->title,
+                    'description' => $game->description,
+                    'question' => $game->question,
+                    'answer' => $game->answer,
+                    'options' => $this->parseOptions($game->options),
+                    'game_file' => $game->game_file,
+                    'thumbnail' => $game->thumbnail,
+                    'type' => $game->type,
+                    'status' => $game->status,
+                ];
+            })
+            ->filter(function (array $question) {
+                return !empty($question['question'])
+                    && !empty($question['answer'])
+                    && count($question['options']) > 0;
+            })
+            ->values();
 
         return response()->json([
             'status' => 'success',
-            'questions' => array_map(function ($q) {
-                return [
-                    'id' => $q['id'],
-                    'title' => $q['title'],
-                    'description' => $q['description'],
-                    'question' => $q['question'],
-                    'answer' => $q['answer'],
-                    'options' => $q['options'],
-                    'type' => 'default_assessment',
-                    'status' => 'active'
-                ];
-            }, $questions)
+            'questions' => $payload,
         ]);
     }
 
     public function submit(Request $request)
     {
         $user = $request->user();
-        $assessments = $request->input('assessments', []);
-        $defaultQuestions = collect($this->getDefaultQuestions());
+        $validated = $request->validate([
+            'assessments' => 'required|array|min:1',
+            'assessments.*.game_id' => 'required|integer',
+            'assessments.*.user_answer' => 'nullable|string',
+        ]);
+
+        $assessments = collect($validated['assessments']);
+        $questionIds = $assessments->pluck('game_id')->map(fn ($id) => (int) $id)->unique()->values();
+        $questions = Game::whereIn('id', $questionIds)
+            ->where('type', 'guess_part')
+            ->get()
+            ->keyBy('id');
 
         $correctCount = 0;
+        $processedCount = 0;
 
         foreach ($assessments as $assessment) {
-            $questionId = $assessment['game_id'] ?? null;
-            $isCorrect = false;
-
-            // Check if it's a default question
-            $defaultQ = $defaultQuestions->firstWhere('id', $questionId);
-            if ($defaultQ) {
-                $isCorrect = (trim(strtolower($assessment['user_answer'])) === trim(strtolower($defaultQ['answer'])));
-                
-                // We don't save to UserAssessment since it requires a real game_id (foreign key)
-                // If the user wants to keep track of these, we would need to modify the schema.
-                // For now, we will just count the score.
-                if ($isCorrect) {
-                    $correctCount++;
-                }
-            } else {
-                // Fallback for real games if any
-                $game = Game::find($questionId);
-                if ($game) {
-                    $isCorrect = $assessment['is_correct'];
-                    UserAssessment::create([
-                        'user_id' => $user->id,
-                        'game_id' => $game->id,
-                        'user_answer' => $assessment['user_answer'],
-                        'is_correct' => $isCorrect
-                    ]);
-
-                    if ($isCorrect) {
-                        $correctCount++;
-                    }
-                }
+            $question = $questions->get((int) $assessment['game_id']);
+            if (!$question) {
+                continue;
             }
+
+            $processedCount++;
+            $userAnswer = trim((string) ($assessment['user_answer'] ?? ''));
+            $isCorrect = mb_strtolower($userAnswer) === mb_strtolower(trim((string) $question->answer));
+
+            UserAssessment::create([
+                'user_id' => $user->id,
+                'game_id' => $question->id,
+                'user_answer' => $userAnswer,
+                'is_correct' => $isCorrect,
+            ]);
+
+            if ($isCorrect) {
+                $correctCount++;
+            }
+        }
+
+        if ($processedCount === 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No valid assessment questions were submitted.',
+            ], 422);
         }
 
         Score::create([
@@ -117,7 +120,7 @@ class AssessmentController extends Controller
             'status' => 'success',
             'message' => 'Assessment submitted successfully',
             'correct_count' => $correctCount,
-            'total_questions' => count($assessments)
+            'total_questions' => $processedCount,
         ]);
     }
 }

@@ -403,16 +403,7 @@ export default {
                 }
             }
 
-            return [
-                "CPU",
-                "GPU",
-                "RAM",
-                "Motherboard",
-                "Hard Drive",
-                "SSD",
-                "Power Supply",
-                "Cooling Fan",
-            ];
+            return [];
         },
         selectAnswer(answer) {
             this.selectedAnswer = answer;

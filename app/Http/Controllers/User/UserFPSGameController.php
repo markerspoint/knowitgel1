@@ -26,7 +26,6 @@ class UserFPSGameController extends Controller
         $games = Game::where('type', 'qa')
             ->where('status', 'active')
             ->inRandomOrder()
-            ->limit(10)
             ->get();
 
         $questions = $games->map(function (Game $game) {
@@ -82,5 +81,4 @@ class UserFPSGameController extends Controller
         ]);
     }
 }
-
 

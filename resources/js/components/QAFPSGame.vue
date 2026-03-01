@@ -37,11 +37,11 @@
                     <div>
                         <span
                             class="block text-sm font-black uppercase tracking-[0.2em] text-white"
-                            >Logic Combat Module</span
+                            >Interactive Q&A Module</span
                         >
                         <span
                             class="block text-[9px] font-mono text-gray-500 uppercase tracking-widest"
-                            >Protocol: Q&A Target Acquisition</span
+                            >Session: Timed Question Practice</span
                         >
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                             @click="$router.push('/user/dashboard')"
                             class="px-5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest border border-red-500/20 transition-all"
                         >
-                            Abort
+                            Exit
                         </button>
                     </div>
                 </div>
@@ -176,7 +176,7 @@
                             <div class="flex items-center space-x-4">
                                 <span
                                     class="text-[8px] font-mono text-gray-500 uppercase"
-                                    >Pkt {{ currentIndex + 1 }}/{{
+                                    >Item {{ currentIndex + 1 }}/{{
                                         totalQuestions
                                     }}</span
                                 >
@@ -208,7 +208,7 @@
                                 "{{ currentQuestion.question }}"
                             </span>
                             <span v-else class="text-white/20 animate-pulse"
-                                >Initializing Data Stream...</span
+                                >Loading question...</span
                             >
                         </p>
                     </div>
@@ -246,7 +246,7 @@
                         <div class="relative z-10 text-center">
                             <span
                                 class="block text-[8px] font-mono text-gray-500 uppercase tracking-widest mb-1 group-hover/bubble:text-red-500/60"
-                                >Candidate Option</span
+                                >Answer Option</span
                             >
                             <span
                                 class="text-sm font-black text-white uppercase tracking-tight group-hover/bubble:text-red-500 transition-colors"
@@ -271,7 +271,7 @@
                             <div
                                 class="text-[120px] font-black text-red-500/20 uppercase tracking-[0.5em] animate-ping"
                             >
-                                CRITICAL HIT
+                                CORRECT
                             </div>
                         </div>
                     </div>
@@ -285,7 +285,7 @@
                         <div
                             class="text-[120px] font-black text-white/10 uppercase tracking-[0.5em] animate-pulse"
                         >
-                            SYSTEM JAM
+                            TRY AGAIN
                         </div>
                     </div>
                 </transition>
@@ -330,7 +330,7 @@
                         <div
                             class="text-red-500 font-mono text-[10px] font-black tracking-widest uppercase"
                         >
-                            Weapon Asset Missing
+                            Visual Asset Missing
                         </div>
                     </div>
                 </div>
@@ -345,7 +345,7 @@
                         <div class="flex items-center justify-between">
                             <span
                                 class="text-[9px] font-black text-gray-500 uppercase tracking-widest"
-                                >Logic Links</span
+                                >Score</span
                             >
                             <span class="text-lg font-black text-white">{{
                                 score
@@ -365,7 +365,7 @@
                             <div class="flex flex-col">
                                 <span
                                     class="text-[8px] font-mono text-gray-600 uppercase"
-                                    >Confirmed</span
+                                    >Correct</span
                                 >
                                 <span
                                     class="text-xs font-bold text-green-500"
@@ -375,7 +375,7 @@
                             <div class="flex flex-col items-end">
                                 <span
                                     class="text-[8px] font-mono text-gray-600 uppercase"
-                                    >Failed</span
+                                    >Incorrect</span
                                 >
                                 <span class="text-xs font-bold text-red-500">{{
                                     incorrectCount
@@ -396,7 +396,7 @@
                             <div
                                 class="absolute -top-10 left-1/2 -translate-x-1/2 text-red-500/5 text-[180px] font-black -z-10 rotate-12 select-none"
                             >
-                                FPS
+                                Q&A
                             </div>
 
                             <div
@@ -410,14 +410,13 @@
                             <h2
                                 class="text-4xl font-black text-white uppercase tracking-tighter mb-4 italic"
                             >
-                                Aim Stats
+                                Session Setup
                             </h2>
                             <p
                                 class="text-sm text-gray-400 mb-12 font-medium leading-relaxed uppercase tracking-widest"
                             >
-                                Synchronize your motor cortex. Identify logic
-                                vulnerabilities and eliminate incorrect data
-                                strings.
+                                Review each question and select the best answer
+                                before time runs out.
                             </p>
 
                             <div
@@ -483,12 +482,16 @@
                             <h2
                                 class="text-5xl font-black text-white uppercase tracking-tighter mb-2"
                             >
-                                {{ gameWon ? "SYNC COMPLETE" : "LINK SEVERED" }}
+                                {{
+                                    gameWon
+                                        ? "SESSION COMPLETE"
+                                        : "SESSION ENDED"
+                                }}
                             </h2>
                             <p
                                 class="text-[10px] font-mono text-gray-500 uppercase tracking-[0.4em] mb-10"
                             >
-                                Operation Outcome Status Report
+                                Session Summary
                             </p>
 
                             <div class="grid grid-cols-3 gap-6 mb-12">
@@ -497,7 +500,7 @@
                                 >
                                     <span
                                         class="block text-[8px] font-mono text-gray-500 uppercase mb-2"
-                                        >Efficiency Rating</span
+                                        >Accuracy</span
                                     >
                                     <span
                                         class="text-3xl font-black text-white italic"
@@ -513,7 +516,7 @@
                                 >
                                     <span
                                         class="block text-[8px] font-mono text-gray-500 uppercase mb-2"
-                                        >Confirmed Packs</span
+                                        >Correct Answers</span
                                     >
                                     <span
                                         class="text-3xl font-black text-white italic"
@@ -526,7 +529,7 @@
                                 >
                                     <span
                                         class="block text-[8px] font-mono text-gray-500 uppercase mb-2"
-                                        >Fatigue</span
+                                        >Incorrect Answers</span
                                     >
                                     <span
                                         class="text-3xl font-black text-red-500 italic"
@@ -540,19 +543,19 @@
                                     class="px-10 py-4 rounded-xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-gray-200 transition-all shadow-[0_15px_30px_rgba(255,255,255,0.1)]"
                                     @click="resetGame"
                                 >
-                                    Re-Initialize Link
+                                    Restart Session
                                 </button>
                                 <button
                                     class="px-10 py-4 rounded-xl bg-red-500 text-white font-black uppercase tracking-widest text-[10px] hover:bg-red-600 transition-all shadow-[0_15px_30px_rgba(239,68,68,0.3)]"
                                     @click="$router.push('/user/dashboard')"
                                 >
-                                    Exit Terminal
+                                    Back to Dashboard
                                 </button>
                                 <button
                                     class="px-10 py-4 rounded-xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/10 transition-all"
                                     @click="$router.push('/leaderboard')"
                                 >
-                                    Node Rankings
+                                    Leaderboard
                                 </button>
                             </div>
                         </div>
@@ -560,6 +563,15 @@
                 </transition>
             </div>
         </div>
+
+        <button
+            type="button"
+            @click="toggleBackgroundMusic"
+            class="fixed bottom-6 right-6 z-[120] px-4 py-3 rounded-xl border-2 border-red-500/60 bg-black/70 backdrop-blur-md text-white text-xs font-black uppercase tracking-widest hover:bg-black/85 hover:border-red-400 transition-all shadow-[0_0_20px_rgba(239,68,68,0.2)] flex items-center gap-2"
+        >
+            <i :class="isMusicPlaying ? 'fas fa-volume-up' : 'fas fa-volume-mute'"></i>
+            <span>{{ isMusicPlaying ? "Pause Music" : "Play Music" }}</span>
+        </button>
     </div>
 </template>
 
@@ -592,6 +604,8 @@ export default {
             correctSound: null,
             wrongSound: null,
             shotSound: null,
+            backgroundMusic: null,
+            isMusicPlaying: false,
             animationFrameId: null,
             showMuzzleFlash: false,
             showGunRecoil: false,
@@ -623,15 +637,70 @@ export default {
     mounted() {
         this.createBackgroundParticles();
         this.initSounds();
+        this.initBackgroundMusic();
         this.updateGunPivot();
         window.addEventListener("resize", this.updateGunPivot);
     },
     beforeUnmount() {
         this.clearTimer();
         this.stopAnimation();
+        this.stopBackgroundMusic();
         window.removeEventListener("resize", this.updateGunPivot);
     },
     methods: {
+        initBackgroundMusic() {
+            if (this.backgroundMusic) return;
+
+            const tracks = [
+                "/audio/Distant Echoes (SHOOTING GAME).mp3",
+                "/audio/Fainted (SHOOTING GAME).mp3",
+            ];
+            const selectedTrack =
+                tracks[Math.floor(Math.random() * tracks.length)];
+
+            this.backgroundMusic = new Howl({
+                src: [encodeURI(selectedTrack)],
+                loop: true,
+                volume: 0.2,
+                html5: true,
+                onplay: () => {
+                    this.isMusicPlaying = true;
+                },
+                onpause: () => {
+                    this.isMusicPlaying = false;
+                },
+                onstop: () => {
+                    this.isMusicPlaying = false;
+                },
+                onplayerror: () => {
+                    this.isMusicPlaying = false;
+                    this.backgroundMusic?.once("unlock", () => {
+                        this.backgroundMusic?.play();
+                    });
+                },
+            });
+
+            this.backgroundMusic.play();
+        },
+        toggleBackgroundMusic() {
+            if (!this.backgroundMusic) {
+                this.initBackgroundMusic();
+                return;
+            }
+
+            if (this.backgroundMusic.playing()) {
+                this.backgroundMusic.pause();
+            } else {
+                this.backgroundMusic.play();
+            }
+        },
+        stopBackgroundMusic() {
+            if (!this.backgroundMusic) return;
+            this.backgroundMusic.stop();
+            this.backgroundMusic.unload();
+            this.backgroundMusic = null;
+            this.isMusicPlaying = false;
+        },
         startWithDifficulty(level) {
             this.difficulty = level;
             this.errorMessage = "";
@@ -651,7 +720,7 @@ export default {
                     this.gameOver = false;
                     if (!this.questions.length) {
                         this.errorMessage =
-                            "Linkage Refused: No data packets in registry.";
+                            "No questions are available right now.";
                         this.phase = "idle";
                         return;
                     }
@@ -829,7 +898,7 @@ export default {
                 this.correctCount += 1;
                 this.feedbackType = "correct";
                 if (this.correctSound) this.correctSound.play();
-                this.speakFeedback("Target Neutralized.");
+                this.speakFeedback("Correct answer.");
                 this.phase = "feedback";
                 setTimeout(() => {
                     this.currentIndex += 1;
@@ -842,11 +911,11 @@ export default {
                 if (this.wrongSound) this.wrongSound.play();
 
                 if (this.wrongAnswersForCurrentQuestion >= 2) {
-                    this.speakFeedback("System Failure.");
+                    this.speakFeedback("Session ended.");
                     this.phase = "feedback";
                     setTimeout(() => this.finishGame(false), 1000);
                 } else {
-                    this.speakFeedback("Fault Detected. Re-acquiring target.");
+                    this.speakFeedback("Incorrect answer. Try again.");
                     this.phase = "feedback";
                     setTimeout(() => {
                         this.questionLocked = false;
@@ -865,7 +934,7 @@ export default {
             this.incorrectCount += 1;
             this.wrongAnswersForCurrentQuestion += 1;
             this.feedbackType = "wrong";
-            this.speakFeedback("Link Timed Out.");
+            this.speakFeedback("Time is up.");
             this.phase = "feedback";
 
             if (this.wrongAnswersForCurrentQuestion >= 2) {
