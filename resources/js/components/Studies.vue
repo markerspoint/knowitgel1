@@ -91,7 +91,7 @@
                 </p>
             </div>
 
-            <div v-else class="max-w-4xl mx-auto space-y-12">
+            <div v-else class="max-w-6xl mx-auto space-y-12">
                 <div class="mb-12 text-center reveal-section active">
                     <h2
                         class="text-red-500 font-mono tracking-[0.3em] text-xs mb-3 uppercase"
@@ -141,9 +141,166 @@
 
                 <div
                     v-if="currentStudy"
-                    class="reveal-section active bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500"
+                    class="grid lg:grid-cols-[280px_minmax(0,1fr)] gap-6 items-start"
                 >
-                    <div class="p-10 md:p-16">
+                    <aside
+                        class="reveal-section active bg-white/5 border border-white/10 rounded-2xl p-4 md:p-5 lg:sticky lg:top-28"
+                    >
+                        <div class="space-y-4">
+                            <div class="flex items-end justify-between gap-3">
+                                <div>
+                                    <p
+                                        class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
+                                    >
+                                        Lesson Navigator
+                                    </p>
+                                    <p class="text-xs text-gray-400 mt-1">
+                                        Search, jump, or browse pages.
+                                    </p>
+                                </div>
+                                <p
+                                    class="text-[10px] font-mono text-gray-500 uppercase tracking-widest"
+                                >
+                                    {{ orderedStudies.length }} Total
+                                </p>
+                            </div>
+
+                            <div>
+                                <label
+                                    class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
+                                    for="lesson-search"
+                                >
+                                    Find Lesson
+                                </label>
+                                <div class="relative mt-2">
+                                    <i
+                                        class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs"
+                                    ></i>
+                                    <input
+                                        id="lesson-search"
+                                        v-model.trim="lessonSearch"
+                                        type="text"
+                                        placeholder="Search title or lesson number"
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-red-500/40"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-[1fr_auto] gap-2">
+                                <input
+                                    v-model.number="jumpLessonNumber"
+                                    type="number"
+                                    min="1"
+                                    :max="orderedStudies.length"
+                                    placeholder="Go to lesson #"
+                                    class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-red-500/40"
+                                    @keydown.enter.prevent="jumpToLessonNumber"
+                                />
+                                <button
+                                    type="button"
+                                    @click="jumpToLessonNumber"
+                                    class="px-4 py-2.5 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-[10px] font-black uppercase tracking-widest text-red-400 transition-all"
+                                >
+                                    Go
+                                </button>
+                            </div>
+
+                            <div
+                                class="flex items-center justify-between text-[10px] font-mono text-gray-500 uppercase tracking-widest"
+                            >
+                                <span>
+                                    {{ filteredLessonEntries.length }} Match{{
+                                        filteredLessonEntries.length === 1
+                                            ? ""
+                                            : "es"
+                                    }}
+                                </span>
+                                <span v-if="filteredLessonEntries.length">
+                                    {{ lessonListRangeStart }}-{{
+                                        lessonListRangeEnd
+                                    }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 space-y-2 max-h-[44vh] overflow-y-auto pr-1">
+                            <button
+                                v-for="entry in paginatedLessonEntries"
+                                :key="entry.lesson.id"
+                                @click="goToPage(entry.index)"
+                                :class="[
+                                    'w-full text-left rounded-xl border px-3 py-3 transition-all',
+                                    entry.index === currentPage
+                                        ? 'bg-red-500/15 border-red-500/40'
+                                        : 'bg-white/5 border-white/10 hover:bg-white/10',
+                                ]"
+                            >
+                                <span
+                                    :class="[
+                                        'text-[10px] font-black uppercase tracking-widest',
+                                        entry.index === currentPage
+                                            ? 'text-red-400'
+                                            : 'text-gray-500',
+                                    ]"
+                                >
+                                    Lesson {{ entry.lessonNumber }}
+                                </span>
+                                <p
+                                    :class="[
+                                        'text-sm font-bold mt-1 truncate',
+                                        entry.index === currentPage
+                                            ? 'text-white'
+                                            : 'text-gray-300',
+                                    ]"
+                                >
+                                    {{ entry.lesson.title }}
+                                </p>
+                            </button>
+
+                            <div
+                                v-if="!paginatedLessonEntries.length"
+                                class="rounded-xl border border-white/10 bg-white/5 p-4 text-center"
+                            >
+                                <p
+                                    class="text-[10px] font-black text-gray-500 uppercase tracking-widest"
+                                >
+                                    No lessons found
+                                </p>
+                            </div>
+                        </div>
+
+                        <div
+                            v-if="totalLessonListPages > 1"
+                            class="mt-4 flex items-center justify-between gap-2"
+                        >
+                            <button
+                                type="button"
+                                :disabled="lessonListPage === 1"
+                                @click="setLessonListPage(lessonListPage - 1)"
+                                class="px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                            >
+                                Prev
+                            </button>
+                            <p
+                                class="text-[10px] font-mono text-gray-500 uppercase tracking-widest"
+                            >
+                                Page {{ lessonListPage }} / {{ totalLessonListPages }}
+                            </p>
+                            <button
+                                type="button"
+                                :disabled="lessonListPage === totalLessonListPages"
+                                @click="setLessonListPage(lessonListPage + 1)"
+                                class="px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white/10 transition-all"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </aside>
+
+                    <div
+                        class="reveal-section active bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500"
+                    >
+                        <div class="p-10 md:p-16">
                         <!-- Lesson Header -->
                         <div
                             class="flex flex-col items-center text-center mb-12"
@@ -249,6 +406,7 @@
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
         </div>
     </div>
@@ -265,6 +423,10 @@ export default {
             loading: true,
             currentPage: 0,
             sortOrder: "asc",
+            lessonSearch: "",
+            jumpLessonNumber: 1,
+            lessonListPage: 1,
+            lessonListPageSize: 12,
         };
     },
     computed: {
@@ -279,6 +441,63 @@ export default {
         currentStudy() {
             return this.orderedStudies[this.currentPage] || null;
         },
+        lessonEntries() {
+            return this.orderedStudies.map((lesson, index) => ({
+                lesson,
+                index,
+                lessonNumber: index + 1,
+            }));
+        },
+        filteredLessonEntries() {
+            const term = String(this.lessonSearch || "")
+                .trim()
+                .toLowerCase();
+
+            if (!term) return this.lessonEntries;
+
+            return this.lessonEntries.filter((entry) => {
+                const title = String(entry.lesson.title || "").toLowerCase();
+                const lessonNumber = String(entry.lessonNumber);
+                return title.includes(term) || lessonNumber.includes(term);
+            });
+        },
+        totalLessonListPages() {
+            const pages = Math.ceil(
+                this.filteredLessonEntries.length / this.lessonListPageSize,
+            );
+            return Math.max(pages, 1);
+        },
+        paginatedLessonEntries() {
+            const start = (this.lessonListPage - 1) * this.lessonListPageSize;
+            const end = start + this.lessonListPageSize;
+            return this.filteredLessonEntries.slice(start, end);
+        },
+        lessonListRangeStart() {
+            if (!this.filteredLessonEntries.length) return 0;
+            return (this.lessonListPage - 1) * this.lessonListPageSize + 1;
+        },
+        lessonListRangeEnd() {
+            if (!this.filteredLessonEntries.length) return 0;
+            return Math.min(
+                this.lessonListPage * this.lessonListPageSize,
+                this.filteredLessonEntries.length,
+            );
+        },
+    },
+    watch: {
+        currentPage() {
+            this.jumpLessonNumber = this.currentPage + 1;
+            this.syncLessonListPageWithCurrent();
+        },
+        lessonSearch() {
+            this.lessonListPage = 1;
+            this.syncLessonListPageWithCurrent();
+        },
+        filteredLessonEntries() {
+            if (this.lessonListPage > this.totalLessonListPages) {
+                this.lessonListPage = this.totalLessonListPages;
+            }
+        },
     },
     async mounted() {
         await this.fetchStudies();
@@ -290,6 +509,8 @@ export default {
                 const response = await axios.get("/api/user/studies");
                 this.studies = response.data.studies || [];
                 this.currentPage = 0;
+                this.jumpLessonNumber = 1;
+                this.lessonListPage = 1;
             } catch (error) {
                 console.error("Failed to load lessons:", error);
             } finally {
@@ -321,6 +542,38 @@ export default {
             const plainText = String(content).replace(/<[^>]*>/g, "");
             return plainText.replace(/\s/g, "").length;
         },
+        setLessonListPage(page) {
+            this.lessonListPage = Math.min(
+                Math.max(page, 1),
+                this.totalLessonListPages,
+            );
+        },
+        syncLessonListPageWithCurrent() {
+            const position = this.filteredLessonEntries.findIndex(
+                (entry) => entry.index === this.currentPage,
+            );
+
+            if (position < 0) return;
+
+            this.lessonListPage =
+                Math.floor(position / this.lessonListPageSize) + 1;
+        },
+        jumpToLessonNumber() {
+            const total = this.orderedStudies.length;
+            if (!total) return;
+
+            const target = Math.trunc(Number(this.jumpLessonNumber));
+            if (!Number.isFinite(target)) return;
+
+            const clamped = Math.min(Math.max(target, 1), total);
+            this.jumpLessonNumber = clamped;
+
+            if (this.lessonSearch) {
+                this.lessonSearch = "";
+            }
+
+            this.goToPage(clamped - 1);
+        },
         goToPage(index) {
             const lastIndex = this.orderedStudies.length - 1;
             this.currentPage = Math.min(Math.max(index, 0), lastIndex);
@@ -329,6 +582,8 @@ export default {
         toggleSortOrder() {
             this.sortOrder = this.sortOrder === "asc" ? "desc" : "asc";
             this.currentPage = 0;
+            this.lessonListPage = 1;
+            this.jumpLessonNumber = 1;
             window.scrollTo({ top: 0, behavior: "smooth" });
         },
     },
