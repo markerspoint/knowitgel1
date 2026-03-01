@@ -100,7 +100,7 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-cogs w-5"></i
-                                        ><span>System Settings</span>
+                                        ><span>Settings</span>
                                     </router-link>
                                 </div>
                                 <button

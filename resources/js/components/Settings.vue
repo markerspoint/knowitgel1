@@ -44,11 +44,6 @@
                                 >
                                     {{ user?.fname }} {{ user?.lname }}
                                 </p>
-                                <p
-                                    class="text-[10px] font-mono text-red-500 uppercase tracking-widest"
-                                >
-                                    Network Authority
-                                </p>
                             </div>
                             <div
                                 class="w-10 h-10 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden bg-white/5 group-hover:border-red-500/50 transition-colors"
@@ -79,28 +74,28 @@
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-user-shield w-5"></i
-                                        ><span>Admin Profile</span>
+                                        ><span>Profile</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/users"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-users w-5"></i
-                                        ><span>User Manager</span>
+                                        ><span>Users</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/assessment"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-tasks w-5"></i
-                                        ><span>Assessment Logic</span>
+                                        ><span>Assessment</span>
                                     </router-link>
                                     <router-link
                                         to="/admin/settings"
                                         class="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-white/5 text-sm font-bold text-gray-400 hover:text-white transition-all"
                                     >
                                         <i class="fas fa-cogs w-5"></i
-                                        ><span>System Settings</span>
+                                        ><span>Settings</span>
                                     </router-link>
                                 </div>
                                 <button
@@ -108,7 +103,7 @@
                                     class="w-full flex items-center space-x-3 px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white text-xs font-black uppercase tracking-[0.2em] transition-all border-t border-white/5"
                                 >
                                     <i class="fas fa-power-off"></i
-                                    ><span>Terminate Session</span>
+                                    ><span>Log Out</span>
                                 </button>
                             </div>
                         </transition>
