@@ -289,9 +289,8 @@
                             <span class="text-red-500">Master</span>
                         </h2>
                         <p class="text-gray-500 leading-relaxed mb-8">
-                            A comprehensive curriculum designed to take you from
-                            foundational understanding to deep societal
-                            analysis.
+                            Build core GEL1 skills through the same learning
+                            modules available inside the student dashboard.
                         </p>
                         <div
                             class="p-6 bg-red-500/5 rounded-2xl border border-red-500/10"
@@ -300,13 +299,13 @@
                                 PROGRESSION PATH
                             </div>
                             <div class="text-2xl font-bold text-white mb-4">
-                                4 Key Modules
+                                {{ modules.length }} Learning Modules
                             </div>
                             <div
                                 class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden"
                             >
                                 <div
-                                    class="bg-red-500 h-full w-1/4 animate-pulse"
+                                    class="bg-red-500 h-full w-full animate-pulse"
                                 ></div>
                             </div>
                         </div>
@@ -535,28 +534,22 @@ export default {
             ],
             modules: [
                 {
-                    id: "MOD",
-                    roman: "I",
-                    title: "ICT Fundamentals",
-                    desc: "Understanding hardware, software, and how computers 'think' at their most core level.",
+                    id: "MODE",
+                    roman: "01",
+                    title: "Q&A Shooter",
+                    desc: "Fast-paced quiz challenge for GEL1 concepts, focused on response time and answer accuracy.",
                 },
                 {
-                    id: "MOD",
-                    roman: "II",
-                    title: "The Internet & Web",
-                    desc: "The history of the WWW, DNS architecture, and the transformative power of the cloud.",
+                    id: "MODE",
+                    roman: "02",
+                    title: "Typing Speed",
+                    desc: "Typing practice module that strengthens speed, rhythm, and precision using GEL1-aligned prompts.",
                 },
                 {
-                    id: "MOD",
-                    roman: "III",
-                    title: "IT & Society",
-                    desc: "Analyzing the influence of tech on Philippine culture, education, and modern social behavior.",
-                },
-                {
-                    id: "MOD",
-                    roman: "IV",
-                    title: "Ethics & Law",
-                    desc: "Cybersecurity basics, Intellectual Property rights, and anti-cybercrime legal frameworks.",
+                    id: "MODE",
+                    roman: "03",
+                    title: "Study Library",
+                    desc: "Central archive for lessons and learning references to review GEL1 topics at your own pace.",
                 },
             ],
         };

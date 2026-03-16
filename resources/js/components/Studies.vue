@@ -235,19 +235,9 @@
                                         : 'bg-white/5 border-white/10 hover:bg-white/10',
                                 ]"
                             >
-                                <span
-                                    :class="[
-                                        'text-[10px] font-black uppercase tracking-widest',
-                                        entry.index === currentPage
-                                            ? 'text-red-400'
-                                            : 'text-gray-500',
-                                    ]"
-                                >
-                                    Lesson {{ entry.lessonNumber }}
-                                </span>
                                 <p
                                     :class="[
-                                        'text-sm font-bold mt-1 truncate',
+                                        'text-sm font-bold truncate',
                                         entry.index === currentPage
                                             ? 'text-white'
                                             : 'text-gray-300',
